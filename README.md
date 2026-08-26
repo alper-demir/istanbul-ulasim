@@ -80,6 +80,6 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.3.0`
+Güncel MVP sürümü: `0.3.1`
 
 Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.

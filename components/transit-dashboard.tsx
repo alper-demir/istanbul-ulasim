@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
+import { APP_VERSION } from '@/lib/app-version';
 import { cn } from '@/lib/utils';
 
 const ROUTE_SOURCE = 'selected-route';
@@ -371,7 +372,7 @@ export function TransitDashboard() {
         <div className="flex min-w-fit items-center gap-3 pr-1 md:w-[272px]">
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-[var(--primary)] text-white shadow-lg"><Navigation2 className="h-5 w-5 rotate-45" /></div>
           <div className="hidden sm:block">
-            <p className="text-[17px] font-bold leading-none tracking-tight">İstanbulum</p>
+            <p className="flex items-center gap-1.5 text-[17px] font-bold leading-none tracking-tight">İstanbulum <span className="rounded-md bg-[var(--surface-muted)] px-1.5 py-0.5 text-[9px] font-bold tracking-normal text-[var(--muted)]">v{APP_VERSION}</span></p>
             <p className="mt-1 text-[10px] font-medium text-[var(--muted)]">Şehrin ulaşımı, tek haritada</p>
           </div>
         </div>

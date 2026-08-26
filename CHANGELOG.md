@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.3.1 - 2026-08-26
+
+### Eklendi
+
+- Başlıktaki İstanbulum markasının yanında görünür sürüm rozeti
+
 ## 0.3.0 - 2026-08-26
 
 ### Eklendi
