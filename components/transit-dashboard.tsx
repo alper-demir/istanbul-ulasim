@@ -11,7 +11,7 @@ import {
   Navigation2, Search, Star, Sun, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { routes as fixtureRoutes, type TransitRoute, type TransitVehicle } from '@/lib/transit-fixtures';
+import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import { cn } from '@/lib/utils';
 
@@ -69,6 +69,7 @@ export function TransitDashboard() {
   const selectedRouteRef = useRef(fixtureRoutes[0]);
   const [selectedRouteId, setSelectedRouteId] = useState('iett:500T');
   const [selectedVehicle, setSelectedVehicle] = useState<TransitVehicle | null>(null);
+  const [selectedStop, setSelectedStop] = useState<TransitStop | null>(null);
   const [search, setSearch] = useState('');
   const [routeListOpen, setRouteListOpen] = useState(true);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
@@ -102,6 +103,7 @@ export function TransitDashboard() {
   });
 
   const selectedRoute = routeQuery.data?.data ?? fixtureRoutes[0];
+  const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
     const normalized = search.trim().toLocaleLowerCase('tr-TR');
@@ -121,8 +123,8 @@ export function TransitDashboard() {
   }, [selectedRoute]);
 
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
-    const initialRoute = selectedRouteRef.current;
+    if (!mapContainerRef.current || mapRef.current || !activeRoute) return;
+    const initialRoute = activeRoute;
     const map = new maplibregl.Map({
       container:mapContainerRef.current,
       style: ISTANBUL_BASEMAP_STYLE,
@@ -150,12 +152,19 @@ export function TransitDashboard() {
         const activeRoute = selectedRouteRef.current;
         setSelectedVehicle(activeRoute.vehicles.find((item) => item.id === id) ?? null);
       });
+      map.on('mouseenter','route-stops',() => { map.getCanvas().style.cursor='pointer'; });
+      map.on('mouseleave','route-stops',() => { map.getCanvas().style.cursor=''; });
+      map.on('click','route-stops',(event: MapLayerMouseEvent) => {
+        const id = event.features?.[0]?.properties?.id;
+        const activeRoute = selectedRouteRef.current;
+        setSelectedStop(activeRoute.stops.find((item) => item.id === id) ?? null);
+      });
       setMapReady(true);
       fitRoute(map, initialRoute);
     });
     mapRef.current = map;
     return () => { map.remove(); mapRef.current=null; };
-  }, []);
+  }, [activeRoute]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -163,7 +172,7 @@ export function TransitDashboard() {
     // hot reload or a slow basemap response.  Mutating a half-loaded style
     // throws and leaves the canvas blank, so wait until every transit layer is
     // available.
-    if (!map || !mapReady || !map.isStyleLoaded() || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE) || !map.getSource(VEHICLE_SOURCE)) return;
+    if (!map || !mapReady || !activeRoute || !map.isStyleLoaded() || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE) || !map.getSource(VEHICLE_SOURCE)) return;
     (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(selectedRoute));
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute));
     (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute));
@@ -171,8 +180,9 @@ export function TransitDashboard() {
     if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
     if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
     setSelectedVehicle(null);
+    setSelectedStop(null);
     fitRoute(map,selectedRoute);
-  }, [mapReady,selectedRoute]);
+  }, [activeRoute, mapReady, selectedRoute]);
 
   const selectRoute = (route: TransitRouteSummary) => {
     setSelectedRouteId(route.id);
@@ -190,7 +200,7 @@ export function TransitDashboard() {
     <main className="relative h-dvh w-screen overflow-hidden bg-[var(--background)]">
       <div ref={mapContainerRef} className="absolute inset-0" aria-label="İstanbul ulaşım haritası" />
 
-      {!mapReady && (
+      {(!mapReady || !activeRoute) && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-[var(--background)]">
           <div className="text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary-soft)] border-t-[var(--primary)]" />
@@ -263,7 +273,7 @@ export function TransitDashboard() {
               </button>
             ))}
           </div>
-          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh durakları</h2><span className="text-xs font-medium text-[var(--muted)]">Yakınlaşınca haritada</span></div>
+          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh durakları</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Resmî durak verisi bekleniyor'}</span></div>
           <div className="relative mt-3 space-y-0 pl-1">
             {selectedRoute.stops.map((stop,index)=>(
               <div key={stop.id} className="relative flex min-h-14 gap-3 pb-3">{index<selectedRoute.stops.length-1&&<span className="absolute left-[7px] top-4 h-full w-0.5 bg-[var(--border)]" />}<span className="relative z-10 mt-1.5 h-4 w-4 rounded-full border-[3px] bg-[var(--surface-strong)]" style={{borderColor:selectedRoute.color}} /><div><p className="text-sm font-semibold">{stop.name}</p><p className="mt-0.5 text-xs text-[var(--muted)]">{stop.district}</p></div></div>
@@ -273,6 +283,7 @@ export function TransitDashboard() {
       </aside>
 
       {selectedVehicle&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><BusFront className="h-5 w-5" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-extrabold">{selectedVehicle.doorCode}</p><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-300">DEMO</span></div><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Sıradaki {selectedVehicle.nextStop}</p></div><div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.speed} km/sa</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
+      {selectedStop&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(360px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-extrabold">{selectedStop.name}</p><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedStop.district} · {selectedRoute.code} hattı durağı</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
 
       <div className="absolute bottom-5 left-5 z-10 hidden items-center gap-2 md:flex"><Button variant="secondary" size="sm"><Layers3 className="h-3.5 w-3.5" />Katmanlar</Button><Button variant="secondary" size="icon" aria-label="Konumuma git"><LocateFixed className="h-4 w-4" /></Button></div>
       {!mobilePanelOpen&&<Button className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 shadow-xl md:hidden" onClick={()=>setMobilePanelOpen(true)}><BusFront className="h-4 w-4" />{selectedRoute.code} detayları</Button>}

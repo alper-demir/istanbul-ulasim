@@ -5,6 +5,26 @@ const root = process.cwd();
 const source = join(root, 'data', 'iett-hat-guzergahlari.geojson');
 const output = join(root, 'public', 'iett');
 const dataset = JSON.parse(await readFile(source, 'utf8'));
+const parseCsv = (content) => {
+  const [header, ...rows] = content.trim().split(/\r?\n/);
+  const keys = header.replace(/^\uFEFF/, '').split(';');
+  return rows.map((row) => Object.fromEntries(keys.map((key, index) => [key, row.split(';')[index] ?? ''])));
+};
+const gtfsRoutes = parseCsv(await readFile(join(root, 'data', 'routes.csv'), 'utf8'));
+const gtfsTrips = parseCsv(await readFile(join(root, 'data', 'trips.csv'), 'utf8'));
+const gtfsStops = parseCsv(await readFile(join(root, 'data', 'stops.csv'), 'utf8'));
+const gtfsStopTimes = parseCsv(await readFile(join(root, 'data', 'stop_times.csv'), 'utf8'));
+const normalizeCoordinate = (value) => Number(value.replace(/\./g, '')) / 1e13;
+const stopById = new Map(gtfsStops.map((stop) => [stop.stop_id, {
+  id: `iett-stop:${stop.stop_id}`,
+  name: stop.stop_name,
+  district: stop.stop_desc.replace(/^direction:\s*/i, '') || 'İstanbul',
+  coordinates: [normalizeCoordinate(stop.stop_lon), normalizeCoordinate(stop.stop_lat)],
+}]));
+const stopTimesByTrip = new Map();
+for (const time of gtfsStopTimes) {
+  stopTimesByTrip.set(time.trip_id, [...(stopTimesByTrip.get(time.trip_id) ?? []), time]);
+}
 const groups = new Map();
 for (const feature of dataset.features) {
   const code = feature.properties.HAT_KODU?.trim();
@@ -31,7 +51,16 @@ for (const [code, features] of groups) {
     vehicleCount: 0, stopCount: 0,
   };
   index.push(route);
-  await writeFile(join(output, 'routes', `${encodeURIComponent(code)}.json`), JSON.stringify({ data: { ...route, coordinates: feature.geometry.coordinates, stops: [], vehicles: [] }, meta: { source: 'ibb-open-data', status: 'static' } }));
+  const matchingRouteIds = new Set(gtfsRoutes.filter((item) => item.route_short_name === code).map((item) => item.route_id));
+  const matchingTripIds = new Set(gtfsTrips.filter((item) => matchingRouteIds.has(item.route_id)).map((item) => item.trip_id));
+  const selectedSequence = [...matchingTripIds].map((tripId) => stopTimesByTrip.get(tripId) ?? []).sort((a, b) => b.length - a.length)[0] ?? [];
+  const stops = selectedSequence
+    .sort((a, b) => Number(a.stop_sequence) - Number(b.stop_sequence))
+    .map((time) => stopById.get(time.stop_id))
+    .filter(Boolean);
+  route.stopCount = stops.length;
+  index[index.length - 1].stopCount = stops.length;
+  await writeFile(join(output, 'routes', `${encodeURIComponent(code)}.json`), JSON.stringify({ data: { ...route, coordinates: feature.geometry.coordinates, stops, vehicles: [] }, meta: { source: 'ibb-open-data', status: 'static' } }));
 }
 index.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
 await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: index, meta: { source: 'ibb-open-data', status: 'static', routeCount: index.length } }));
