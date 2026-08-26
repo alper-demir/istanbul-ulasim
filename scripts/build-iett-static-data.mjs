@@ -125,6 +125,7 @@ const chooseDirection = (features, direction, code) => {
 const directionName = (feature) => feature.properties.GUZERGAH_ADI.trim().replace(/\s+-\s+/g, ' → ').replace(/\s+/g, ' ');
 await mkdir(join(output, 'routes'), { recursive: true });
 const index = [];
+const stopIndex = new Map();
 for (const [code, features] of groups) {
   const directions = [
     ['outbound', chooseDirection(features, 'GİDİŞ', code)],
@@ -146,6 +147,24 @@ for (const [code, features] of groups) {
     vehicleCount: 0, stopCount: primaryDirection.stops.length,
   };
   index.push(route);
+  for (const direction of directions) {
+    direction.stops.forEach((stop, stopIndexInDirection) => {
+      const indexedStop = stopIndex.get(stop.id) ?? {
+        ...stop,
+        routes: [],
+      };
+      const occurrenceKey = `${route.id}:${direction.id}`;
+      if (!indexedStop.routes.some((occurrence) => occurrence.key === occurrenceKey)) {
+        indexedStop.routes.push({
+          key: occurrenceKey,
+          routeCode: route.code,
+          directionId: direction.id,
+          stopOrder: stopIndexInDirection + 1,
+        });
+      }
+      stopIndex.set(stop.id, indexedStop);
+    });
+  }
   await writeFile(join(output, 'routes', `${encodeURIComponent(code)}.json`), JSON.stringify({
     data: {
       ...route,
@@ -159,4 +178,11 @@ for (const [code, features] of groups) {
 }
 index.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
 await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: index, meta: { source: 'ibb-open-data', status: 'static', routeCount: index.length } }));
-console.log(`Generated ${index.length} official IETT route records.`);
+const stops = [...stopIndex.values()]
+  .map((stop) => ({
+    ...stop,
+    routes: stop.routes.map(({ routeCode, directionId, stopOrder }) => [routeCode, directionId, stopOrder]),
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: stops, meta: { source: 'ibb-open-data', status: 'static', stopCount: stops.length } }));
+console.log(`Generated ${index.length} official IETT route records and ${stops.length} searchable stops.`);
