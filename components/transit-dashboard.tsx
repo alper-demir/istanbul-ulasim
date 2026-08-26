@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import * as maplibregl from 'maplibre-gl';
 import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
@@ -22,10 +22,13 @@ const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
 const USER_LOCATION_SOURCE = 'user-location';
+const ENDPOINT_SOURCE = 'route-endpoints';
+const COMPARISON_SOURCE = 'comparison-routes';
 const TRANSIT_DATA_VERSION = '2026-08-26.7';
 const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
 
 type LocationStatus = 'idle' | 'loading' | 'ready' | 'denied' | 'unavailable';
+type ComparisonRoute = { routeId:string; directionId:string };
 
 function readRouteStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -62,6 +65,19 @@ const ISTANBUL_BASEMAP_STYLE = {
 
 function lineFeature(route: TransitRoute): FeatureCollection {
   return { type:'FeatureCollection', features:[{ type:'Feature', properties:{ color:route.color }, geometry:{ type:'LineString', coordinates:route.coordinates } }] };
+}
+
+function endpointFeatures(route: TransitRoute): FeatureCollection {
+  const start = route.stops[0]?.coordinates ?? route.coordinates[0]!;
+  const end = route.stops.at(-1)?.coordinates ?? route.coordinates.at(-1)!;
+  return { type:'FeatureCollection', features:[
+    { type:'Feature', properties:{ kind:'start' }, geometry:{ type:'Point', coordinates:start } },
+    { type:'Feature', properties:{ kind:'end' }, geometry:{ type:'Point', coordinates:end } },
+  ] };
+}
+
+function comparisonFeatures(routes: TransitRoute[]): FeatureCollection {
+  return { type:'FeatureCollection', features:routes.map((route) => ({ type:'Feature', properties:{ color:route.color }, geometry:{ type:'LineString', coordinates:route.coordinates } })) };
 }
 
 function stopFeatures(route: TransitRoute, selectedStopId?: string): FeatureCollection {
@@ -150,6 +166,7 @@ export function TransitDashboard() {
   const [recents, setRecents] = useState<RecentTransitItem[]>(readStoredRecents);
   const [savedManualLocation, setSavedManualLocation] = useState<SavedManualLocation | null>(readStoredManualLocation);
   const [locationOrigin, setLocationOrigin] = useState<'browser' | 'manual' | null>(() => readStoredManualLocation() ? 'manual' : null);
+  const [comparisonRouteKeys, setComparisonRouteKeys] = useState<ComparisonRoute[]>([]);
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
@@ -189,6 +206,19 @@ export function TransitDashboard() {
     placeholderData: (previousData) => previousData,
     staleTime: 24 * 60 * 60 * 1000,
   });
+  const comparisonQueries = useQueries({
+    queries: comparisonRouteKeys.map(({ routeId }) => ({
+      queryKey:['comparison-route', TRANSIT_DATA_VERSION, routeId],
+      queryFn: async (): Promise<{ data:TransitRoute }> => {
+        const response = routeId.startsWith('iett:')
+          ? await fetch(`/iett/routes/${encodeURIComponent(routeId.replace('iett:', ''))}.json?v=${TRANSIT_DATA_VERSION}`)
+          : await fetch(`/api/v1/routes/${encodeURIComponent(routeId)}`);
+        if (!response.ok) throw new Error('Karşılaştırma hattı alınamadı');
+        return response.json();
+      },
+      staleTime:24 * 60 * 60 * 1000,
+    })),
+  });
 
   const routeData = routeQuery.data?.data ?? fixtureRoutes[0];
   const selectedDirection = routeData.directions?.find((direction) => direction.id === selectedDirectionId) ?? routeData.directions?.[0];
@@ -198,6 +228,12 @@ export function TransitDashboard() {
     stops:selectedDirection.stops,
     durationMinutes:selectedDirection.durationMinutes,
   } : routeData, [routeData, selectedDirection]);
+  const comparisonRoutes = useMemo(() => comparisonRouteKeys.flatMap((key, index) => {
+    if (key.routeId === selectedRoute.id && key.directionId === selectedDirection?.id) return [];
+    const route = comparisonQueries[index]?.data?.data;
+    const direction = route?.directions?.find((item) => item.id === key.directionId) ?? route?.directions?.[0];
+    return route && direction ? [{ ...route, coordinates:direction.coordinates, stops:direction.stops, durationMinutes:direction.durationMinutes }] : [];
+  }), [comparisonQueries, comparisonRouteKeys, selectedDirection?.id, selectedRoute.id]);
   const selectedStopIndex = selectedStop ? selectedRoute.stops.findIndex((stop) => stop.id === selectedStop.id) : -1;
   const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
@@ -276,6 +312,9 @@ export function TransitDashboard() {
     map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
     map.on('load', () => {
+      map.addSource(COMPARISON_SOURCE, { type:'geojson', data:comparisonFeatures([]) });
+      map.addLayer({ id:'comparison-route-halo', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':7, 'line-opacity':0.65 } });
+      map.addLayer({ id:'comparison-route-line', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':3.5, 'line-opacity':0.8, 'line-dasharray':[1.5,1.2] } });
       map.addSource(ROUTE_SOURCE, { type:'geojson', data:lineFeature(initialRoute) });
       map.addLayer({ id:'route-halo', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':9, 'line-opacity':0.72 } });
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
@@ -283,6 +322,10 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, paint:{
         'circle-radius':STOP_RADIUS,
         'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
+      } });
+      map.addSource(ENDPOINT_SOURCE, { type:'geojson', data:endpointFeatures(initialRoute) });
+      map.addLayer({ id:'route-endpoints', type:'circle', source:ENDPOINT_SOURCE, paint:{
+        'circle-radius':8, 'circle-color':['match',['get','kind'],'start','#16a34a','end','#dc2626','#ffffff'], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':3,
       } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute) });
       map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':18, 'circle-color':initialRoute.color, 'circle-opacity':0.18 } });
@@ -335,6 +378,7 @@ export function TransitDashboard() {
     (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(selectedRoute));
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute));
     (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute));
+    if (map.getSource(ENDPOINT_SOURCE)) (map.getSource(ENDPOINT_SOURCE) as GeoJSONSource).setData(endpointFeatures(selectedRoute));
     if (map.getLayer('route-stops')) {
       map.setLayerZoomRange('route-stops', 0, 24);
       map.setLayoutProperty('route-stops','visibility','visible');
@@ -350,6 +394,12 @@ export function TransitDashboard() {
     setSelectedStop(null);
     fitRoute(map,selectedRoute);
   }, [activeRoute, mapReady, selectedRoute]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !map.getSource(COMPARISON_SOURCE)) return;
+    (map.getSource(COMPARISON_SOURCE) as GeoJSONSource).setData(comparisonFeatures(comparisonRoutes));
+  }, [comparisonRoutes, mapReady]);
 
   useEffect(() => {
     if (!pendingStop || selectedRoute.id !== pendingStop.routeId || selectedDirection?.id !== pendingStop.directionId) return;
@@ -417,6 +467,19 @@ export function TransitDashboard() {
     const next = favorites.includes(selectedRoute.id) ? favorites.filter((id) => id !== selectedRoute.id) : [...favorites,selectedRoute.id];
     setFavorites(next);
     window.localStorage.setItem(USER_STATE_KEYS.favoriteRoutes,JSON.stringify(next));
+  };
+
+  const toggleComparisonRoute = () => {
+    const next = { routeId:selectedRoute.id, directionId:selectedDirection?.id ?? selectedDirectionId };
+    setComparisonRouteKeys((current) => {
+      const exists = current.some((item) => item.routeId === next.routeId && item.directionId === next.directionId);
+      if (exists) return current.filter((item) => !(item.routeId === next.routeId && item.directionId === next.directionId));
+      return current.length < 3 ? [...current, next] : current;
+    });
+  };
+
+  const removeComparisonRoute = (routeId: string, directionId: string) => {
+    setComparisonRouteKeys((current) => current.filter((item) => !(item.routeId === routeId && item.directionId === directionId)));
   };
 
   const toggleStopFavorite = () => {
@@ -560,6 +623,7 @@ export function TransitDashboard() {
         </div>
         <div className="p-4">
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Güzergâh yönü</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block line-clamp-2">{direction.name}</span></button>)}</div></div>}
+          <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div>}</div>
           <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={String(selectedRoute.vehicles.length)} label="aktif araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="örnek durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.vehicles.length?'30 sn’de yenilenir':'Canlı kaynak bekleniyor'}</span></div>
