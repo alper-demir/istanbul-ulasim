@@ -14,13 +14,17 @@ const gtfsRoutes = parseCsv(await readFile(join(root, 'data', 'routes.csv'), 'ut
 const gtfsTrips = parseCsv(await readFile(join(root, 'data', 'trips.csv'), 'utf8'));
 const gtfsStops = parseCsv(await readFile(join(root, 'data', 'stops.csv'), 'utf8'));
 const gtfsStopTimes = parseCsv(await readFile(join(root, 'data', 'stop_times.csv'), 'utf8'));
-const normalizeCoordinate = (value) => Number(value.replace(/\./g, '')) / 1e13;
+const normalizeCoordinate = (value) => {
+  const direct = Number(value.replace(',', '.'));
+  if (Number.isFinite(direct) && Math.abs(direct) > 1 && Math.abs(direct) < 180) return direct;
+  return Number(value.replace(/[^0-9-]/g, '')) / 1e13;
+};
 const stopById = new Map(gtfsStops.map((stop) => [stop.stop_id, {
   id: `iett-stop:${stop.stop_id}`,
   name: stop.stop_name,
   district: stop.stop_desc.replace(/^direction:\s*/i, '') || 'İstanbul',
   coordinates: [normalizeCoordinate(stop.stop_lon), normalizeCoordinate(stop.stop_lat)],
-}]));
+}]).filter(([, stop]) => stop.coordinates[0] > 26 && stop.coordinates[0] < 31 && stop.coordinates[1] > 40 && stop.coordinates[1] < 42));
 const stopTimesByTrip = new Map();
 for (const time of gtfsStopTimes) {
   stopTimesByTrip.set(time.trip_id, [...(stopTimesByTrip.get(time.trip_id) ?? []), time]);

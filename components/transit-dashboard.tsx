@@ -163,8 +163,12 @@ export function TransitDashboard() {
       fitRoute(map, initialRoute);
     });
     mapRef.current = map;
-    return () => { map.remove(); mapRef.current=null; };
   }, [activeRoute]);
+
+  useEffect(() => () => {
+    mapRef.current?.remove();
+    mapRef.current = null;
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
