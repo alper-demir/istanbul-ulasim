@@ -2,6 +2,24 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.4.0 - 2026-08-26
+
+### Eklendi
+
+- Tarayıcıda saklanan son bakılan hat ve duraklar
+- Durak favorileri ve seçili durak kartından favoriye alma eylemi
+- Haritadan seçilen konumu isteğe bağlı olarak bu cihazda hatırlama
+- Tarayıcı konumu kullanıldığında bildirilen yaklaşık konum doğruluğu
+- Durak seçimini de içeren paylaşılabilir bağlantılar
+- Arama panelinde resmî veri kaynağı, hat ve durak kapsamı bilgisi
+- Güzergâhların başlangıç ve bitişini gösteren harita işaretleri
+- Aynı haritada en fazla üç hattı tutarak güzergâh karşılaştırma
+
+### Gizlilik
+
+- Favoriler, son bakılanlar ve isteğe bağlı manuel konum yalnızca tarayıcının yerel depolamasında tutulur.
+- Konum veya tercih verisi uygulama tarafından sunucuya gönderilmez.
+
 ## 0.3.3 - 2026-08-26
 
 ### Eklendi

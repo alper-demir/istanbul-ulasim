@@ -10,9 +10,12 @@
 - Durak adı, bölgesi, güzergâhtaki sırası ve koordinat bilgileri
 - Seçilen duraktan geçen hatları görme ve ilgili hat/yöne geçme
 - Konum izniyle en yakın 12 durağı mesafe sırasıyla gösterme
+- Tarayıcının bildirdiği yaklaşık konum doğruluğunu gösterme
 - Tarayıcı konumu hatalıysa haritadan elle konum seçme
-- Hatları tarayıcıda favorilere kaydetme
-- Seçilen hat ve yönü URL üzerinden paylaşma
+- Haritadan seçilen konumu isteğe bağlı olarak bu cihazda hatırlama
+- Hat ve durakları tarayıcıda favorilere kaydetme; son bakılanlara hızlı dönüş
+- Seçilen hat, yön ve durağı URL üzerinden paylaşma
+- Güzergâh başlangıç/bitiş işaretleri ve en fazla üç hatla harita karşılaştırması
 - Açık/koyu tema ve mobil uyumlu arayüz
 - Canlı araç verisi bulunmadığında açıklayıcı boş durum
 
@@ -64,10 +67,10 @@ Betik, hat detaylarına ek olarak birleşik aramada kullanılan `stop-index.json
 
 ## Paylaşılabilir bağlantılar
 
-Hat ve yön seçimi sorgu parametreleriyle saklanır:
+Hat, yön ve isteğe bağlı durak seçimi sorgu parametreleriyle saklanır:
 
 ```text
-/?route=41ST&direction=return
+/?route=41ST&direction=return&stop=iett-stop:123456
 ```
 
 Desteklenen yön değerleri `outbound` ve `return` değerleridir. Tarayıcının geri/ileri hareketleri de seçimi günceller.
@@ -82,7 +85,7 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.3.3`
+Güncel MVP sürümü: `0.4.0`
 
 ## Sürümleme yaklaşımı
 
