@@ -1,0 +1,82 @@
+# İstanbulum
+
+İstanbul otobüs hatlarını, yön bazlı güzergâhlarını ve duraklarını tek haritada incelemeyi sağlayan web uygulaması.
+
+## MVP özellikleri
+
+- İETT hat kodu veya hat adına göre arama
+- Gidiş ve dönüş yönleri için ayrı güzergâh çizgileri ve durak sıraları
+- Harita üzerindeki durakları seçme, durağa ve tüm güzergâha odaklanma
+- Durak adı, bölgesi, güzergâhtaki sırası ve koordinat bilgileri
+- Hatları tarayıcıda favorilere kaydetme
+- Seçilen hat ve yönü URL üzerinden paylaşma
+- Açık/koyu tema ve mobil uyumlu arayüz
+- Canlı araç verisi bulunmadığında açıklayıcı boş durum
+
+## Teknoloji
+
+- React 19 ve Next.js 16 API'leri
+- Vinext / Vite
+- TypeScript ve Tailwind CSS
+- MapLibre GL ve OpenStreetMap
+
+## Yerel geliştirme
+
+Node.js 22.13 veya daha yeni bir sürüm gereklidir.
+
+```bash
+npm install
+npm run dev
+```
+
+Uygulama varsayılan olarak `http://localhost:3000` adresinde açılır.
+
+Kalite kontrolleri:
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## Veri üretimi
+
+Uygulama, çalışma zamanında `public/iett` altındaki statik JSON dosyalarını okur. Bu dosyalar kaynak veri büyüklüğü nedeniyle repoya eklenmez ve aşağıdaki yerel dosyalardan üretilir:
+
+- `data/iett-hat-guzergahlari.geojson`
+- `data/routes.txt` veya `data/routes.csv`
+- `data/trips.txt` veya `data/trips.csv`
+- `data/stops.txt` veya `data/stops.csv`
+- `data/stop_times.txt` veya `data/stop_times.csv`
+
+Kaynaklar yerleştirildikten sonra:
+
+```bash
+npm run data:build-iett
+```
+
+`stop_times` verisi Excel satır sınırına takılabildiği için mümkünse portalın özgün `stop_times.txt` dosyası kullanılmalıdır. Üretim betiği eksik sefer kapsamını kontrol eder ve hatalı veriyle devam etmez.
+
+## Paylaşılabilir bağlantılar
+
+Hat ve yön seçimi sorgu parametreleriyle saklanır:
+
+```text
+/?route=41ST&direction=return
+```
+
+Desteklenen yön değerleri `outbound` ve `return` değerleridir. Tarayıcının geri/ileri hareketleri de seçimi günceller.
+
+## Güzergâh renkleri
+
+Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodundan deterministik olarak seçilen sabit bir palet kullanılır; böylece aynı hat her açılışta aynı renkte görünür. Metrobüs hatları ayrıca turuncu renkle ayrılır.
+
+## Veri kapsamı
+
+Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu henüz bağlı değildir. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
+
+## Sürüm
+
+Güncel MVP sürümü: `0.2.0`
+
+Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.
