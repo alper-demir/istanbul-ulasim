@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.4.1 - 2026-08-27
+
+### Eklendi
+
+- Karşılaştırmaya eklenmiş tüm hatları tek eylemle temizleme
+- Haritadaki durak ve araç seçimini kapatıp ana güzergâha yeniden odaklanan “Güzergâhı sıfırla” eylemi
+
 ## 0.4.0 - 2026-08-26
 
 ### Eklendi
