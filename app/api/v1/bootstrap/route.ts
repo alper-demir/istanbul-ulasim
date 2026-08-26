@@ -1,4 +1,7 @@
+import { getIettSourceHealth } from '@/lib/data-sources/iett';
+
 export async function GET() {
+  const sourceHealth = getIettSourceHealth();
   return Response.json({
     data: {
       city: 'İstanbul',
@@ -6,13 +9,14 @@ export async function GET() {
       defaultZoom: 9.6,
       refreshIntervalMs: 30_000,
       features: {
-        liveVehicles: false,
+        liveVehicles: sourceHealth.some((source) => source.kind === 'live-vehicles' && source.status === 'ready-to-import'),
         traffic: false,
         favorites: true,
       },
     },
     meta: {
       source: 'fixture',
+      sourceHealth,
       fetchedAt: new Date().toISOString(),
     },
   });

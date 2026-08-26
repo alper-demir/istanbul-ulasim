@@ -7,6 +7,7 @@ export async function GET() {
       source: 'fixture',
       fetchedAt: new Date().toISOString(),
       status: 'demo',
+      nextSource: 'ibb-iett-route-geometry',
     },
   });
 }

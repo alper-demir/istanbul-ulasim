@@ -56,6 +56,9 @@ button { -webkit-tap-highlight-color: transparent; }
 .maplibregl-ctrl-bottom-right { bottom: 14px; right: 14px; }
 .maplibregl-ctrl-attrib { border-radius: 8px 0 0 0; font-size: 10px; }
 .maplibregl-canvas:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
+/* MapLibre's base stylesheet sets its root to relative.  This map is a
+   full-screen application layer, so preserve the Tailwind inset dimensions. */
+.maplibregl-map { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; }
 
 @media (max-width: 767px) {
   .maplibregl-ctrl-bottom-right { bottom: 178px; }

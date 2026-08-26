@@ -18,6 +18,25 @@ const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
 
+// Keep the operational layers independent of the basemap provider.  If tile
+// delivery is slow, the background remains legible and the transit data stays
+// usable instead of presenting a blank map surface.
+const ISTANBUL_BASEMAP_STYLE = {
+  version: 8 as const,
+  sources: {
+    osm: {
+      type: 'raster' as const,
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    { id: 'basemap-background', type: 'background' as const, paint: { 'background-color': '#dce8e6' } },
+    { id: 'osm-raster', type: 'raster' as const, source: 'osm', paint: { 'raster-saturation': -0.35, 'raster-contrast': -0.08 } },
+  ],
+};
+
 function lineFeature(route: TransitRoute): FeatureCollection {
   return { type:'FeatureCollection', features:[{ type:'Feature', properties:{ color:route.color }, geometry:{ type:'LineString', coordinates:route.coordinates } }] };
 }
@@ -92,7 +111,7 @@ export function TransitDashboard() {
     const initialRoute = selectedRouteRef.current;
     const map = new maplibregl.Map({
       container:mapContainerRef.current,
-      style:'https://tiles.openfreemap.org/styles/liberty',
+      style: ISTANBUL_BASEMAP_STYLE,
       center:[29.01,41.035], zoom:9.6, minZoom:8, maxZoom:18,
       attributionControl:false,
     });
@@ -126,13 +145,17 @@ export function TransitDashboard() {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady) return;
-    (map.getSource(ROUTE_SOURCE) as GeoJSONSource)?.setData(lineFeature(selectedRoute));
-    (map.getSource(STOP_SOURCE) as GeoJSONSource)?.setData(stopFeatures(selectedRoute));
-    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource)?.setData(vehicleFeatures(selectedRoute));
-    map.setPaintProperty('route-stops','circle-stroke-color',selectedRoute.color);
-    map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
-    map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
+    // Route data can arrive while MapLibre is recreating its style during a
+    // hot reload or a slow basemap response.  Mutating a half-loaded style
+    // throws and leaves the canvas blank, so wait until every transit layer is
+    // available.
+    if (!map || !mapReady || !map.isStyleLoaded() || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE) || !map.getSource(VEHICLE_SOURCE)) return;
+    (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(selectedRoute));
+    (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute));
+    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute));
+    if (map.getLayer('route-stops')) map.setPaintProperty('route-stops','circle-stroke-color',selectedRoute.color);
+    if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
+    if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
     setSelectedVehicle(null);
     fitRoute(map,selectedRoute);
   }, [mapReady,selectedRoute]);
@@ -176,7 +199,7 @@ export function TransitDashboard() {
           {search && <button onClick={()=>setSearch('')} aria-label="Aramayı temizle" className="absolute right-3 text-[var(--muted)]"><X className="h-4 w-4" /></button>}
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
-          <span className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300 md:flex"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />Demo canlı</span>
+          <span className="hidden items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-700 dark:text-amber-300 md:flex"><span className="h-2 w-2 rounded-full bg-amber-500" />Demo veri</span>
           <Button variant="secondary" size="icon" aria-label="Temayı değiştir" onClick={()=>setTheme(resolvedTheme==='dark'?'light':'dark')}>
             <Moon className="h-4 w-4 dark:hidden" />
             <Sun className="hidden h-4 w-4 dark:block" />
@@ -208,7 +231,7 @@ export function TransitDashboard() {
         <div className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 backdrop-blur-xl">
           <div className="flex items-start gap-3">
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
-            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />canlı</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
+            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />demo</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
             <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label="Hattı favorile"><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
@@ -235,7 +258,7 @@ export function TransitDashboard() {
         </div>
       </aside>
 
-      {selectedVehicle&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><BusFront className="h-5 w-5" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-extrabold">{selectedVehicle.doorCode}</p><span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-300">CANLI</span></div><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Sıradaki {selectedVehicle.nextStop}</p></div><div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.speed} km/sa</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
+      {selectedVehicle&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><BusFront className="h-5 w-5" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-extrabold">{selectedVehicle.doorCode}</p><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-300">DEMO</span></div><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Sıradaki {selectedVehicle.nextStop}</p></div><div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.speed} km/sa</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
 
       <div className="absolute bottom-5 left-5 z-10 hidden items-center gap-2 md:flex"><Button variant="secondary" size="sm"><Layers3 className="h-3.5 w-3.5" />Katmanlar</Button><Button variant="secondary" size="icon" aria-label="Konumuma git"><LocateFixed className="h-4 w-4" /></Button></div>
       {!mobilePanelOpen&&<Button className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 shadow-xl md:hidden" onClick={()=>setMobilePanelOpen(true)}><BusFront className="h-4 w-4" />{selectedRoute.code} detayları</Button>}
