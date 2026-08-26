@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
+const TRANSIT_DATA_VERSION = '2026-08-26.3';
 
 // Keep the operational layers independent of the basemap provider.  If tile
 // delivery is slow, the background remains legible and the transit data stays
@@ -78,9 +79,9 @@ export function TransitDashboard() {
   const { resolvedTheme, setTheme } = useTheme();
 
   const routesQuery = useQuery({
-    queryKey: ['routes'],
+    queryKey: ['routes', TRANSIT_DATA_VERSION],
     queryFn: async (): Promise<{ data: TransitRouteSummary[] }> => {
-      const response = await fetch('/iett/route-index.json');
+      const response = await fetch(`/iett/route-index.json?v=${TRANSIT_DATA_VERSION}`);
       if (!response.ok) throw new Error('Hat verisi alınamadı');
       return response.json();
     },
@@ -90,15 +91,15 @@ export function TransitDashboard() {
 
   const routes = routesQuery.data?.data ?? fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length }));
   const routeQuery = useQuery({
-    queryKey: ['route', selectedRouteId],
+    queryKey: ['route', TRANSIT_DATA_VERSION, selectedRouteId],
     queryFn: async (): Promise<{ data: TransitRoute }> => {
       const response = selectedRouteId.startsWith('iett:')
-        ? await fetch(`/iett/routes/${encodeURIComponent(selectedRouteId.replace('iett:', ''))}.json`)
+        ? await fetch(`/iett/routes/${encodeURIComponent(selectedRouteId.replace('iett:', ''))}.json?v=${TRANSIT_DATA_VERSION}`)
         : await fetch(`/api/v1/routes/${encodeURIComponent(selectedRouteId)}`);
       if (!response.ok) throw new Error('Hat detayı alınamadı');
       return response.json();
     },
-    placeholderData: selectedRouteId === fixtureRoutes[0].id ? { data: fixtureRoutes[0] } : undefined,
+    placeholderData: (previousData) => previousData,
     staleTime: 24 * 60 * 60 * 1000,
   });
 
@@ -180,7 +181,15 @@ export function TransitDashboard() {
     (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(selectedRoute));
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute));
     (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute));
-    if (map.getLayer('route-stops')) map.setPaintProperty('route-stops','circle-stroke-color',selectedRoute.color);
+    if (map.getLayer('route-stops')) {
+      map.setLayerZoomRange('route-stops', 0, 24);
+      map.setLayoutProperty('route-stops','visibility','visible');
+      map.setPaintProperty('route-stops','circle-radius',['case',['get','selected'],12,['interpolate',['linear'],['zoom'],0,5,14,8]]);
+      map.setPaintProperty('route-stops','circle-color',['case',['get','selected'],selectedRoute.color,'#ffffff']);
+      map.setPaintProperty('route-stops','circle-stroke-color',['case',['get','selected'],'#ffffff',selectedRoute.color]);
+      map.setPaintProperty('route-stops','circle-stroke-width',['case',['get','selected'],4,3.5]);
+      map.moveLayer('route-stops');
+    }
     if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
     if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
     setSelectedVehicle(null);
@@ -216,7 +225,7 @@ export function TransitDashboard() {
     <main className="relative h-dvh w-screen overflow-hidden bg-[var(--background)]">
       <div ref={mapContainerRef} className="absolute inset-0" aria-label="İstanbul ulaşım haritası" />
 
-      {(!mapReady || !activeRoute) && (
+      {!mapReady && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-[var(--background)]">
           <div className="text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary-soft)] border-t-[var(--primary)]" />
