@@ -7,8 +7,8 @@ import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'mapl
 import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
-  BusFront, ChevronRight, Clock3, Layers3, LocateFixed, MapPin, Moon,
-  Navigation2, Search, Star, Sun, TramFront, X,
+  BusFront, Check, ChevronRight, Clock3, Layers3, LocateFixed, MapPin, Moon,
+  Navigation2, Search, Share2, Star, Sun, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
@@ -20,6 +20,15 @@ const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
 const TRANSIT_DATA_VERSION = '2026-08-26.5';
 const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
+
+function readRouteStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const route = params.get('route')?.trim();
+  return {
+    routeId: route ? (route.startsWith('iett:') ? route : `iett:${route}`) : 'iett:500T',
+    directionId: params.get('direction') === 'return' ? 'return' : 'outbound',
+  };
+}
 
 // Keep the operational layers independent of the basemap provider.  If tile
 // delivery is slow, the background remains legible and the transit data stays
@@ -78,6 +87,8 @@ export function TransitDashboard() {
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [urlStateReady, setUrlStateReady] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
 
   const routesQuery = useQuery({
@@ -127,6 +138,26 @@ export function TransitDashboard() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setFavorites(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    const applyUrlState = () => {
+      const next = readRouteStateFromUrl();
+      setSelectedRouteId(next.routeId);
+      setSelectedDirectionId(next.directionId);
+      setUrlStateReady(true);
+    };
+    applyUrlState();
+    window.addEventListener('popstate', applyUrlState);
+    return () => window.removeEventListener('popstate', applyUrlState);
+  }, []);
+
+  useEffect(() => {
+    if (!urlStateReady) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('route', selectedRouteId.replace(/^iett:/, ''));
+    url.searchParams.set('direction', selectedDirectionId);
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [selectedDirectionId, selectedRouteId, urlStateReady]);
 
   useEffect(() => {
     selectedRouteRef.current = selectedRoute;
@@ -231,6 +262,12 @@ export function TransitDashboard() {
     window.localStorage.setItem('istanbulum:favorites',JSON.stringify(next));
   };
 
+  const copyRouteLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    setLinkCopied(true);
+    window.setTimeout(() => setLinkCopied(false), 1800);
+  };
+
   return (
     <main className="relative h-dvh w-screen overflow-hidden bg-[var(--background)]">
       <div ref={mapContainerRef} className="absolute inset-0" aria-label="İstanbul ulaşım haritası" />
@@ -292,6 +329,7 @@ export function TransitDashboard() {
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
             <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
             <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label="Hattı favorile"><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
+            <Button variant="ghost" size="icon" onClick={copyRouteLink} aria-label="Hat bağlantısını kopyala">{linkCopied?<Check className="h-4 w-4 text-emerald-500" />:<Share2 className="h-4 w-4" />}</Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
         </div>
