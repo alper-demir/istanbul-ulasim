@@ -138,9 +138,9 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-halo', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':9, 'line-opacity':0.72 } });
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
       map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(initialRoute) });
-      map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, minzoom:8.8, paint:{
-        'circle-radius':['case',['get','selected'],11,['interpolate',['linear'],['zoom'],8.8,3.5,14,7]],
-        'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3],
+      map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, paint:{
+        'circle-radius':['case',['get','selected'],12,['interpolate',['linear'],['zoom'],0,5,14,8]],
+        'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
       } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute) });
       map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':18, 'circle-color':initialRoute.color, 'circle-opacity':0.18 } });
