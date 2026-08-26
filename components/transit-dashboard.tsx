@@ -7,8 +7,8 @@ import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'mapl
 import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
-  BusFront, Check, ChevronRight, Clock3, Layers3, LocateFixed, MapPin, Moon,
-  Navigation2, Search, Share2, Star, Sun, TramFront, X,
+  BusFront, Check, ChevronRight, Clock3, LocateFixed, MapPin, Moon,
+  Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
@@ -128,6 +128,7 @@ export function TransitDashboard() {
     stops:selectedDirection.stops,
     durationMinutes:selectedDirection.durationMinutes,
   } : routeData, [routeData, selectedDirection]);
+  const selectedStopIndex = selectedStop ? selectedRoute.stops.findIndex((stop) => stop.id === selectedStop.id) : -1;
   const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
@@ -277,9 +278,26 @@ export function TransitDashboard() {
   };
 
   const copyRouteLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    setLinkCopied(true);
-    window.setTimeout(() => setLinkCopied(false), 1800);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 1800);
+    } catch { /* Clipboard access can be unavailable outside secure contexts. */ }
+  };
+
+  const focusRoute = () => {
+    if (mapRef.current) fitRoute(mapRef.current, selectedRoute);
+  };
+
+  const focusStop = () => {
+    if (mapRef.current && selectedStop) mapRef.current.flyTo({ center:selectedStop.coordinates, zoom:Math.max(mapRef.current.getZoom(),14), duration:500 });
+  };
+
+  const locateUser = () => {
+    if (!mapRef.current || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      mapRef.current?.flyTo({ center:[coords.longitude,coords.latitude], zoom:14, duration:700 });
+    });
   };
 
   return (
@@ -339,7 +357,7 @@ export function TransitDashboard() {
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
             <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
             <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label={favorites.includes(selectedRoute.id)?'Hattı favorilerden çıkar':'Hattı favorilere ekle'}><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
-            <Button variant="ghost" size="icon" onClick={copyRouteLink} aria-label="Hat bağlantısını kopyala">{linkCopied?<Check className="h-4 w-4 text-emerald-500" />:<Share2 className="h-4 w-4" />}</Button>
+            <Button variant="ghost" size="icon" onClick={copyRouteLink} aria-label={linkCopied?'Hat bağlantısı kopyalandı':'Hat bağlantısını kopyala'}>{linkCopied?<Check className="h-4 w-4 text-emerald-500" />:<Share2 className="h-4 w-4" />}</Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
         </div>
@@ -347,7 +365,7 @@ export function TransitDashboard() {
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Güzergâh yönü</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block line-clamp-2">{direction.name}</span></button>)}</div></div>}
           <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={String(selectedRoute.vehicles.length)} label="aktif araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="örnek durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
-          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">30 sn’de yenilenir</span></div>
+          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.vehicles.length?'30 sn’de yenilenir':'Canlı kaynak bekleniyor'}</span></div>
           <div className="mt-2 space-y-2">
             {!selectedRoute.vehicles.length&&<div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-center"><BusFront className="mx-auto h-5 w-5 text-[var(--muted)]" /><p className="mt-2 text-xs font-bold">Canlı araç verisi bağlı değil</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">Güzergâh ve durak verileri kullanılabilir.</p></div>}
             {selectedRoute.vehicles.map((vehicle)=>(
@@ -368,9 +386,9 @@ export function TransitDashboard() {
       </aside>
 
       {selectedVehicle&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><BusFront className="h-5 w-5" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-extrabold">{selectedVehicle.doorCode}</p><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-300">DEMO</span></div><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Sıradaki {selectedVehicle.nextStop}</p></div><div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.speed} km/sa</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
-      {selectedStop&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(360px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-extrabold">{selectedStop.name}</p><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedStop.district} · {selectedRoute.code} hattı durağı</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
+      {selectedStop&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-extrabold">{selectedStop.name}</p><p className="mt-0.5 text-xs text-[var(--muted)]">{selectedStop.district} · {selectedStopIndex+1}. durak / {selectedRoute.stops.length}</p><p className="mt-1 truncate text-[10px] font-medium text-[var(--muted)]">{selectedDirection?.name??selectedRoute.name}</p><p className="mt-1 font-mono text-[10px] text-[var(--muted)]">{selectedStop.coordinates[1].toFixed(5)}, {selectedStop.coordinates[0].toFixed(5)}</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button></div><Button variant="secondary" size="sm" className="mt-3 w-full" onClick={focusStop}><LocateFixed className="h-3.5 w-3.5" />Durağa odaklan</Button></div>}
 
-      <div className="absolute bottom-5 left-5 z-10 hidden items-center gap-2 md:flex"><Button variant="secondary" size="sm"><Layers3 className="h-3.5 w-3.5" />Katmanlar</Button><Button variant="secondary" size="icon" aria-label="Konumuma git"><LocateFixed className="h-4 w-4" /></Button></div>
+      <div className="absolute bottom-5 left-5 z-10 hidden items-center gap-2 md:flex"><Button variant="secondary" size="sm" onClick={focusRoute}><RouteIcon className="h-3.5 w-3.5" />Güzergâhı göster</Button><Button variant="secondary" size="icon" onClick={locateUser} aria-label="Konumuma git"><LocateFixed className="h-4 w-4" /></Button></div>
       {!mobilePanelOpen&&<Button className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 shadow-xl md:hidden" onClick={()=>setMobilePanelOpen(true)}><BusFront className="h-4 w-4" />{selectedRoute.code} detayları</Button>}
     </main>
   );
