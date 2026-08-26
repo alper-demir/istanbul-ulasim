@@ -33,6 +33,7 @@ function readRouteStateFromUrl() {
   return {
     routeId: route ? (route.startsWith('iett:') ? route : `iett:${route}`) : 'iett:500T',
     directionId: params.get('direction') === 'return' ? 'return' : 'outbound',
+    stopId: params.get('stop')?.trim() || null,
   };
 }
 
@@ -155,7 +156,7 @@ export function TransitDashboard() {
 
   const routesQuery = useQuery({
     queryKey: ['routes', TRANSIT_DATA_VERSION],
-    queryFn: async (): Promise<{ data: TransitRouteSummary[] }> => {
+    queryFn: async (): Promise<{ data: TransitRouteSummary[]; meta?:{ source?:string; routeCount?:number } }> => {
       const response = await fetch(`/iett/route-index.json?v=${TRANSIT_DATA_VERSION}`);
       if (!response.ok) throw new Error('Hat verisi alınamadı');
       return response.json();
@@ -168,7 +169,7 @@ export function TransitDashboard() {
   const normalizedSearch = normalizeSearch(search.trim());
   const stopIndexQuery = useQuery({
     queryKey: ['stops', TRANSIT_DATA_VERSION],
-    queryFn: async (): Promise<{ data: TransitStopSummary[] }> => {
+    queryFn: async (): Promise<{ data: TransitStopSummary[]; meta?:{ source?:string; stopCount?:number } }> => {
       const response = await fetch(`/iett/stop-index.json?v=${TRANSIT_DATA_VERSION}`);
       if (!response.ok) throw new Error('Durak verisi alınamadı');
       return response.json();
@@ -234,6 +235,7 @@ export function TransitDashboard() {
       const next = readRouteStateFromUrl();
       setSelectedRouteId(next.routeId);
       setSelectedDirectionId(next.directionId);
+      setPendingStop(next.stopId ? { stopId:next.stopId, routeId:next.routeId, directionId:next.directionId } : null);
       setUrlStateReady(true);
     };
     applyUrlState();
@@ -246,8 +248,11 @@ export function TransitDashboard() {
     const url = new URL(window.location.href);
     url.searchParams.set('route', selectedRouteId.replace(/^iett:/, ''));
     url.searchParams.set('direction', selectedDirectionId);
+    const stopId = pendingStop?.stopId ?? selectedStop?.id;
+    if (stopId) url.searchParams.set('stop', stopId);
+    else url.searchParams.delete('stop');
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [selectedDirectionId, selectedRouteId, urlStateReady]);
+  }, [pendingStop?.stopId, selectedDirectionId, selectedRouteId, selectedStop?.id, urlStateReady]);
 
   useEffect(() => {
     selectedRouteRef.current = selectedRoute;
@@ -537,6 +542,7 @@ export function TransitDashboard() {
           <div className="max-h-[42vh] space-y-1 overflow-y-auto p-2">
             {nearbyOpen ? <><p className="px-3 pt-2 text-[10px] leading-relaxed text-[var(--muted)]">Konum yalnızca bu cihazda, en yakın durakları sıralamak için kullanılır.</p><div className="grid grid-cols-2 gap-2 px-3 pt-3"><Button variant="secondary" size="sm" onClick={chooseLocationOnMap}><MapPin className="h-3.5 w-3.5" />Haritadan seç</Button><Button variant="ghost" size="sm" onClick={findNearbyStops}><LocateFixed className="h-3.5 w-3.5" />Konumu yenile</Button></div>{locationOrigin==='manual'&&<Button variant="ghost" size="sm" className="mx-3 mt-2 w-[calc(100%-24px)]" onClick={toggleSavedManualLocation}>{savedManualLocation?'Kaydedilen konumu unut':'Bu konumu bu cihazda hatırla'}</Button>}{(locationStatus==='loading'||(locationStatus==='ready'&&stopIndexQuery.isLoading))&&<div className="px-5 py-10 text-center"><LocateFixed className="mx-auto h-6 w-6 animate-pulse text-[var(--primary)]" /><p className="mt-3 text-sm font-bold">Yakındaki duraklar hazırlanıyor</p><p className="mt-1 text-xs text-[var(--muted)]">Konum ve resmî durak verisi eşleştiriliyor.</p></div>}{locationStatus==='denied'&&<NearbyStatus title="Konum izni gerekli" description="Tarayıcı ayarlarından konum iznini verdikten sonra tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='unavailable'&&<NearbyStatus title="Konum alınamadı" description="Konum servisinin açık olduğundan emin olup tekrar deneyin." onRetry={findNearbyStops} />}{stopIndexQuery.isError&&<NearbyStatus title="Durak verisi yüklenemedi" description="Bağlantıyı kontrol edip tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='ready'&&!stopIndexQuery.isLoading&&!stopIndexQuery.isError&&nearbyStops.map(({stop,distance})=><NearbyStopResult key={stop.id} stop={stop} distance={distance} onSelect={selectStopResult} />)}</> : <>{!search.trim()&&recents.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Son bakılanlar</p>{recents.slice(0,3).map((item)=><RecentResult key={`${item.kind}-${item.id}`} item={item} onRoute={selectRoute} onStop={selectStopResult} routes={routes} stops={stopById} />)}</>}{!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat favorileri</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}</>}{!search.trim() && favoriteStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Durak favorileri</p>{favoriteStops.map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}</>}{!search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}{search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}{regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}{normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}{search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}{search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}</>}
           </div>
+          {!nearbyOpen && <div className="border-t border-[var(--border)] px-4 py-2.5 text-[10px] font-medium text-[var(--muted)]">Resmî İBB açık veri anlık görüntüsü · {routes.length.toLocaleString('tr-TR')} hat{stopIndexQuery.data?.meta?.stopCount ? ` · ${stopIndexQuery.data.meta.stopCount.toLocaleString('tr-TR')} durak` : ''}</div>}
         </section>
       )}
 
