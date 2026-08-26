@@ -105,6 +105,7 @@ export function TransitDashboard() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectedRouteRef = useRef(fixtureRoutes[0]);
+  const manualLocationModeRef = useRef(false);
   const [selectedRouteId, setSelectedRouteId] = useState('iett:500T');
   const [selectedDirectionId, setSelectedDirectionId] = useState('outbound');
   const [selectedVehicle, setSelectedVehicle] = useState<TransitVehicle | null>(null);
@@ -115,6 +116,7 @@ export function TransitDashboard() {
   const [nearbyOpen, setNearbyOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
+  const [manualLocationMode, setManualLocationMode] = useState(false);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -234,6 +236,12 @@ export function TransitDashboard() {
   }, [selectedRoute]);
 
   useEffect(() => {
+    manualLocationModeRef.current = manualLocationMode;
+    const map = mapRef.current;
+    if (map) map.getCanvas().style.cursor = manualLocationMode ? 'crosshair' : '';
+  }, [manualLocationMode]);
+
+  useEffect(() => {
     if (!mapContainerRef.current || mapRef.current || !activeRoute) return;
     const initialRoute = activeRoute;
     const map = new maplibregl.Map({
@@ -272,6 +280,15 @@ export function TransitDashboard() {
         const id = event.features?.[0]?.properties?.id;
         const activeRoute = selectedRouteRef.current;
         setSelectedStop(activeRoute.stops.find((item) => item.id === id) ?? null);
+      });
+      map.on('click', (event) => {
+        if (!manualLocationModeRef.current) return;
+        setUserLocation([event.lngLat.lng, event.lngLat.lat]);
+        setLocationStatus('ready');
+        manualLocationModeRef.current = false;
+        setManualLocationMode(false);
+        setNearbyOpen(true);
+        setRouteListOpen(true);
       });
       setMapReady(true);
       fitRoute(map, initialRoute);
@@ -392,6 +409,8 @@ export function TransitDashboard() {
   };
 
   const findNearbyStops = () => {
+    setManualLocationMode(false);
+    manualLocationModeRef.current = false;
     setNearbyOpen(true);
     setSearch('');
     setRouteListOpen(true);
@@ -406,6 +425,19 @@ export function TransitDashboard() {
     }, (error) => {
       setLocationStatus(error.code === error.PERMISSION_DENIED ? 'denied' : 'unavailable');
     }, { enableHighAccuracy:true, maximumAge:60_000, timeout:10_000 });
+  };
+
+  const chooseLocationOnMap = () => {
+    manualLocationModeRef.current = true;
+    setManualLocationMode(true);
+    setNearbyOpen(false);
+    setRouteListOpen(false);
+    setMobilePanelOpen(false);
+  };
+
+  const cancelManualLocation = () => {
+    manualLocationModeRef.current = false;
+    setManualLocationMode(false);
   };
 
   return (
@@ -444,6 +476,8 @@ export function TransitDashboard() {
         </div>
       </header>
 
+      {manualLocationMode&&<div className="glass-panel absolute left-1/2 top-[92px] z-40 flex w-[min(360px,calc(100%-24px))] -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-3 py-2.5"><span className="text-xs font-bold"><MapPin className="mr-1.5 inline h-4 w-4 text-[var(--primary)]" />Haritadan konumunu seç</span><Button variant="ghost" size="sm" onClick={cancelManualLocation}>Vazgeç</Button></div>}
+
       {routeListOpen && (
         <section className="glass-panel absolute left-3 right-3 top-[84px] z-20 max-h-[52vh] overflow-hidden rounded-2xl md:left-5 md:right-auto md:top-[104px] md:w-[340px]" aria-label="Arama sonuçları">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
@@ -451,7 +485,7 @@ export function TransitDashboard() {
             <Button variant="ghost" size="icon" onClick={()=>{setRouteListOpen(false);setNearbyOpen(false);}} aria-label="Arama sonuçlarını kapat"><X className="h-4 w-4" /></Button>
           </div>
           <div className="max-h-[42vh] space-y-1 overflow-y-auto p-2">
-            {nearbyOpen ? <><p className="px-3 pt-2 text-[10px] leading-relaxed text-[var(--muted)]">Konum yalnızca bu cihazda, en yakın durakları sıralamak için kullanılır.</p>{(locationStatus==='loading'||(locationStatus==='ready'&&stopIndexQuery.isLoading))&&<div className="px-5 py-10 text-center"><LocateFixed className="mx-auto h-6 w-6 animate-pulse text-[var(--primary)]" /><p className="mt-3 text-sm font-bold">Yakındaki duraklar hazırlanıyor</p><p className="mt-1 text-xs text-[var(--muted)]">Konum ve resmî durak verisi eşleştiriliyor.</p></div>}{locationStatus==='denied'&&<NearbyStatus title="Konum izni gerekli" description="Tarayıcı ayarlarından konum iznini verdikten sonra tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='unavailable'&&<NearbyStatus title="Konum alınamadı" description="Konum servisinin açık olduğundan emin olup tekrar deneyin." onRetry={findNearbyStops} />}{stopIndexQuery.isError&&<NearbyStatus title="Durak verisi yüklenemedi" description="Bağlantıyı kontrol edip tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='ready'&&!stopIndexQuery.isLoading&&!stopIndexQuery.isError&&nearbyStops.map(({stop,distance})=><NearbyStopResult key={stop.id} stop={stop} distance={distance} onSelect={selectStopResult} />)}</> : <>{!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Favoriler</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}{regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}</>}{search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}{regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}{normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}{search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}{search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}</>}
+            {nearbyOpen ? <><p className="px-3 pt-2 text-[10px] leading-relaxed text-[var(--muted)]">Konum yalnızca bu cihazda, en yakın durakları sıralamak için kullanılır.</p><div className="grid grid-cols-2 gap-2 px-3 pt-3"><Button variant="secondary" size="sm" onClick={chooseLocationOnMap}><MapPin className="h-3.5 w-3.5" />Haritadan seç</Button><Button variant="ghost" size="sm" onClick={findNearbyStops}><LocateFixed className="h-3.5 w-3.5" />Konumu yenile</Button></div>{(locationStatus==='loading'||(locationStatus==='ready'&&stopIndexQuery.isLoading))&&<div className="px-5 py-10 text-center"><LocateFixed className="mx-auto h-6 w-6 animate-pulse text-[var(--primary)]" /><p className="mt-3 text-sm font-bold">Yakındaki duraklar hazırlanıyor</p><p className="mt-1 text-xs text-[var(--muted)]">Konum ve resmî durak verisi eşleştiriliyor.</p></div>}{locationStatus==='denied'&&<NearbyStatus title="Konum izni gerekli" description="Tarayıcı ayarlarından konum iznini verdikten sonra tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='unavailable'&&<NearbyStatus title="Konum alınamadı" description="Konum servisinin açık olduğundan emin olup tekrar deneyin." onRetry={findNearbyStops} />}{stopIndexQuery.isError&&<NearbyStatus title="Durak verisi yüklenemedi" description="Bağlantıyı kontrol edip tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='ready'&&!stopIndexQuery.isLoading&&!stopIndexQuery.isError&&nearbyStops.map(({stop,distance})=><NearbyStopResult key={stop.id} stop={stop} distance={distance} onSelect={selectStopResult} />)}</> : <>{!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Favoriler</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}{regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}</>}{search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}{regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}{normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}{search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}{search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}</>}
           </div>
         </section>
       )}

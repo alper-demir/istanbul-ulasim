@@ -10,6 +10,7 @@
 - Durak adı, bölgesi, güzergâhtaki sırası ve koordinat bilgileri
 - Seçilen duraktan geçen hatları görme ve ilgili hat/yöne geçme
 - Konum izniyle en yakın 12 durağı mesafe sırasıyla gösterme
+- Tarayıcı konumu hatalıysa haritadan elle konum seçme
 - Hatları tarayıcıda favorilere kaydetme
 - Seçilen hat ve yönü URL üzerinden paylaşma
 - Açık/koyu tema ve mobil uyumlu arayüz
@@ -81,7 +82,7 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.3.2`
+Güncel MVP sürümü: `0.3.3`
 
 ## Sürümleme yaklaşımı
 

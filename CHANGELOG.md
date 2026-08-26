@@ -2,6 +2,18 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.3.3 - 2026-08-26
+
+### Eklendi
+
+- Yakındaki duraklar panelinde “Haritadan seç” seçeneği
+- Harita üzerinde tıklanan noktayı kullanıcı konumu olarak kabul eden seçim modu
+- Manuel seçim sırasında yönlendirici açıklama ve iptal eylemi
+
+### Değiştirildi
+
+- Tarayıcı konumu yanlış olduğunda kullanıcı manuel konumla yakın durak sonuçlarını düzeltebilir
+
 ## 0.3.2 - 2026-08-26
 
 ### Eklendi
