@@ -2,6 +2,14 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.4.2 - 2026-08-27
+
+### Düzeltildi
+
+- İşlevsel olmayan ana güzergâh sıfırlama eylemi kaldırıldı.
+- Masaüstü harita kontrolünde “Haritadan seç” konum seçme eylemi geri getirildi.
+- Hat karşılaştırma kartı tekil hale getirildi; karşılaştırma hatlarını temizleme eylemi korundu.
+
 ## 0.4.1 - 2026-08-27
 
 ### Eklendi

@@ -85,7 +85,7 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.4.1`
+Güncel MVP sürümü: `0.4.2`
 
 ## Sürümleme yaklaşımı
 
