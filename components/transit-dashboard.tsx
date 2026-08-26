@@ -30,6 +30,10 @@ function readRouteStateFromUrl() {
   };
 }
 
+function normalizeSearch(value: string) {
+  return value.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/\p{Diacritic}/gu, '').replaceAll('ı', 'i');
+}
+
 // Keep the operational layers independent of the basemap provider.  If tile
 // delivery is slow, the background remains legible and the transit data stays
 // usable instead of presenting a blank map surface.
@@ -127,16 +131,26 @@ export function TransitDashboard() {
   const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
-    const normalized = search.trim().toLocaleLowerCase('tr-TR');
+    const normalized = normalizeSearch(search.trim());
     if (!normalized) return routes;
-    return routes.filter((route) => `${route.code} ${route.name} ${route.mode}`.toLocaleLowerCase('tr-TR').includes(normalized));
+    return routes.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalized));
   }, [routes, search]);
+  const favoriteRoutes = useMemo(() => routes.filter((route) => favorites.includes(route.id)), [favorites, routes]);
+  const regularRoutes = useMemo(
+    () => search.trim() ? filteredRoutes : filteredRoutes.filter((route) => !favorites.includes(route.id)),
+    [favorites, filteredRoutes, search],
+  );
 
   useEffect(() => {
     const stored = window.localStorage.getItem('istanbulum:favorites');
     // Favorites are intentionally device-local for the MVP.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setFavorites(JSON.parse(stored));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) setFavorites(parsed);
+      } catch { /* Ignore malformed device-local state. */ }
+    }
   }, []);
 
   useEffect(() => {
@@ -310,13 +324,9 @@ export function TransitDashboard() {
             <Button variant="ghost" size="icon" onClick={()=>setRouteListOpen(false)} aria-label="Hat listesini kapat"><X className="h-4 w-4" /></Button>
           </div>
           <div className="max-h-[42vh] space-y-1 overflow-y-auto p-2">
-            {filteredRoutes.map((route)=>(
-              <button key={route.id} onClick={()=>selectRoute(route)} className={cn('flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]',selectedRoute.id===route.id&&'bg-[var(--primary-soft)]')}>
-                <span className="grid h-11 min-w-14 place-items-center rounded-xl text-sm font-black text-white" style={{background:route.color}}>{route.code}</span>
-                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{route.name}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh'}</span></span>
-                <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
-              </button>
-            ))}
+            {!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Favoriler</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}{regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}</>}
+            {regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}
+            {!filteredRoutes.length&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Hat bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">Hat kodunu veya adını farklı yazarak tekrar deneyin.</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}
           </div>
         </section>
       )}
@@ -328,7 +338,7 @@ export function TransitDashboard() {
           <div className="flex items-start gap-3">
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
             <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
-            <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label="Hattı favorile"><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
+            <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label={favorites.includes(selectedRoute.id)?'Hattı favorilerden çıkar':'Hattı favorilere ekle'}><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
             <Button variant="ghost" size="icon" onClick={copyRouteLink} aria-label="Hat bağlantısını kopyala">{linkCopied?<Check className="h-4 w-4 text-emerald-500" />:<Share2 className="h-4 w-4" />}</Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
@@ -339,6 +349,7 @@ export function TransitDashboard() {
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">30 sn’de yenilenir</span></div>
           <div className="mt-2 space-y-2">
+            {!selectedRoute.vehicles.length&&<div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-center"><BusFront className="mx-auto h-5 w-5 text-[var(--muted)]" /><p className="mt-2 text-xs font-bold">Canlı araç verisi bağlı değil</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">Güzergâh ve durak verileri kullanılabilir.</p></div>}
             {selectedRoute.vehicles.map((vehicle)=>(
               <button key={vehicle.id} onClick={()=>setSelectedVehicle(vehicle)} className={cn('flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3 text-left transition hover:border-[var(--primary)]',selectedVehicle?.id===vehicle.id&&'border-[var(--primary)] ring-2 ring-[var(--primary-soft)]')}>
                 <span className="grid h-9 w-9 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-4 w-4" /></span>
@@ -367,4 +378,12 @@ export function TransitDashboard() {
 
 function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; label:string }) {
   return <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3"><div className="mb-2 h-4 w-4 text-[var(--primary)] [&>svg]:h-4 [&>svg]:w-4">{icon}</div><p className="text-sm font-extrabold">{value}</p><p className="mt-0.5 text-[10px] font-medium text-[var(--muted)]">{label}</p></div>;
+}
+
+function RouteResult({ route,selected,favorite,onSelect }: { route:TransitRouteSummary; selected:boolean; favorite:boolean; onSelect:(route:TransitRouteSummary)=>void }) {
+  return <button onClick={()=>onSelect(route)} className={cn('flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]',selected&&'bg-[var(--primary-soft)]')}>
+    <span className="grid h-11 min-w-14 place-items-center rounded-xl text-sm font-black text-white" style={{background:route.color}}>{route.code}</span>
+    <span className="min-w-0 flex-1"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-bold">{route.name}</span>{favorite&&<Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-500" />}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh'}</span></span>
+    <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
+  </button>;
 }
