@@ -42,8 +42,8 @@ function lineFeature(route: TransitRoute): FeatureCollection {
   return { type:'FeatureCollection', features:[{ type:'Feature', properties:{ color:route.color }, geometry:{ type:'LineString', coordinates:route.coordinates } }] };
 }
 
-function stopFeatures(route: TransitRoute): FeatureCollection {
-  return { type:'FeatureCollection', features:route.stops.map((stop,index) => ({ type:'Feature', properties:{ ...stop, order:index+1 }, geometry:{ type:'Point', coordinates:stop.coordinates } })) };
+function stopFeatures(route: TransitRoute, selectedStopId?: string): FeatureCollection {
+  return { type:'FeatureCollection', features:route.stops.map((stop,index) => ({ type:'Feature', properties:{ ...stop, order:index+1, selected:stop.id === selectedStopId }, geometry:{ type:'Point', coordinates:stop.coordinates } })) };
 }
 
 function vehicleFeatures(route: TransitRoute): FeatureCollection {
@@ -139,8 +139,8 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
       map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(initialRoute) });
       map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, minzoom:10.4, paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10.4,4,14,7],
-        'circle-color':'#ffffff', 'circle-stroke-color':initialRoute.color, 'circle-stroke-width':3,
+        'circle-radius':['case',['get','selected'],11,['interpolate',['linear'],['zoom'],10.4,4,14,7]],
+        'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3],
       } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute) });
       map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':18, 'circle-color':initialRoute.color, 'circle-opacity':0.18 } });
@@ -183,6 +183,18 @@ export function TransitDashboard() {
     setSelectedStop(null);
     fitRoute(map,selectedRoute);
   }, [activeRoute, mapReady, selectedRoute]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !map.getSource(STOP_SOURCE)) return;
+    (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute, selectedStop?.id));
+  }, [mapReady, selectedRoute, selectedStop?.id]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !selectedStop) return;
+    map.flyTo({ center:selectedStop.coordinates, zoom:Math.max(map.getZoom(), 14), duration:500 });
+  }, [mapReady, selectedStop]);
 
   const selectRoute = (route: TransitRouteSummary) => {
     setSelectedRouteId(route.id);
@@ -276,7 +288,7 @@ export function TransitDashboard() {
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh durakları</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Resmî durak verisi bekleniyor'}</span></div>
           <div className="relative mt-3 space-y-0 pl-1">
             {selectedRoute.stops.map((stop,index)=>(
-              <div key={stop.id} className="relative flex min-h-14 gap-3 pb-3">{index<selectedRoute.stops.length-1&&<span className="absolute left-[7px] top-4 h-full w-0.5 bg-[var(--border)]" />}<span className="relative z-10 mt-1.5 h-4 w-4 rounded-full border-[3px] bg-[var(--surface-strong)]" style={{borderColor:selectedRoute.color}} /><div><p className="text-sm font-semibold">{stop.name}</p><p className="mt-0.5 text-xs text-[var(--muted)]">{stop.district}</p></div></div>
+              <button key={stop.id} onClick={()=>setSelectedStop(stop)} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className="absolute left-[7px] top-4 h-full w-0.5 bg-[var(--border)]" />}<span className="relative z-10 mt-1.5 h-4 w-4 rounded-full border-[3px] bg-[var(--surface-strong)] transition" style={{borderColor:selectedStop?.id===stop.id?'#ffffff':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:undefined}} /><span><span className="text-sm font-semibold">{stop.name}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
             ))}
           </div>
         </div>
