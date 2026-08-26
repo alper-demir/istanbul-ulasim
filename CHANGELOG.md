@@ -2,6 +2,22 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.3.0 - 2026-08-26
+
+### Eklendi
+
+- Hat ve durakları aynı alanda arayan birleşik arama deneyimi
+- Türkçe karakterlerden bağımsız durak adı ve bölge araması
+- Her durak için o duraktan geçen hat ve yönleri üreten statik ters indeks
+- Durak detay kartında geçen hatların yön ve durak sırası bilgileri
+- Durak kartından başka bir hattın doğru yönüne doğrudan geçiş
+
+### Değiştirildi
+
+- Arama sonucu paneli hat ve durak sonuçlarını ayrı başlıklarla gösterecek şekilde genişletildi
+- Arama performansı için durak sonuçları ilk 20 kayıtla sınırlandırıldı
+- Veri üretim özeti oluşturulan aranabilir durak sayısını da raporlayacak şekilde güncellendi
+
 ## 0.2.0 - 2026-08-26
 
 ### Eklendi

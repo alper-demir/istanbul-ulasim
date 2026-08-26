@@ -4,10 +4,11 @@
 
 ## MVP özellikleri
 
-- İETT hat kodu veya hat adına göre arama
+- İETT hat kodu, hat adı, durak adı veya durak bölgesine göre arama
 - Gidiş ve dönüş yönleri için ayrı güzergâh çizgileri ve durak sıraları
 - Harita üzerindeki durakları seçme, durağa ve tüm güzergâha odaklanma
 - Durak adı, bölgesi, güzergâhtaki sırası ve koordinat bilgileri
+- Seçilen duraktan geçen hatları görme ve ilgili hat/yöne geçme
 - Hatları tarayıcıda favorilere kaydetme
 - Seçilen hat ve yönü URL üzerinden paylaşma
 - Açık/koyu tema ve mobil uyumlu arayüz
@@ -57,6 +58,8 @@ npm run data:build-iett
 
 `stop_times` verisi Excel satır sınırına takılabildiği için mümkünse portalın özgün `stop_times.txt` dosyası kullanılmalıdır. Üretim betiği eksik sefer kapsamını kontrol eder ve hatalı veriyle devam etmez.
 
+Betik, hat detaylarına ek olarak birleşik aramada kullanılan `stop-index.json` dosyasını da üretir. Bu ters indeks her durağı, o duraktan geçen hat ve yönlerle ilişkilendirir; uygulama böylece yüzlerce hat dosyasını ayrı ayrı indirmeden durak arayabilir.
+
 ## Paylaşılabilir bağlantılar
 
 Hat ve yön seçimi sorgu parametreleriyle saklanır:
@@ -77,6 +80,6 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.2.0`
+Güncel MVP sürümü: `0.3.0`
 
 Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.
