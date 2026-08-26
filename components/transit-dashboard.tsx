@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitRoute, type TransitVehicle } from '@/lib/transit-fixtures';
+import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import { cn } from '@/lib/utils';
 
 const ROUTE_SOURCE = 'selected-route';
@@ -66,7 +67,7 @@ export function TransitDashboard() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectedRouteRef = useRef(fixtureRoutes[0]);
-  const [selectedRouteId, setSelectedRouteId] = useState(fixtureRoutes[0].id);
+  const [selectedRouteId, setSelectedRouteId] = useState('iett:500T');
   const [selectedVehicle, setSelectedVehicle] = useState<TransitVehicle | null>(null);
   const [search, setSearch] = useState('');
   const [routeListOpen, setRouteListOpen] = useState(true);
@@ -77,18 +78,31 @@ export function TransitDashboard() {
 
   const routesQuery = useQuery({
     queryKey: ['routes'],
-    queryFn: async (): Promise<{ data: TransitRoute[] }> => {
-      const response = await fetch('/api/v1/routes');
+    queryFn: async (): Promise<{ data: TransitRouteSummary[] }> => {
+      const response = await fetch('/iett/route-index.json');
       if (!response.ok) throw new Error('Hat verisi alınamadı');
       return response.json();
     },
-    placeholderData: { data: fixtureRoutes },
+    placeholderData: { data: fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length })) },
     staleTime: 24 * 60 * 60 * 1000,
   });
 
-  const routes = routesQuery.data?.data ?? fixtureRoutes;
+  const routes = routesQuery.data?.data ?? fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length }));
+  const routeQuery = useQuery({
+    queryKey: ['route', selectedRouteId],
+    queryFn: async (): Promise<{ data: TransitRoute }> => {
+      const response = selectedRouteId.startsWith('iett:')
+        ? await fetch(`/iett/routes/${encodeURIComponent(selectedRouteId.replace('iett:', ''))}.json`)
+        : await fetch(`/api/v1/routes/${encodeURIComponent(selectedRouteId)}`);
+      if (!response.ok) throw new Error('Hat detayı alınamadı');
+      return response.json();
+    },
+    placeholderData: selectedRouteId === fixtureRoutes[0].id ? { data: fixtureRoutes[0] } : undefined,
+    staleTime: 24 * 60 * 60 * 1000,
+  });
 
-  const selectedRoute = routes.find((route) => route.id === selectedRouteId) ?? routes[0];
+  const selectedRoute = routeQuery.data?.data ?? fixtureRoutes[0];
+  const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
     const normalized = search.trim().toLocaleLowerCase('tr-TR');
     if (!normalized) return routes;
@@ -160,7 +174,7 @@ export function TransitDashboard() {
     fitRoute(map,selectedRoute);
   }, [mapReady,selectedRoute]);
 
-  const selectRoute = (route: TransitRoute) => {
+  const selectRoute = (route: TransitRouteSummary) => {
     setSelectedRouteId(route.id);
     setMobilePanelOpen(true);
     if (window.innerWidth < 768) setRouteListOpen(false);
@@ -199,7 +213,7 @@ export function TransitDashboard() {
           {search && <button onClick={()=>setSearch('')} aria-label="Aramayı temizle" className="absolute right-3 text-[var(--muted)]"><X className="h-4 w-4" /></button>}
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
-          <span className="hidden items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-700 dark:text-amber-300 md:flex"><span className="h-2 w-2 rounded-full bg-amber-500" />Demo veri</span>
+          <span className="hidden items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-700 dark:text-amber-300 md:flex"><span className="h-2 w-2 rounded-full bg-amber-500" />{isOfficialRoute ? 'Resmî hat ağı' : 'Demo veri'}</span>
           <Button variant="secondary" size="icon" aria-label="Temayı değiştir" onClick={()=>setTheme(resolvedTheme==='dark'?'light':'dark')}>
             <Moon className="h-4 w-4 dark:hidden" />
             <Sun className="hidden h-4 w-4 dark:block" />
@@ -217,7 +231,7 @@ export function TransitDashboard() {
             {filteredRoutes.map((route)=>(
               <button key={route.id} onClick={()=>selectRoute(route)} className={cn('flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]',selectedRoute.id===route.id&&'bg-[var(--primary-soft)]')}>
                 <span className="grid h-11 min-w-14 place-items-center rounded-xl text-sm font-black text-white" style={{background:route.color}}>{route.code}</span>
-                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{route.name}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicles.length} araç</span></span>
+                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{route.name}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh'}</span></span>
                 <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
               </button>
             ))}
@@ -231,14 +245,14 @@ export function TransitDashboard() {
         <div className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 backdrop-blur-xl">
           <div className="flex items-start gap-3">
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
-            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />demo</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
+            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
             <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label="Hattı favorile"><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
         </div>
         <div className="p-4">
           <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={String(selectedRoute.vehicles.length)} label="aktif araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="örnek durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
-          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Demo veri</span></div></div>
+          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">30 sn’de yenilenir</span></div>
           <div className="mt-2 space-y-2">
             {selectedRoute.vehicles.map((vehicle)=>(

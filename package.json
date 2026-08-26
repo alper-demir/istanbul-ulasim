@@ -10,7 +10,8 @@
     "build": "vinext build",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "data:build-iett": "node scripts/build-iett-static-data.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",
