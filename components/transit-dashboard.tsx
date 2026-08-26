@@ -18,7 +18,8 @@ import { cn } from '@/lib/utils';
 const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
-const TRANSIT_DATA_VERSION = '2026-08-26.3';
+const TRANSIT_DATA_VERSION = '2026-08-26.5';
+const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
 
 // Keep the operational layers independent of the basemap provider.  If tile
 // delivery is slow, the background remains legible and the transit data stays
@@ -69,6 +70,7 @@ export function TransitDashboard() {
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectedRouteRef = useRef(fixtureRoutes[0]);
   const [selectedRouteId, setSelectedRouteId] = useState('iett:500T');
+  const [selectedDirectionId, setSelectedDirectionId] = useState('outbound');
   const [selectedVehicle, setSelectedVehicle] = useState<TransitVehicle | null>(null);
   const [selectedStop, setSelectedStop] = useState<TransitStop | null>(null);
   const [search, setSearch] = useState('');
@@ -103,7 +105,14 @@ export function TransitDashboard() {
     staleTime: 24 * 60 * 60 * 1000,
   });
 
-  const selectedRoute = routeQuery.data?.data ?? fixtureRoutes[0];
+  const routeData = routeQuery.data?.data ?? fixtureRoutes[0];
+  const selectedDirection = routeData.directions?.find((direction) => direction.id === selectedDirectionId) ?? routeData.directions?.[0];
+  const selectedRoute = useMemo(() => selectedDirection ? {
+    ...routeData,
+    coordinates:selectedDirection.coordinates,
+    stops:selectedDirection.stops,
+    durationMinutes:selectedDirection.durationMinutes,
+  } : routeData, [routeData, selectedDirection]);
   const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
@@ -140,7 +149,7 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
       map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(initialRoute) });
       map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, paint:{
-        'circle-radius':['case',['get','selected'],12,['interpolate',['linear'],['zoom'],0,5,14,8]],
+        'circle-radius':STOP_RADIUS,
         'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
       } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute) });
@@ -184,7 +193,7 @@ export function TransitDashboard() {
     if (map.getLayer('route-stops')) {
       map.setLayerZoomRange('route-stops', 0, 24);
       map.setLayoutProperty('route-stops','visibility','visible');
-      map.setPaintProperty('route-stops','circle-radius',['case',['get','selected'],12,['interpolate',['linear'],['zoom'],0,5,14,8]]);
+      map.setPaintProperty('route-stops','circle-radius',STOP_RADIUS);
       map.setPaintProperty('route-stops','circle-color',['case',['get','selected'],selectedRoute.color,'#ffffff']);
       map.setPaintProperty('route-stops','circle-stroke-color',['case',['get','selected'],'#ffffff',selectedRoute.color]);
       map.setPaintProperty('route-stops','circle-stroke-width',['case',['get','selected'],4,3.5]);
@@ -210,6 +219,7 @@ export function TransitDashboard() {
   }, [mapReady, selectedStop]);
 
   const selectRoute = (route: TransitRouteSummary) => {
+    setSelectedDirectionId('outbound');
     setSelectedRouteId(route.id);
     setMobilePanelOpen(true);
     if (window.innerWidth < 768) setRouteListOpen(false);
@@ -244,7 +254,7 @@ export function TransitDashboard() {
         </div>
         <div className="relative mx-auto flex max-w-xl flex-1 items-center">
           <Search className="pointer-events-none absolute left-3 h-4 w-4 text-[var(--muted)]" />
-          <input value={search} onChange={(e)=>{setSearch(e.target.value);setRouteListOpen(true);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat, durak veya otobüs ara" aria-label="Hat, durak veya otobüs ara" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-10 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
+          <input value={search} onChange={(e)=>{setSearch(e.target.value);setRouteListOpen(true);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat kodu veya adı ara" aria-label="Hat kodu veya adı ara" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-10 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
           {search && <button onClick={()=>setSearch('')} aria-label="Aramayı temizle" className="absolute right-3 text-[var(--muted)]"><X className="h-4 w-4" /></button>}
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
@@ -286,6 +296,7 @@ export function TransitDashboard() {
           </div>
         </div>
         <div className="p-4">
+          {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Güzergâh yönü</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block line-clamp-2">{direction.name}</span></button>)}</div></div>}
           <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={String(selectedRoute.vehicles.length)} label="aktif araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="örnek durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-xs font-medium text-[var(--muted)]">30 sn’de yenilenir</span></div>

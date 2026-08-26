@@ -15,6 +15,14 @@ export type TransitVehicle = {
   updatedSecondsAgo: number;
 };
 
+export type TransitDirection = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  coordinates: [number, number][];
+  stops: TransitStop[];
+};
+
 export type TransitRoute = {
   id: string;
   code: string;
@@ -26,6 +34,7 @@ export type TransitRoute = {
   coordinates: [number, number][];
   stops: TransitStop[];
   vehicles: TransitVehicle[];
+  directions?: TransitDirection[];
 };
 
 export const routes: TransitRoute[] = [
