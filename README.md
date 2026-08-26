@@ -9,6 +9,7 @@
 - Harita üzerindeki durakları seçme, durağa ve tüm güzergâha odaklanma
 - Durak adı, bölgesi, güzergâhtaki sırası ve koordinat bilgileri
 - Seçilen duraktan geçen hatları görme ve ilgili hat/yöne geçme
+- Konum izniyle en yakın 12 durağı mesafe sırasıyla gösterme
 - Hatları tarayıcıda favorilere kaydetme
 - Seçilen hat ve yönü URL üzerinden paylaşma
 - Açık/koyu tema ve mobil uyumlu arayüz
@@ -80,6 +81,10 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.3.1`
+Güncel MVP sürümü: `0.3.2`
+
+## Sürümleme yaklaşımı
+
+Proje `0.x.y` biçimini kullanır. Küçük düzeltmeler ve sınırlı özellik eklemeleri son haneyi yükseltir (`0.3.1` → `0.3.2`). Daha geniş kullanıcı akışları veya mimari değişiklikler orta haneyi yükseltir (`0.3.x` → `0.4.0`). Her sürüm, Git etiketi ve değişiklik günlüğüyle birlikte kaydedilir.
 
 Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.

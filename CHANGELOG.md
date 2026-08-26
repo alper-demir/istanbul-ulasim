@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.3.2 - 2026-08-26
+
+### Eklendi
+
+- Başlıktaki ve masaüstü harita kontrollerindeki “Yakındaki duraklar” eylemi
+- Tarayıcı konumuyla mesafe hesaplanarak sıralanan en yakın 12 durak
+- Haritada kullanıcının konumunu gösteren işaret
+- Konum izni, konum hizmeti ve durak verisi hataları için açıklayıcı tekrar-dene durumları
+
+### Gizlilik
+
+- Konum bilgisi yalnızca tarayıcı belleğinde tutulur ve en yakın durakları hesaplamak için kullanılır; uygulama tarafından sunucuya kaydedilmez veya gönderilmez.
+
 ## 0.3.1 - 2026-08-26
 
 ### Eklendi
