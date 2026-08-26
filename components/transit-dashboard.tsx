@@ -13,12 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
+import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
 import { cn } from '@/lib/utils';
 
 const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
 const VEHICLE_SOURCE = 'selected-vehicles';
-const TRANSIT_DATA_VERSION = '2026-08-26.5';
+const TRANSIT_DATA_VERSION = '2026-08-26.6';
 const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
 
 function readRouteStateFromUrl() {
@@ -86,6 +87,7 @@ export function TransitDashboard() {
   const [selectedDirectionId, setSelectedDirectionId] = useState('outbound');
   const [selectedVehicle, setSelectedVehicle] = useState<TransitVehicle | null>(null);
   const [selectedStop, setSelectedStop] = useState<TransitStop | null>(null);
+  const [pendingStop, setPendingStop] = useState<{ stopId:string; routeId:string; directionId:string } | null>(null);
   const [search, setSearch] = useState('');
   const [routeListOpen, setRouteListOpen] = useState(true);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
@@ -107,6 +109,17 @@ export function TransitDashboard() {
   });
 
   const routes = routesQuery.data?.data ?? fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length }));
+  const normalizedSearch = normalizeSearch(search.trim());
+  const stopIndexQuery = useQuery({
+    queryKey: ['stops', TRANSIT_DATA_VERSION],
+    queryFn: async (): Promise<{ data: TransitStopSummary[] }> => {
+      const response = await fetch(`/iett/stop-index.json?v=${TRANSIT_DATA_VERSION}`);
+      if (!response.ok) throw new Error('Durak verisi alınamadı');
+      return response.json();
+    },
+    enabled: normalizedSearch.length >= 2 || Boolean(selectedStop),
+    staleTime: 24 * 60 * 60 * 1000,
+  });
   const routeQuery = useQuery({
     queryKey: ['route', TRANSIT_DATA_VERSION, selectedRouteId],
     queryFn: async (): Promise<{ data: TransitRoute }> => {
@@ -132,10 +145,20 @@ export function TransitDashboard() {
   const activeRoute = routeQuery.data?.data;
   const isOfficialRoute = selectedRoute.id.startsWith('iett:');
   const filteredRoutes = useMemo(() => {
-    const normalized = normalizeSearch(search.trim());
-    if (!normalized) return routes;
-    return routes.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalized));
-  }, [routes, search]);
+    if (!normalizedSearch) return routes;
+    return routes.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalizedSearch));
+  }, [normalizedSearch, routes]);
+  const filteredStops = useMemo(() => {
+    if (normalizedSearch.length < 2) return [];
+    return (stopIndexQuery.data?.data ?? []).filter((stop) => normalizeSearch(`${stop.name} ${stop.district}`).includes(normalizedSearch));
+  }, [normalizedSearch, stopIndexQuery.data?.data]);
+  const routeByCode = useMemo(() => new Map(routes.map((route) => [route.code, route])), [routes]);
+  const stopById = useMemo(() => new Map((stopIndexQuery.data?.data ?? []).map((stop) => [stop.id, stop])), [stopIndexQuery.data?.data]);
+  const selectedStopSummary = selectedStop ? stopById.get(selectedStop.id) : undefined;
+  const selectedStopOccurrences = useMemo(() => (selectedStopSummary?.routes ?? [])
+    .map((occurrence) => ({ occurrence, route:routeByCode.get(occurrence[0]) }))
+    .filter((item): item is { occurrence:TransitStopOccurrence; route:TransitRouteSummary } => Boolean(item.route)),
+  [routeByCode, selectedStopSummary]);
   const favoriteRoutes = useMemo(() => routes.filter((route) => favorites.includes(route.id)), [favorites, routes]);
   const regularRoutes = useMemo(
     () => search.trim() ? filteredRoutes : filteredRoutes.filter((route) => !favorites.includes(route.id)),
@@ -253,6 +276,17 @@ export function TransitDashboard() {
   }, [activeRoute, mapReady, selectedRoute]);
 
   useEffect(() => {
+    if (!pendingStop || selectedRoute.id !== pendingStop.routeId || selectedDirection?.id !== pendingStop.directionId) return;
+    const stop = selectedRoute.stops.find((item) => item.id === pendingStop.stopId);
+    if (!stop) return;
+    // The target route JSON arrives asynchronously after a stop search result
+    // is selected. Resolve the stop only once that route and direction exist.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedStop(stop);
+    setPendingStop(null);
+  }, [pendingStop, selectedDirection?.id, selectedRoute]);
+
+  useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(STOP_SOURCE)) return;
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute, selectedStop?.id));
@@ -269,6 +303,26 @@ export function TransitDashboard() {
     setSelectedRouteId(route.id);
     setMobilePanelOpen(true);
     if (window.innerWidth < 768) setRouteListOpen(false);
+  };
+
+  const openStopOnRoute = (stopId: string, occurrence: TransitStopOccurrence) => {
+    const [routeCode, directionId] = occurrence;
+    const routeId = `iett:${routeCode}`;
+    setPendingStop({ stopId,routeId,directionId });
+    setSelectedDirectionId(directionId);
+    setSelectedRouteId(routeId);
+    setSelectedVehicle(null);
+    setMobilePanelOpen(true);
+    setRouteListOpen(false);
+    setSearch('');
+  };
+
+  const selectStopResult = (stop: TransitStopSummary) => {
+    const currentCode = selectedRouteId.replace(/^iett:/, '');
+    const occurrence = stop.routes.find(([routeCode, directionId]) => routeCode === currentCode && directionId === selectedDirectionId)
+      ?? stop.routes.find(([routeCode]) => routeCode === currentCode)
+      ?? stop.routes[0];
+    if (occurrence) openStopOnRoute(stop.id, occurrence);
   };
 
   const toggleFavorite = () => {
@@ -323,7 +377,7 @@ export function TransitDashboard() {
         </div>
         <div className="relative mx-auto flex max-w-xl flex-1 items-center">
           <Search className="pointer-events-none absolute left-3 h-4 w-4 text-[var(--muted)]" />
-          <input value={search} onChange={(e)=>{setSearch(e.target.value);setRouteListOpen(true);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat kodu veya adı ara" aria-label="Hat kodu veya adı ara" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-10 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
+          <input value={search} onChange={(e)=>{setSearch(e.target.value);setRouteListOpen(true);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat veya durak ara" aria-label="Hat veya durak ara" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-10 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
           {search && <button onClick={()=>setSearch('')} aria-label="Aramayı temizle" className="absolute right-3 text-[var(--muted)]"><X className="h-4 w-4" /></button>}
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
@@ -336,15 +390,18 @@ export function TransitDashboard() {
       </header>
 
       {routeListOpen && (
-        <section className="glass-panel absolute left-3 right-3 top-[84px] z-20 max-h-[52vh] overflow-hidden rounded-2xl md:left-5 md:right-auto md:top-[104px] md:w-[320px]" aria-label="Hat sonuçları">
+        <section className="glass-panel absolute left-3 right-3 top-[84px] z-20 max-h-[52vh] overflow-hidden rounded-2xl md:left-5 md:right-auto md:top-[104px] md:w-[340px]" aria-label="Arama sonuçları">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-            <div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p><p className="mt-0.5 text-sm font-semibold">{filteredRoutes.length} sonuç</p></div>
-            <Button variant="ghost" size="icon" onClick={()=>setRouteListOpen(false)} aria-label="Hat listesini kapat"><X className="h-4 w-4" /></Button>
+            <div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">{search.trim()?'Arama':'Hatlar'}</p><p className="mt-0.5 text-sm font-semibold">{search.trim()?`${filteredRoutes.length} hat · ${filteredStops.length} durak`:`${filteredRoutes.length} hat`}</p></div>
+            <Button variant="ghost" size="icon" onClick={()=>setRouteListOpen(false)} aria-label="Arama sonuçlarını kapat"><X className="h-4 w-4" /></Button>
           </div>
           <div className="max-h-[42vh] space-y-1 overflow-y-auto p-2">
             {!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Favoriler</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}{regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}</>}
+            {search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}
             {regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}
-            {!filteredRoutes.length&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Hat bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">Hat kodunu veya adını farklı yazarak tekrar deneyin.</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}
+            {normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}
+            {search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}
+            {search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}
           </div>
         </section>
       )}
@@ -386,7 +443,7 @@ export function TransitDashboard() {
       </aside>
 
       {selectedVehicle&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><BusFront className="h-5 w-5" /></span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-extrabold">{selectedVehicle.doorCode}</p><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-300">DEMO</span></div><p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Sıradaki {selectedVehicle.nextStop}</p></div><div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.speed} km/sa</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button></div></div>}
-      {selectedStop&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-extrabold">{selectedStop.name}</p><p className="mt-0.5 text-xs text-[var(--muted)]">{selectedStop.district} · {selectedStopIndex+1}. durak / {selectedRoute.stops.length}</p><p className="mt-1 truncate text-[10px] font-medium text-[var(--muted)]">{selectedDirection?.name??selectedRoute.name}</p><p className="mt-1 font-mono text-[10px] text-[var(--muted)]">{selectedStop.coordinates[1].toFixed(5)}, {selectedStop.coordinates[0].toFixed(5)}</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button></div><Button variant="secondary" size="sm" className="mt-3 w-full" onClick={focusStop}><LocateFixed className="h-3.5 w-3.5" />Durağa odaklan</Button></div>}
+      {selectedStop&&<div className="glass-panel absolute bottom-5 left-1/2 z-30 max-h-[70vh] w-[min(500px,calc(100%-24px))] -translate-x-1/2 overflow-y-auto rounded-2xl p-4 md:left-[calc(50%-10px)]"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-extrabold">{selectedStop.name}</p><p className="mt-0.5 text-xs text-[var(--muted)]">{selectedStop.district} · {selectedStopIndex+1}. durak / {selectedRoute.stops.length}</p><p className="mt-1 truncate text-[10px] font-medium text-[var(--muted)]">{selectedDirection?.name??selectedRoute.name}</p><p className="mt-1 font-mono text-[10px] text-[var(--muted)]">{selectedStop.coordinates[1].toFixed(5)}, {selectedStop.coordinates[0].toFixed(5)}</p></div><Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button></div>{stopIndexQuery.isLoading&&<p className="mt-3 text-center text-[10px] font-medium text-[var(--muted)]">Duraktan geçen hatlar yükleniyor…</p>}{selectedStopOccurrences.length>0&&<div className="mt-3 border-t border-[var(--border)] pt-3"><div className="mb-2 flex items-center justify-between"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Bu duraktan geçen hatlar</p><span className="text-[10px] font-semibold text-[var(--muted)]">{new Set(selectedStopOccurrences.map(({route})=>route.id)).size} hat</span></div><div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto pr-1">{selectedStopOccurrences.map(({occurrence,route})=><button key={`${occurrence[0]}-${occurrence[1]}`} onClick={()=>openStopOnRoute(selectedStop.id,occurrence)} className={cn('flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2 text-left transition hover:border-[var(--primary)]',route.id===selectedRoute.id&&occurrence[1]===selectedDirectionId&&'border-[var(--primary)] bg-[var(--primary-soft)]')}><span className="grid h-7 min-w-10 place-items-center rounded-md text-[10px] font-black text-white" style={{background:route.color}}>{route.code}</span><span className="min-w-0"><span className="block truncate text-[10px] font-bold">{occurrence[1]==='return'?'Dönüş':'Gidiş'}</span><span className="block text-[9px] text-[var(--muted)]">{occurrence[2]}. durak</span></span></button>)}</div></div>}<Button variant="secondary" size="sm" className="mt-3 w-full" onClick={focusStop}><LocateFixed className="h-3.5 w-3.5" />Durağa odaklan</Button></div>}
 
       <div className="absolute bottom-5 left-5 z-10 hidden items-center gap-2 md:flex"><Button variant="secondary" size="sm" onClick={focusRoute}><RouteIcon className="h-3.5 w-3.5" />Güzergâhı göster</Button><Button variant="secondary" size="icon" onClick={locateUser} aria-label="Konumuma git"><LocateFixed className="h-4 w-4" /></Button></div>
       {!mobilePanelOpen&&<Button className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 shadow-xl md:hidden" onClick={()=>setMobilePanelOpen(true)}><BusFront className="h-4 w-4" />{selectedRoute.code} detayları</Button>}
@@ -402,6 +459,15 @@ function RouteResult({ route,selected,favorite,onSelect }: { route:TransitRouteS
   return <button onClick={()=>onSelect(route)} className={cn('flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]',selected&&'bg-[var(--primary-soft)]')}>
     <span className="grid h-11 min-w-14 place-items-center rounded-xl text-sm font-black text-white" style={{background:route.color}}>{route.code}</span>
     <span className="min-w-0 flex-1"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-bold">{route.name}</span>{favorite&&<Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-500" />}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh'}</span></span>
+    <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
+  </button>;
+}
+
+function StopResult({ stop,onSelect }: { stop:TransitStopSummary; onSelect:(stop:TransitStopSummary)=>void }) {
+  const routeCount = new Set(stop.routes.map(([routeCode]) => routeCode)).size;
+  return <button onClick={()=>onSelect(stop)} className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]">
+    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--primary-soft)] text-[var(--primary)]"><MapPin className="h-5 w-5" /></span>
+    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{stop.name}</span><span className="mt-1 block truncate text-xs text-[var(--muted)]">{stop.district} · {routeCount} hat</span></span>
     <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
   </button>;
 }
