@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #edf3f4;
+  --foreground: #11272a;
+  --surface: rgba(250, 253, 252, 0.9);
+  --surface-strong: #ffffff;
+  --surface-muted: #e8f0f0;
+  --border: rgba(32, 66, 70, 0.13);
+  --muted: #60777a;
+  --primary: #087f8c;
+  --primary-strong: #066772;
+  --primary-soft: #d8f3f3;
+  --shadow: 0 22px 55px rgba(17, 45, 48, 0.14);
+}
+
+.dark {
+  --background: #071316;
+  --foreground: #eaf6f5;
+  --surface: rgba(9, 26, 29, 0.9);
+  --surface-strong: #0d2023;
+  --surface-muted: #132c30;
+  --border: rgba(196, 237, 235, 0.12);
+  --muted: #91a9ab;
+  --primary: #2bc4c8;
+  --primary-strong: #5cdfe0;
+  --primary-soft: #123c40;
+  --shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.glass-panel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.maplibregl-ctrl-bottom-right { bottom: 14px; right: 14px; }
+.maplibregl-ctrl-attrib { border-radius: 8px 0 0 0; font-size: 10px; }
+.maplibregl-canvas:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
+
+@media (max-width: 767px) {
+  .maplibregl-ctrl-bottom-right { bottom: 178px; }
+}
