@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.9 - 2026-08-29
+
+### Eklendi
+
+- Durak detayında seçili hat ve yönde durağa yaklaşan en yakın üç canlı araç
+- Araçların yaklaşık güzergâh mesafesine göre sıralanması ve tek tıkla haritada seçilmesi
+- Canlı araç bulunmadığında yükleme, kaynak hatası ve boş durum açıklamaları
+
+### Değiştirildi
+
+- Duraktan geçen hatların göreceli “Gidiş/Dönüş” etiketleri başlangıç ve bitiş yönleriyle değiştirildi.
+- Durak ve araç seçimleri birbirini kapatacak şekilde ayrıştırıldı; harita kartlarının üst üste gelmesi engellendi.
+
 ## 0.5.0-beta.8 - 2026-08-29
 
 ### Düzeltildi
