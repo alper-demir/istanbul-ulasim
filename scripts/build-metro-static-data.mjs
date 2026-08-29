@@ -24,6 +24,7 @@ const allRelationIds = unique(manifest.lines.flatMap((line) => line.directions.f
 const elements = await requestRelations(allRelationIds);
 const relationById = new Map(elements.filter((item) => item.type === 'relation').map((item) => [item.id, item]));
 const nodeById = new Map(elements.filter((item) => item.type === 'node').map((item) => [item.id, item]));
+const wayById = new Map(elements.filter((item) => item.type === 'way').map((item) => [item.id, item]));
 
 function stationFromMember(member) {
   if (member.type !== 'node' || !['stop', 'platform'].includes(member.role)) return null;
@@ -46,6 +47,26 @@ function stationsForRelations(ids) {
     }
   }
   return stations;
+}
+
+function geometryForRelations(ids, fallback) {
+  const coordinates = [];
+  for (const id of ids) {
+    const relation = relationById.get(id);
+    for (const member of relation?.members ?? []) {
+      if (member.type !== 'way') continue;
+      const way = wayById.get(member.ref);
+      const segment = (way?.geometry ?? [])
+        .filter((point) => Number.isFinite(point.lon) && Number.isFinite(point.lat))
+        .map((point) => [point.lon, point.lat]);
+      if (segment.length < 2) continue;
+      const previous = coordinates.at(-1);
+      const distance = (a, b) => ((a[0] - b[0]) ** 2) + ((a[1] - b[1]) ** 2);
+      if (previous && distance(previous, segment.at(-1)) < distance(previous, segment[0])) segment.reverse();
+      coordinates.push(...(coordinates.length && coordinates.at(-1)[0] === segment[0][0] && coordinates.at(-1)[1] === segment[0][1] ? segment.slice(1) : segment));
+    }
+  }
+  return coordinates.length >= 2 ? coordinates : fallback;
 }
 
 function validateLine(line, directions) {
@@ -74,7 +95,7 @@ const stopIndex = new Map();
 for (const line of manifest.lines) {
   const directions = line.directions.map((direction) => {
     const stops = [...(direction.prependStops ?? []), ...stationsForRelations(direction.relationIds), ...(direction.appendStops ?? [])];
-    return { ...direction, durationMinutes: 0, coordinates: stops.map((stop) => stop.coordinates), stops };
+    return { ...direction, durationMinutes: 0, coordinates: geometryForRelations(direction.relationIds, stops.map((stop) => stop.coordinates)), stops };
   });
   validateLine(line, directions);
   const primary = directions.find((direction) => direction.id === 'outbound') ?? directions[0];
