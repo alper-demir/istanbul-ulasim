@@ -3,13 +3,16 @@ import { IETT_SOURCES } from '@/lib/data-sources/iett';
 
 const CACHE_TTL_MS = 60_000;
 const STALE_CACHE_TTL_MS = 10 * 60 * 1_000;
-const UPSTREAM_TIMEOUT_MS = 8_000;
+const UPSTREAM_TIMEOUT_MS = 10_000;
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
 const UPSTREAM_RATE_LIMIT = 90;
 const MAX_CONCURRENT_UPSTREAM_REQUESTS = 2;
 const MIN_UPSTREAM_REQUEST_INTERVAL_MS = 750;
 const MAX_QUEUED_REQUESTS = 240;
-const MAX_QUEUE_WAIT_MS = 7_000;
+// This must exceed the upstream timeout. In short-lived local/serverless
+// runtimes, returning `pending` first can discard the in-flight refresh and
+// leave every client retry stuck in the same state.
+const MAX_QUEUE_WAIT_MS = UPSTREAM_TIMEOUT_MS + 1_500;
 const FAILURE_BACKOFF_MS = 15_000;
 const MAX_CACHE_ENTRIES = 360;
 
