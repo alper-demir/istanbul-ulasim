@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.3 - 2026-08-29
+
+### Değiştirildi
+
+- Göreceli “Gidiş/Dönüş” araç etiketleri yerine doğrudan “Başlangıç → Bitiş” yön adları gösteriliyor.
+- Başlangıç ve bitiş durakları haritada renkli vurgu ve etiket, durak listesinde belirgin rozet kazandı.
+- Statik güzergâh ile canlı araç verisinin farklı kaynak niteliği arayüzde daha açık ifade ediliyor.
+
+### Doğrulandı
+
+- Statik ağdaki 801 resmî hat kodunun tamamı canlı API doğrulama kuralıyla uyumlu.
+- Sayısal, harfli, Türkçe karakterli, tireli ve metrobüs hat kodları canlı kaynakla denetlendi.
+
 ## 0.5.0-beta.2 - 2026-08-29
 
 ### Eklendi

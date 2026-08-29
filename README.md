@@ -81,13 +81,13 @@ Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodu
 
 ## Veri kapsamı
 
-Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili hattın canlı araçları, resmî İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
+Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hattın canlı araçları, hat kodundan bağımsız olarak İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Statik ağdaki 801 hat kodunun tamamı canlı sorgu doğrulamasından geçer. Bununla birlikte servis, o anda aktif aracı veya konum kaydı bulunmayan bir hat için boş liste döndürebilir. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
 
 ## Sürüm
 
 Kararlı MVP sürümü: `0.4.2`
 
-Canlı araç özellik dalı: `0.5.0-beta.2`
+Canlı araç özellik dalı: `0.5.0-beta.3`
 
 ## Sürümleme yaklaşımı
 
