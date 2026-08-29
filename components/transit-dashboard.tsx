@@ -91,8 +91,8 @@ function stopFeatures(route: TransitRoute, selectedStopId?: string): FeatureColl
   return { type:'FeatureCollection', features:route.stops.map((stop,index) => ({ type:'Feature', properties:{ ...stop, order:index+1, selected:stop.id === selectedStopId }, geometry:{ type:'Point', coordinates:stop.coordinates } })) };
 }
 
-function vehicleFeatures(vehicles: TransitVehicle[]): FeatureCollection {
-  return { type:'FeatureCollection', features:vehicles.map((vehicle) => ({ type:'Feature', properties:{ ...vehicle, stale:vehicle.updatedSecondsAgo > 180 }, geometry:{ type:'Point', coordinates:vehicle.coordinates } })) };
+function vehicleFeatures(vehicles: TransitVehicle[], selectedVehicleId?: string): FeatureCollection {
+  return { type:'FeatureCollection', features:vehicles.map((vehicle) => ({ type:'Feature', properties:{ ...vehicle, stale:vehicle.updatedSecondsAgo > 180, selected:vehicle.id === selectedVehicleId }, geometry:{ type:'Point', coordinates:vehicle.coordinates } })) };
 }
 
 function vehicleIconImage() {
@@ -427,9 +427,10 @@ export function TransitDashboard() {
       }, paint:{ 'text-color':['match',['get','kind'],'start','#15803d','end','#b91c1c','#334155'], 'text-halo-color':'#ffffff', 'text-halo-width':2 } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute.vehicles) });
       map.addImage(VEHICLE_ICON, vehicleIconImage(), { pixelRatio:2 });
-      map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':20, 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','stale'],0.06,0.2] } });
-      map.addLayer({ id:'route-vehicles', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':12, 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','stale'],0.45,1], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':2.5 } });
-      map.addLayer({ id:'route-vehicle-icons', type:'symbol', source:VEHICLE_SOURCE, layout:{ 'icon-image':VEHICLE_ICON, 'icon-size':1, 'icon-allow-overlap':true, 'icon-ignore-placement':true }, paint:{ 'icon-opacity':['case',['get','stale'],0.5,1] } });
+      map.addLayer({ id:'selected-vehicle-ring', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],28,0], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','selected'],0.16,0], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],3,0] } });
+      map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],24,20], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','selected'],0.35,['case',['get','stale'],0.06,0.2]] } });
+      map.addLayer({ id:'route-vehicles', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],16,12], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','stale'],0.45,1], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],4,2.5] } });
+      map.addLayer({ id:'route-vehicle-icons', type:'symbol', source:VEHICLE_SOURCE, layout:{ 'icon-image':VEHICLE_ICON, 'icon-size':['case',['get','selected'],1.25,1], 'icon-allow-overlap':true, 'icon-ignore-placement':true }, paint:{ 'icon-opacity':['case',['get','stale'],0.5,1] } });
       map.addSource(USER_LOCATION_SOURCE, { type:'geojson', data:userLocationFeature() });
       map.addLayer({ id:'user-location-halo', type:'circle', source:USER_LOCATION_SOURCE, paint:{ 'circle-radius':18, 'circle-color':'#14b8a6', 'circle-opacity':0.2 } });
       map.addLayer({ id:'user-location-dot', type:'circle', source:USER_LOCATION_SOURCE, paint:{ 'circle-radius':7, 'circle-color':'#14b8a6', 'circle-stroke-color':'#ffffff', 'circle-stroke-width':3 } });
@@ -500,10 +501,11 @@ export function TransitDashboard() {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(VEHICLE_SOURCE)) return;
-    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute.vehicles));
+    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute.vehicles, selectedVehicle?.id));
     if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
     if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
-  }, [mapReady, selectedRoute.color, selectedRoute.vehicles]);
+    if (map.getLayer('selected-vehicle-ring')) map.setPaintProperty('selected-vehicle-ring','circle-color',selectedRoute.color);
+  }, [mapReady, selectedRoute.color, selectedRoute.vehicles, selectedVehicle?.id]);
 
   useEffect(() => {
     const map = mapRef.current;
