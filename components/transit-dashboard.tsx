@@ -495,7 +495,8 @@ export function TransitDashboard() {
     });
     map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
-    map.on('load', () => {
+    const initializeTransitLayers = () => {
+      if (map.getSource(ROUTE_SOURCE)) return;
       map.addSource(COMPARISON_SOURCE, { type:'geojson', data:comparisonFeatures([]) });
       map.addLayer({ id:'comparison-route-halo', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':7, 'line-opacity':0.65 } });
       map.addLayer({ id:'comparison-route-line', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':3.5, 'line-opacity':0.8, 'line-dasharray':[1.5,1.2] } });
@@ -558,7 +559,10 @@ export function TransitDashboard() {
       });
       setMapReady(true);
       fitRoute(map, initialRoute);
-    });
+    };
+    map.on('load', initializeTransitLayers);
+    map.on('style.load', initializeTransitLayers);
+    if (map.isStyleLoaded()) initializeTransitLayers();
     mapRef.current = map;
   }, [activeRoute]);
 
@@ -875,7 +879,7 @@ export function TransitDashboard() {
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh {selectedRoute.mode==='Metro'?'istasyonları':'durakları'}</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Veri bekleniyor'}</span></div>
           <div className="relative mt-3 space-y-0 pl-1">
             {selectedRoute.stops.map((stop,index)=>{const isStart=index===0;const isEnd=index===selectedRoute.stops.length-1;return (
-              <button key={stop.id} onClick={()=>{setSelectedVehicle(null);setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
+              <button key={`${stop.id}-${index}`} onClick={()=>{setSelectedVehicle(null);setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
             );})}
           </div>
         </div>
