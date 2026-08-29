@@ -8,7 +8,7 @@ import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
   BusFront, Check, ChevronRight, Clock3, LocateFixed, MapPin, Moon,
-  Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, TramFront, X,
+  Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitDirection, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
@@ -256,6 +256,7 @@ export function TransitDashboard() {
   const [savedManualLocation, setSavedManualLocation] = useState<SavedManualLocation | null>(readStoredManualLocation);
   const [locationOrigin, setLocationOrigin] = useState<'browser' | 'manual' | null>(() => readStoredManualLocation() ? 'manual' : null);
   const [comparisonRouteKeys, setComparisonRouteKeys] = useState<ComparisonRoute[]>([]);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
@@ -777,12 +778,26 @@ export function TransitDashboard() {
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
           <span className="hidden items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-700 dark:text-amber-300 md:flex"><span className="h-2 w-2 rounded-full bg-amber-500" />{isOfficialRoute ? 'Resmî hat ağı' : 'Demo veri'}</span>
           <Button variant="secondary" size="icon" aria-label="Yakınımdaki durakları göster" onClick={findNearbyStops}><LocateFixed className="h-4 w-4" /></Button>
+          <Button variant="secondary" size="icon" aria-label="Uygulama hakkında" onClick={()=>setAboutOpen(true)}><Info className="h-4 w-4" /></Button>
           <Button variant="secondary" size="icon" aria-label="Temayı değiştir" onClick={()=>setTheme(resolvedTheme==='dark'?'light':'dark')}>
             <Moon className="h-4 w-4 dark:hidden" />
             <Sun className="hidden h-4 w-4 dark:block" />
           </Button>
         </div>
       </header>
+
+      {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
+        <section role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
+          <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulum</p><h2 id="about-title" className="mt-1 text-lg font-extrabold">Uygulama hakkında</h2></div><Button variant="ghost" size="icon" aria-label="Bilgilendirme penceresini kapat" onClick={()=>setAboutOpen(false)}><X className="h-4 w-4" /></Button></div>
+          <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">İstanbulum, otobüs hatlarını, durakları ve uygun olduğunda canlı araç konumlarını haritada incelemeyi kolaylaştıran bir keşif aracıdır. Yolculuk planlama veya varış zamanı tahmini yapmaz.</p>
+          <div className="mt-5 space-y-3">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Güzergâh ve duraklar</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">İBB Açık Veri’de yayımlanan resmî hat güzergâhı ve durak verilerinden işlenir. Uygulamadaki veri tarihi: {ROUTE_DATA_UPDATED_LABEL}.</p></div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Canlı araç konumları</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Seçili hat için İETT canlı araç konum servisi üzerinden alınır. Kaynakta gecikme, eksik kayıt veya konum sapması olabilir.</p></div>
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-amber-900 dark:text-amber-100"><p className="text-xs font-extrabold">Bilgilendirme notu</p><p className="mt-1 text-[11px] leading-relaxed opacity-85">Gösterilen bilgiler bilgilendirme amaçlıdır; güncellik ve doğruluk veri sağlayıcılarına bağlıdır. Kesin sefer, varış saati veya operasyonel bilgi olarak kullanılmamalıdır.</p></div>
+          </div>
+          <div className="mt-5 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-4"><span className="text-[10px] font-medium text-[var(--muted)]">v{APP_VERSION}</span><Button variant="secondary" size="sm" onClick={()=>setAboutOpen(false)}>Tamam</Button></div>
+        </section>
+      </div>}
 
       {manualLocationMode&&<div className="glass-panel absolute left-1/2 top-[92px] z-40 flex w-[min(360px,calc(100%-24px))] -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-3 py-2.5"><span className="text-xs font-bold"><MapPin className="mr-1.5 inline h-4 w-4 text-[var(--primary)]" />Haritadan konumunu seç</span><Button variant="ghost" size="sm" onClick={cancelManualLocation}>Vazgeç</Button></div>}
 

@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.12 - 2026-08-29
+
+### Eklendi
+
+- Ana haritadan bağımsız açılan “Uygulama hakkında” penceresi
+- Uygulamanın amacı, statik İBB açık veri kapsamı, canlı İETT kaynağı ve veri güvenilirliği sınırlarının tek yerde açıklanması
+
 ## 0.5.0-beta.11 - 2026-08-29
 
 ### Değiştirildi
