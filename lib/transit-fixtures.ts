@@ -32,13 +32,22 @@ export type TransitRoute = {
   code: string;
   name: string;
   color: string;
-  mode: 'Otobüs' | 'Metrobüs';
+  /**
+   * Presentation labels are kept in Turkish because this object is also used
+   * by the small offline fixture. New static networks should use the same
+   * contract rather than creating mode-specific route shapes.
+   */
+  mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Vapur' | 'Minibüs';
   fareLabel: string;
   durationMinutes: number;
   coordinates: [number, number][];
   stops: TransitStop[];
   vehicles: TransitVehicle[];
   directions?: TransitDirection[];
+  operator?: string;
+  source?: 'fixture' | 'ibb-open-data' | 'metro-istanbul' | 'osm';
+  sourceUpdatedAt?: string;
+  supportsLiveVehicles?: boolean;
 };
 
 export const routes: TransitRoute[] = [

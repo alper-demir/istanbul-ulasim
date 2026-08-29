@@ -10,7 +10,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 - Dağıtım: Henüz yapılmadı. Yerel uygulama `http://localhost:3000` üzerinden çalışır.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
-Uygulama, İstanbul otobüs hatlarını ve yön bazlı duraklarını haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
+Uygulama, İstanbul otobüs/metrobüs ve metro hatlarını, yön bazlı durak/istasyonlarıyla haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
 
 ## Kullanıcıya sunulan özellikler
 
@@ -22,6 +22,7 @@ Uygulama, İstanbul otobüs hatlarını ve yön bazlı duraklarını haritada in
 - Seçili hat/yön/durağı içeren paylaşılabilir bağlantılar
 - En fazla üç hattı aynı haritada karşılaştırma ve bunları tek eylemle temizleme
 - Açık/koyu tema, masaüstü ve mobil yerleşim
+- M1A, M1B, M2–M9 ve M11 için statik güzergâh/istasyon gösterimi; metroda canlı araç sorgusu yok
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - Durak detayında, seçili hat/yönde durağa yaklaşan en fazla üç canlı aracı yaklaşık güzergâh mesafesiyle gösterme
 - Canlı araçlar ve durakları görsel olarak farklı işaretleme; seçili aracın güçlü harita vurgusu
@@ -34,6 +35,7 @@ Uygulama, İstanbul otobüs hatlarını ve yön bazlı duraklarını haritada in
 | --- | --- | --- |
 | Hat, güzergâh, durak | İBB Açık Veri / İETT kaynak çıktıları | Ham kaynak yerelde işlenir; uygulama çalışma anında `public/iett` altındaki küçük JSON dosyalarını okur. Veri tarihi arayüzde gösterilir. |
 | Canlı araç konumu | İETT `GetHatOtoKonum_json` servisi | Tarayıcı doğrudan bağlanmaz; sadece seçili hat sunucu rotası üzerinden sorgulanır. Araç olmayabilir, kayıt gecikebilir veya konum sapabilir. |
+| Metro hat/istasyon | Metro İstanbul hat sayfaları + OpenStreetMap snapshot | Geliştirme sırasında doğrulanıp `public/metro` altında sürümlü statik çıktıya dönüştürülür; çalışma anında canlı kaynak çağrısı yapılmaz. |
 | Altlık haritası | OpenStreetMap | Sadece görsel harita katmanıdır; hat/durak doğruluğu için kaynak değildir. |
 
 Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt ve konum sapması veri sağlayıcılarına bağlıdır; kesin sefer veya varış bilgisi olarak kullanılmamalıdır.

@@ -38,6 +38,7 @@ next-env.d.ts
 /work/
 *.tsbuildinfo
 public/iett/
+!public/metro/
 data/*.geojson
 data/*.csv
 data/*.txt

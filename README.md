@@ -1,6 +1,6 @@
 # İstanbulum
 
-İstanbul otobüs hatlarını, yön bazlı güzergâhlarını ve duraklarını tek haritada incelemeyi sağlayan web uygulaması.
+İstanbul otobüs, metrobüs ve metro hatlarını; yön bazlı güzergâhlarıyla durak/istasyonlarını tek haritada incelemeyi sağlayan web uygulaması.
 
 ## MVP özellikleri
 
@@ -18,6 +18,7 @@
 - Güzergâh başlangıç/bitiş işaretleri ve en fazla üç hatla harita karşılaştırması
 - Açık/koyu tema ve mobil uyumlu arayüz
 - Seçili hattın yön bazlı canlı araç konumları ve açıklayıcı hata/boş durumları
+- M1A, M1B, M2–M9 ve M11 için statik metro güzergâhı ve istasyonları
 
 ## Teknoloji
 
@@ -64,6 +65,16 @@ npm run data:build-iett
 `stop_times` verisi Excel satır sınırına takılabildiği için mümkünse portalın özgün `stop_times.txt` dosyası kullanılmalıdır. Üretim betiği eksik sefer kapsamını kontrol eder ve hatalı veriyle devam etmez.
 
 Betik, hat detaylarına ek olarak birleşik aramada kullanılan `stop-index.json` dosyasını da üretir. Bu ters indeks her durağı, o duraktan geçen hat ve yönlerle ilişkilendirir; uygulama böylece yüzlerce hat dosyasını ayrı ayrı indirmeden durak arayabilir.
+
+### Metro verisi
+
+Metro hatları çalışma zamanında dış kaynağa bağlanmaz. `data/metro/lines.json` içindeki resmî hat manifesti ve OpenStreetMap ilişki snapshot’ı kullanılarak küçük statik JSON dosyaları üretilir:
+
+```bash
+npm run data:build-metro
+```
+
+Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz. Aynı statik katalog yaklaşımı ileride vapur ve minibüs ağları için de kullanılacaktır.
 
 ## Paylaşılabilir bağlantılar
 
