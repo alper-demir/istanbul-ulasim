@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       data:snapshot.vehicles,
       meta:{
         source:'ibb-iett-live',
-        status:snapshot.cacheStatus === 'stale' ? 'stale' : 'live',
+        status:snapshot.cacheStatus === 'stale' ? 'stale' : snapshot.cacheStatus === 'pending' ? 'pending' : 'live',
         cacheStatus:snapshot.cacheStatus,
         cacheTtlMs:snapshot.cacheTtlMs,
         fetchedAt:snapshot.fetchedAt,
@@ -22,7 +22,12 @@ export async function GET(request: Request) {
         discardedVehicleCount:snapshot.discardedVehicleCount,
       },
     }, {
-      headers:{ 'Cache-Control':'public, max-age=15, stale-while-revalidate=45' },
+      headers:{
+        'Cache-Control': snapshot.cacheStatus === 'pending'
+          ? 'public, max-age=5, stale-while-revalidate=25'
+          : 'public, max-age=15, stale-while-revalidate=45',
+        'X-Live-Data-Cache':snapshot.cacheStatus,
+      },
     });
   } catch (error) {
     console.error('Live vehicle source failed', error);

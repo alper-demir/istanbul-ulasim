@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.10 - 2026-08-29
+
+### Performans
+
+- Farklı hatlardan gelen canlı konum istekleri için sınırlı eşzamanlılıklı ortak yenileme kuyruğu eklendi.
+- Aynı hattın bekleyen yenileme isteği paylaşılmaya devam ederken, kuyruk yoğunluğunda arayüz artık anlaşılır bir “sırada” durumu gösteriyor.
+- Son başarılı canlı yanıt 10 dakika boyunca güvenli geri dönüş verisi olarak tutuluyor; başarısız bir hat 15 saniye boyunca tekrar kaynak isteği üretmiyor.
+- Bellek içi canlı veri önbelleğine süre ve adet sınırı eklendi; uzun süre çalışan sunucuda kontrolsüz büyüme engellendi.
+
+### Notlar
+
+- Bu koruma katmanı tek uygulama sürecinde etkilidir. Çoklu örnekli üretim dağıtımı için Cloudflare KV/Cache, Durable Object veya Redis ile ortak önbellek ve hız limiti kurulmalıdır.
+
 ## 0.5.0-beta.9 - 2026-08-29
 
 ### Eklendi

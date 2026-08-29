@@ -35,7 +35,7 @@ type ComparisonRoute = { routeId:string; directionId:string };
 type ApproachingVehicle = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean };
 type LiveVehicleResponse = {
   data:IettLiveVehicle[];
-  meta:{ source:'ibb-iett-live'; status:'live' | 'stale'; fetchedAt:string; newestPositionAt:string | null };
+  meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; fetchedAt:string; newestPositionAt:string | null };
 };
 
 function readRouteStateFromUrl() {
@@ -361,6 +361,8 @@ export function TransitDashboard() {
       ? 'Canlı kaynak erişilemiyor'
       : liveVehicleStatus === 'stale'
         ? 'Son geçerli konumlar'
+        : liveVehicleStatus === 'pending'
+          ? 'Canlı konum sırada'
         : selectedRoute.vehicles.length
           ? '30 sn’de kontrol edilir'
           : 'Bu yönde aktif araç yok';
@@ -369,6 +371,8 @@ export function TransitDashboard() {
     ? 'Canlı konum kontrol ediliyor'
     : liveVehiclesUnavailable
       ? 'Canlı konum geçici olarak alınamıyor'
+      : liveVehicleStatus === 'pending'
+        ? 'Yoğunluk nedeniyle canlı konum isteği sıraya alındı'
       : liveSourceTimestamp
         ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' ? ' · önceki yanıt' : ''}`
         : 'İETT şu an bu hat için canlı konum bildirmiyor';

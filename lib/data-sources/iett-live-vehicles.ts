@@ -2,9 +2,16 @@ import type { TransitVehicle } from '@/lib/transit-fixtures';
 import { IETT_SOURCES } from '@/lib/data-sources/iett';
 
 const CACHE_TTL_MS = 60_000;
+const STALE_CACHE_TTL_MS = 10 * 60 * 1_000;
 const UPSTREAM_TIMEOUT_MS = 8_000;
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
 const UPSTREAM_RATE_LIMIT = 90;
+const MAX_CONCURRENT_UPSTREAM_REQUESTS = 2;
+const MIN_UPSTREAM_REQUEST_INTERVAL_MS = 750;
+const MAX_QUEUED_REQUESTS = 240;
+const MAX_QUEUE_WAIT_MS = 7_000;
+const FAILURE_BACKOFF_MS = 15_000;
+const MAX_CACHE_ENTRIES = 360;
 
 type RawIettVehicle = {
   kapino?: string;
@@ -36,15 +43,26 @@ export type LiveVehicleSnapshot = {
 };
 
 export type CachedLiveVehicleSnapshot = LiveVehicleSnapshot & {
-  cacheStatus: 'hit' | 'miss' | 'stale';
+  cacheStatus: 'hit' | 'miss' | 'stale' | 'pending';
   cacheTtlMs: number;
 };
 
-type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number };
+type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number; staleAt:number };
+type QueuedRequest = {
+  routeCode:string;
+  resolve:(snapshot:LiveVehicleSnapshot) => void;
+  reject:(error:unknown) => void;
+};
+type FailureEntry = { retryAt:number; error:unknown };
 
 const snapshotCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
 const upstreamRequestTimes: number[] = [];
+const requestQueue: QueuedRequest[] = [];
+const recentFailures = new Map<string, FailureEntry>();
+let activeUpstreamRequests = 0;
+let lastUpstreamRequestAt = 0;
+let queueTimer: ReturnType<typeof setTimeout> | null = null;
 
 function escapeXml(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
@@ -130,6 +148,57 @@ export function parseIettLiveVehicleResponse(xml: string, routeCode: string, now
   };
 }
 
+function pruneCache(now = Date.now()) {
+  for (const [key, entry] of snapshotCache) {
+    if (entry.staleAt <= now) snapshotCache.delete(key);
+  }
+  while (snapshotCache.size > MAX_CACHE_ENTRIES) {
+    const oldestKey = snapshotCache.keys().next().value;
+    if (!oldestKey) break;
+    snapshotCache.delete(oldestKey);
+  }
+}
+
+function readCache(routeCode: string, now = Date.now()) {
+  const entry = snapshotCache.get(routeCode);
+  if (!entry || entry.staleAt <= now) return null;
+  // Map insertion order doubles as a small LRU list.
+  snapshotCache.delete(routeCode);
+  snapshotCache.set(routeCode, entry);
+  return entry;
+}
+
+function waitForQueueTurn() {
+  if (queueTimer || !requestQueue.length || activeUpstreamRequests >= MAX_CONCURRENT_UPSTREAM_REQUESTS) return;
+  const delay = Math.max(0, lastUpstreamRequestAt + MIN_UPSTREAM_REQUEST_INTERVAL_MS - Date.now());
+  queueTimer = setTimeout(() => {
+    queueTimer = null;
+    while (requestQueue.length && activeUpstreamRequests < MAX_CONCURRENT_UPSTREAM_REQUESTS && Date.now() - lastUpstreamRequestAt >= MIN_UPSTREAM_REQUEST_INTERVAL_MS) {
+      const next = requestQueue.shift();
+      if (!next) return;
+      activeUpstreamRequests += 1;
+      lastUpstreamRequestAt = Date.now();
+      void fetchSnapshot(next.routeCode)
+        .then(next.resolve, next.reject)
+        .finally(() => {
+          activeUpstreamRequests -= 1;
+          waitForQueueTurn();
+        });
+    }
+    waitForQueueTurn();
+  }, delay);
+}
+
+function enqueueSnapshot(routeCode: string) {
+  if (requestQueue.length >= MAX_QUEUED_REQUESTS) {
+    return Promise.reject(new Error('Canlı araç yenileme kuyruğu dolu'));
+  }
+  return new Promise<LiveVehicleSnapshot>((resolve, reject) => {
+    requestQueue.push({ routeCode, resolve, reject });
+    waitForQueueTurn();
+  });
+}
+
 async function fetchSnapshot(routeCode: string) {
   const now = Date.now();
   while (upstreamRequestTimes[0] && upstreamRequestTimes[0] <= now - UPSTREAM_RATE_WINDOW_MS) upstreamRequestTimes.shift();
@@ -147,26 +216,73 @@ async function fetchSnapshot(routeCode: string) {
   return parseIettLiveVehicleResponse(await response.text(), routeCode);
 }
 
+function pendingSnapshot(): CachedLiveVehicleSnapshot {
+  return {
+    vehicles:[],
+    fetchedAt:new Date().toISOString(),
+    newestPositionAt:null,
+    discardedVehicleCount:0,
+    cacheStatus:'pending',
+    cacheTtlMs:CACHE_TTL_MS,
+  };
+}
+
+async function waitForSnapshotOrQueueState(pending: Promise<LiveVehicleSnapshot>) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      pending,
+      new Promise<null>((resolve) => { timeout = setTimeout(() => resolve(null), MAX_QUEUE_WAIT_MS); }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 export async function getIettLiveVehicles(routeCode: string): Promise<CachedLiveVehicleSnapshot> {
   const key = routeCode.trim().toLocaleUpperCase('tr-TR');
   const now = Date.now();
-  const cached = snapshotCache.get(key);
+  pruneCache(now);
+  const cached = readCache(key, now);
   if (cached && cached.expiresAt > now) return { ...cached.snapshot, cacheStatus:'hit', cacheTtlMs:CACHE_TTL_MS };
 
   let pending = pendingRequests.get(key);
   if (!pending) {
-    pending = fetchSnapshot(key);
+    const failure = recentFailures.get(key);
+    if (failure && failure.retryAt > now) {
+      if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
+      throw failure.error;
+    }
+    pending = enqueueSnapshot(key)
+      .then((snapshot) => {
+        recentFailures.delete(key);
+        snapshotCache.set(key, {
+          snapshot,
+          expiresAt:Date.now() + CACHE_TTL_MS,
+          staleAt:Date.now() + STALE_CACHE_TTL_MS,
+        });
+        pruneCache();
+        return snapshot;
+      })
+      .catch((error:unknown) => {
+        recentFailures.set(key, { retryAt:Date.now() + FAILURE_BACKOFF_MS, error });
+        throw error;
+      });
     pendingRequests.set(key, pending);
+    void pending.finally(() => {
+      if (pendingRequests.get(key) === pending) pendingRequests.delete(key);
+    }).catch(() => undefined);
   }
 
+  // A stale value is immediately more useful than holding a map interaction
+  // open behind a busy shared queue. The refresh continues in the background.
+  if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
+
   try {
-    const snapshot = await pending;
-    snapshotCache.set(key, { snapshot, expiresAt:Date.now() + CACHE_TTL_MS });
+    const snapshot = await waitForSnapshotOrQueueState(pending);
+    if (!snapshot) return pendingSnapshot();
     return { ...snapshot, cacheStatus:'miss', cacheTtlMs:CACHE_TTL_MS };
   } catch (error) {
-    if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
     throw error;
-  } finally {
-    if (pendingRequests.get(key) === pending) pendingRequests.delete(key);
   }
 }
