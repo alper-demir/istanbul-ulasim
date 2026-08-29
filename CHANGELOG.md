@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.13 - 2026-08-29
+
+### Düzeltildi
+
+- Uygulamadaki etkin düğmeler, bağlantılar ve düğme rollü etkileşimler için `pointer` imleci standartlaştırıldı.
+
 ## 0.5.0-beta.12 - 2026-08-29
 
 ### Eklendi
