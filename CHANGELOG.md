@@ -2,6 +2,17 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.4 - 2026-08-29
+
+### Eklendi
+
+- Güzergâh veri setinin tarihi ve canlı konum servisinin son kayıt zamanı
+- İETT kaynaklı verilerde gecikme veya tutarsızlık olabileceğini belirten kompakt veri notu
+
+### Değiştirildi
+
+- Teknik “güzergâh statik” ifadesi, arayüzde daha anlaşılır “resmî güzergâh” kaynak etiketiyle değiştirildi.
+
 ## 0.5.0-beta.3 - 2026-08-29
 
 ### Değiştirildi
