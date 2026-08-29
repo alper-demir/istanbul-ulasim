@@ -11,7 +11,7 @@ import {
   Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { routes as fixtureRoutes, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
+import { routes as fixtureRoutes, type TransitDirection, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import type { IettLiveVehicle } from '@/lib/data-sources/iett-live-vehicles';
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
@@ -77,8 +77,8 @@ function endpointFeatures(route: TransitRoute): FeatureCollection {
   const start = route.stops[0]?.coordinates ?? route.coordinates[0]!;
   const end = route.stops.at(-1)?.coordinates ?? route.coordinates.at(-1)!;
   return { type:'FeatureCollection', features:[
-    { type:'Feature', properties:{ kind:'start' }, geometry:{ type:'Point', coordinates:start } },
-    { type:'Feature', properties:{ kind:'end' }, geometry:{ type:'Point', coordinates:end } },
+    { type:'Feature', properties:{ kind:'start', label:'BAŞLANGIÇ' }, geometry:{ type:'Point', coordinates:start } },
+    { type:'Feature', properties:{ kind:'end', label:'BİTİŞ' }, geometry:{ type:'Point', coordinates:end } },
   ] };
 }
 
@@ -116,10 +116,11 @@ function vehicleIconImage() {
   return context.getImageData(0, 0, canvas.width, canvas.height);
 }
 
-function vehicleDirectionLabel(vehicle: TransitVehicle) {
-  if (vehicle.directionId === 'outbound') return 'Gidiş';
-  if (vehicle.directionId === 'return') return 'Dönüş';
-  return 'Yön belirsiz';
+function vehicleDirectionName(vehicle: TransitVehicle, directions?: TransitDirection[]) {
+  const direction = directions?.find((item) => item.id === vehicle.directionId);
+  if (direction) return direction.name;
+  if (vehicle.direction && vehicle.direction !== 'Yön bilgisi yok') return `→ ${vehicle.direction}`;
+  return 'Yön bilgisi bulunamadı';
 }
 
 function userLocationFeature(location?: [number, number]): FeatureCollection {
@@ -397,9 +398,15 @@ export function TransitDashboard() {
         'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
       } });
       map.addSource(ENDPOINT_SOURCE, { type:'geojson', data:endpointFeatures(initialRoute) });
-      map.addLayer({ id:'route-endpoints', type:'circle', source:ENDPOINT_SOURCE, paint:{
-        'circle-radius':8, 'circle-color':['match',['get','kind'],'start','#16a34a','end','#dc2626','#ffffff'], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':3,
+      map.addLayer({ id:'route-endpoint-halo', type:'circle', source:ENDPOINT_SOURCE, paint:{
+        'circle-radius':18, 'circle-color':['match',['get','kind'],'start','#16a34a','end','#dc2626','#ffffff'], 'circle-opacity':0.18,
       } });
+      map.addLayer({ id:'route-endpoints', type:'circle', source:ENDPOINT_SOURCE, paint:{
+        'circle-radius':11, 'circle-color':['match',['get','kind'],'start','#16a34a','end','#dc2626','#ffffff'], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':4,
+      } });
+      map.addLayer({ id:'route-endpoint-labels', type:'symbol', source:ENDPOINT_SOURCE, layout:{
+        'text-field':['get','label'], 'text-size':10, 'text-font':['Open Sans Bold'], 'text-anchor':'top', 'text-offset':[0,1.7], 'text-allow-overlap':true,
+      }, paint:{ 'text-color':['match',['get','kind'],'start','#15803d','end','#b91c1c','#334155'], 'text-halo-color':'#ffffff', 'text-halo-width':2 } });
       map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute.vehicles) });
       map.addImage(VEHICLE_ICON, vehicleIconImage(), { pixelRatio:2 });
       map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':20, 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','stale'],0.06,0.2] } });
@@ -706,14 +713,14 @@ export function TransitDashboard() {
         <div className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 backdrop-blur-xl">
           <div className="flex items-start gap-3">
             <div className="grid h-12 min-w-16 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
-            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
+            <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="rounded-md bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]">{selectedRoute.mode}</span><span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-300"><span className="h-1.5 w-1.5 rounded-full bg-amber-500" />{isOfficialRoute ? 'güzergâh statik' : 'demo'}</span></div><h1 className="mt-1.5 text-base font-extrabold leading-tight">{selectedRoute.name}</h1></div>
             <Button variant="ghost" size="icon" onClick={toggleFavorite} aria-label={favorites.includes(selectedRoute.id)?'Hattı favorilerden çıkar':'Hattı favorilere ekle'}><Star className={cn('h-4 w-4',favorites.includes(selectedRoute.id)&&'fill-amber-400 text-amber-500')} /></Button>
             <Button variant="ghost" size="icon" onClick={copyRouteLink} aria-label={linkCopied?'Hat bağlantısı kopyalandı':'Hat bağlantısını kopyala'}>{linkCopied?<Check className="h-4 w-4 text-emerald-500" />:<Share2 className="h-4 w-4" />}</Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={()=>setMobilePanelOpen(false)} aria-label="Detayı kapat"><X className="h-4 w-4" /></Button>
           </div>
         </div>
         <div className="p-4">
-          {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Güzergâh yönü</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block line-clamp-2">{direction.name}</span></button>)}</div></div>}
+          {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
           <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<><div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div><button type="button" onClick={clearComparisonRoutes} className="mt-2 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--foreground)]">Karşılaştırmayı temizle</button></>}</div>
           <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî geometri' : 'Demo veri'}</span></div></div>
@@ -723,16 +730,16 @@ export function TransitDashboard() {
             {selectedRoute.vehicles.map((vehicle)=>(
               <button key={vehicle.id} onClick={()=>setSelectedVehicle(vehicle)} className={cn('flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3 text-left transition hover:border-[var(--primary)]',selectedVehicle?.id===vehicle.id&&'border-[var(--primary)] ring-2 ring-[var(--primary-soft)]')}>
                 <span className="grid h-9 w-9 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-4 w-4" /></span>
-                <span className="min-w-0 flex-1"><span className="flex items-center gap-1.5"><span className="block text-sm font-bold">{vehicle.doorCode}</span><span className="rounded bg-[var(--primary-soft)] px-1.5 py-0.5 text-[9px] font-black text-[var(--primary)]">{vehicleDirectionLabel(vehicle)}</span></span><span className="mt-0.5 block truncate text-xs text-[var(--muted)]">{vehicle.direction} · Yakın: {vehicle.nextStop}</span></span>
+                <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{vehicle.doorCode}</span><span className="mt-0.5 block truncate text-[10px] font-bold text-[var(--primary)]">{vehicleDirectionName(vehicle, routeData.directions)}</span><span className="mt-0.5 block truncate text-xs text-[var(--muted)]">Yakın: {vehicle.nextStop}</span></span>
                 <span className="text-right text-xs"><span className={cn('block font-bold',vehicle.updatedSecondsAgo>180?'text-amber-600 dark:text-amber-300':'text-emerald-600 dark:text-emerald-300')}>{vehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'}</span><span className="text-[var(--muted)]">{vehicle.updatedSecondsAgo} sn önce</span></span>
               </button>
             ))}
           </div>
           <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh durakları</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Resmî durak verisi bekleniyor'}</span></div>
           <div className="relative mt-3 space-y-0 pl-1">
-            {selectedRoute.stops.map((stop,index)=>(
-              <button key={stop.id} onClick={()=>{setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className="absolute left-[7px] top-4 h-full w-0.5 bg-[var(--border)]" />}<span className="relative z-10 mt-1.5 h-4 w-4 rounded-full border-[3px] bg-[var(--surface-strong)] transition" style={{borderColor:selectedStop?.id===stop.id?'#ffffff':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:undefined}} /><span><span className="text-sm font-semibold">{stop.name}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
-            ))}
+            {selectedRoute.stops.map((stop,index)=>{const isStart=index===0;const isEnd=index===selectedRoute.stops.length-1;return (
+              <button key={stop.id} onClick={()=>{setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
+            );})}
           </div>
         </div>
       </aside>
@@ -744,10 +751,10 @@ export function TransitDashboard() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5">
                 <p className="font-extrabold">{selectedVehicle.doorCode}</p>
-                <span className="rounded bg-[var(--primary-soft)] px-1.5 py-0.5 text-[10px] font-black text-[var(--primary)]">{vehicleDirectionLabel(selectedVehicle)}</span>
                 <span className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-bold',selectedVehicle.source==='ibb-iett-live'&&selectedVehicle.updatedSecondsAgo<=180?'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300':'bg-amber-500/10 text-amber-600 dark:text-amber-300')}>{selectedVehicle.source==='ibb-iett-live'?(selectedVehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'):'DEMO'}</span>
               </div>
-              <p className="mt-0.5 truncate text-xs text-[var(--muted)]">{selectedVehicle.direction} yönü · Yakın: {selectedVehicle.nextStop}</p>
+              <p className="mt-0.5 truncate text-[10px] font-bold text-[var(--primary)]">{vehicleDirectionName(selectedVehicle, routeData.directions)}</p>
+              <p className="mt-0.5 truncate text-xs text-[var(--muted)]">Yakın: {selectedVehicle.nextStop}</p>
             </div>
             <div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.source==='ibb-iett-live'?'Konum':`${selectedVehicle.speed} km/sa`}</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div>
             <Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button>
