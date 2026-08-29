@@ -1,20 +1,26 @@
 import type { TransitVehicle } from '@/lib/transit-fixtures';
 import { IETT_SOURCES } from '@/lib/data-sources/iett';
 
-const CACHE_TTL_MS = 60_000;
-const STALE_CACHE_TTL_MS = 10 * 60 * 1_000;
-const UPSTREAM_TIMEOUT_MS = 10_000;
+function configuredMilliseconds(name: string, fallback: number) {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value > 0 ? Math.round(value) : fallback;
+}
+
+function configuredLimit(name: string, fallback: number) {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value >= 0 ? Math.round(value) : fallback;
+}
+
+const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 45_000);
+const STALE_CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_STALE_TTL_MS', 10 * 60 * 1_000);
+const UPSTREAM_TIMEOUT_MS = configuredMilliseconds('IETT_LIVE_TIMEOUT_MS', 10_000);
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
-const UPSTREAM_RATE_LIMIT = 90;
-const MAX_CONCURRENT_UPSTREAM_REQUESTS = 2;
-const MIN_UPSTREAM_REQUEST_INTERVAL_MS = 750;
-const MAX_QUEUED_REQUESTS = 240;
-// This must exceed the upstream timeout. In short-lived local/serverless
-// runtimes, returning `pending` first can discard the in-flight refresh and
-// leave every client retry stuck in the same state.
-const MAX_QUEUE_WAIT_MS = UPSTREAM_TIMEOUT_MS + 1_500;
-const FAILURE_BACKOFF_MS = 15_000;
-const MAX_CACHE_ENTRIES = 360;
+// Zero disables the optional application-side budget. The upstream may still
+// enforce its own limits; set this in the environment when a measured budget
+// is available instead of hard-coding a guess that hides live data from users.
+const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 0);
+const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 5_000);
+const MAX_CACHE_ENTRIES = configuredLimit('IETT_LIVE_MAX_CACHE_ENTRIES', 900);
 
 type RawIettVehicle = {
   kapino?: string;
@@ -46,26 +52,17 @@ export type LiveVehicleSnapshot = {
 };
 
 export type CachedLiveVehicleSnapshot = LiveVehicleSnapshot & {
-  cacheStatus: 'hit' | 'miss' | 'stale' | 'pending';
+  cacheStatus: 'hit' | 'miss' | 'stale';
   cacheTtlMs: number;
 };
 
 type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number; staleAt:number };
-type QueuedRequest = {
-  routeCode:string;
-  resolve:(snapshot:LiveVehicleSnapshot) => void;
-  reject:(error:unknown) => void;
-};
 type FailureEntry = { retryAt:number; error:unknown };
 
 const snapshotCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
 const upstreamRequestTimes: number[] = [];
-const requestQueue: QueuedRequest[] = [];
 const recentFailures = new Map<string, FailureEntry>();
-let activeUpstreamRequests = 0;
-let lastUpstreamRequestAt = 0;
-let queueTimer: ReturnType<typeof setTimeout> | null = null;
 
 function escapeXml(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
@@ -171,42 +168,11 @@ function readCache(routeCode: string, now = Date.now()) {
   return entry;
 }
 
-function waitForQueueTurn() {
-  if (queueTimer || !requestQueue.length || activeUpstreamRequests >= MAX_CONCURRENT_UPSTREAM_REQUESTS) return;
-  const delay = Math.max(0, lastUpstreamRequestAt + MIN_UPSTREAM_REQUEST_INTERVAL_MS - Date.now());
-  queueTimer = setTimeout(() => {
-    queueTimer = null;
-    while (requestQueue.length && activeUpstreamRequests < MAX_CONCURRENT_UPSTREAM_REQUESTS && Date.now() - lastUpstreamRequestAt >= MIN_UPSTREAM_REQUEST_INTERVAL_MS) {
-      const next = requestQueue.shift();
-      if (!next) return;
-      activeUpstreamRequests += 1;
-      lastUpstreamRequestAt = Date.now();
-      void fetchSnapshot(next.routeCode)
-        .then(next.resolve, next.reject)
-        .finally(() => {
-          activeUpstreamRequests -= 1;
-          waitForQueueTurn();
-        });
-    }
-    waitForQueueTurn();
-  }, delay);
-}
-
-function enqueueSnapshot(routeCode: string) {
-  if (requestQueue.length >= MAX_QUEUED_REQUESTS) {
-    return Promise.reject(new Error('Canlı araç yenileme kuyruğu dolu'));
-  }
-  return new Promise<LiveVehicleSnapshot>((resolve, reject) => {
-    requestQueue.push({ routeCode, resolve, reject });
-    waitForQueueTurn();
-  });
-}
-
 async function fetchSnapshot(routeCode: string) {
   const now = Date.now();
   while (upstreamRequestTimes[0] && upstreamRequestTimes[0] <= now - UPSTREAM_RATE_WINDOW_MS) upstreamRequestTimes.shift();
-  if (upstreamRequestTimes.length >= UPSTREAM_RATE_LIMIT) throw new Error('İETT canlı araç servisinin saatlik istek bütçesi doldu');
-  upstreamRequestTimes.push(now);
+  if (UPSTREAM_RATE_LIMIT > 0 && upstreamRequestTimes.length >= UPSTREAM_RATE_LIMIT) throw new Error('İETT canlı araç servisinin saatlik istek bütçesi doldu');
+  if (UPSTREAM_RATE_LIMIT > 0) upstreamRequestTimes.push(now);
 
   const response = await fetch(IETT_SOURCES.vehiclePositions.endpoint, {
     method:'POST',
@@ -217,29 +183,6 @@ async function fetchSnapshot(routeCode: string) {
   });
   if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
   return parseIettLiveVehicleResponse(await response.text(), routeCode);
-}
-
-function pendingSnapshot(): CachedLiveVehicleSnapshot {
-  return {
-    vehicles:[],
-    fetchedAt:new Date().toISOString(),
-    newestPositionAt:null,
-    discardedVehicleCount:0,
-    cacheStatus:'pending',
-    cacheTtlMs:CACHE_TTL_MS,
-  };
-}
-
-async function waitForSnapshotOrQueueState(pending: Promise<LiveVehicleSnapshot>) {
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-  try {
-    return await Promise.race([
-      pending,
-      new Promise<null>((resolve) => { timeout = setTimeout(() => resolve(null), MAX_QUEUE_WAIT_MS); }),
-    ]);
-  } finally {
-    if (timeout) clearTimeout(timeout);
-  }
 }
 
 export async function getIettLiveVehicles(routeCode: string): Promise<CachedLiveVehicleSnapshot> {
@@ -256,7 +199,7 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
       if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
       throw failure.error;
     }
-    pending = enqueueSnapshot(key)
+    pending = fetchSnapshot(key)
       .then((snapshot) => {
         recentFailures.delete(key);
         snapshotCache.set(key, {
@@ -281,11 +224,6 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
   // open behind a busy shared queue. The refresh continues in the background.
   if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
 
-  try {
-    const snapshot = await waitForSnapshotOrQueueState(pending);
-    if (!snapshot) return pendingSnapshot();
-    return { ...snapshot, cacheStatus:'miss', cacheTtlMs:CACHE_TTL_MS };
-  } catch (error) {
-    throw error;
-  }
+  const snapshot = await pending;
+  return { ...snapshot, cacheStatus:'miss', cacheTtlMs:CACHE_TTL_MS };
 }

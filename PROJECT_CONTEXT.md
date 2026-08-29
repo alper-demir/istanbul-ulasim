@@ -43,7 +43,7 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 ## Canlı veri performans tasarımı
 
 - İstemci yalnız seçili hattı sorgular; sayfa arka plandayken yenileme yapılmaz.
-- İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı 60 saniye kullanılır.
+- İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı varsayılan olarak 45 saniye kullanılır ve `IETT_LIVE_*` ortam ayarlarıyla değiştirilebilir.
 - Aynı hat için eşzamanlı istekler tek İETT isteğinde birleştirilir.
 - Farklı hat istekleri, en fazla iki eşzamanlı istek ve istekler arasında kısa aralıkla çalışan süreç içi bir kuyruğa alınır.
 - Son başarılı yanıt 10 dakika boyunca geri dönüş verisi olarak tutulur. Bir kaynağın hatası sonrasında aynı hat 15 saniye yeniden zorlanmaz.
