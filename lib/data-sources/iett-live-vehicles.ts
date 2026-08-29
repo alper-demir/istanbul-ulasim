@@ -1,18 +1,19 @@
 import type { TransitVehicle } from '@/lib/transit-fixtures';
 import { IETT_SOURCES } from '@/lib/data-sources/iett';
 
-const CACHE_TTL_MS = 60_000;
+const CACHE_TTL_MS = 30_000;
 const STALE_CACHE_TTL_MS = 10 * 60 * 1_000;
 const UPSTREAM_TIMEOUT_MS = 10_000;
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
 const UPSTREAM_RATE_LIMIT = 90;
-const MAX_CONCURRENT_UPSTREAM_REQUESTS = 2;
+// The IETT SOAP endpoint is much more reliable with one in-flight request.
+// Parallel calls occasionally leave both sockets hanging until timeout.
 const MIN_UPSTREAM_REQUEST_INTERVAL_MS = 750;
 const MAX_QUEUED_REQUESTS = 240;
 // This must exceed the upstream timeout. In short-lived local/serverless
 // runtimes, returning `pending` first can discard the in-flight refresh and
 // leave every client retry stuck in the same state.
-const MAX_QUEUE_WAIT_MS = UPSTREAM_TIMEOUT_MS + 1_500;
+const MAX_QUEUE_WAIT_MS = 20_000;
 const FAILURE_BACKOFF_MS = 15_000;
 const MAX_CACHE_ENTRIES = 360;
 
@@ -63,9 +64,8 @@ const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
 const upstreamRequestTimes: number[] = [];
 const requestQueue: QueuedRequest[] = [];
 const recentFailures = new Map<string, FailureEntry>();
-let activeUpstreamRequests = 0;
 let lastUpstreamRequestAt = 0;
-let queueTimer: ReturnType<typeof setTimeout> | null = null;
+let queueRunning = false;
 
 function escapeXml(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
@@ -171,25 +171,27 @@ function readCache(routeCode: string, now = Date.now()) {
   return entry;
 }
 
-function waitForQueueTurn() {
-  if (queueTimer || !requestQueue.length || activeUpstreamRequests >= MAX_CONCURRENT_UPSTREAM_REQUESTS) return;
-  const delay = Math.max(0, lastUpstreamRequestAt + MIN_UPSTREAM_REQUEST_INTERVAL_MS - Date.now());
-  queueTimer = setTimeout(() => {
-    queueTimer = null;
-    while (requestQueue.length && activeUpstreamRequests < MAX_CONCURRENT_UPSTREAM_REQUESTS && Date.now() - lastUpstreamRequestAt >= MIN_UPSTREAM_REQUEST_INTERVAL_MS) {
+async function drainQueue() {
+  if (queueRunning) return;
+  queueRunning = true;
+  try {
+    while (requestQueue.length) {
+      const delay = Math.max(0, lastUpstreamRequestAt + MIN_UPSTREAM_REQUEST_INTERVAL_MS - Date.now());
+      if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
       const next = requestQueue.shift();
-      if (!next) return;
-      activeUpstreamRequests += 1;
+      if (!next) continue;
       lastUpstreamRequestAt = Date.now();
-      void fetchSnapshot(next.routeCode)
-        .then(next.resolve, next.reject)
-        .finally(() => {
-          activeUpstreamRequests -= 1;
-          waitForQueueTurn();
-        });
+      try {
+        next.resolve(await fetchSnapshot(next.routeCode));
+      } catch (error) {
+        next.reject(error);
+      } finally {
+      }
     }
-    waitForQueueTurn();
-  }, delay);
+  } finally {
+    queueRunning = false;
+    if (requestQueue.length) void drainQueue();
+  }
 }
 
 function enqueueSnapshot(routeCode: string) {
@@ -198,7 +200,7 @@ function enqueueSnapshot(routeCode: string) {
   }
   return new Promise<LiveVehicleSnapshot>((resolve, reject) => {
     requestQueue.push({ routeCode, resolve, reject });
-    waitForQueueTurn();
+    void drainQueue();
   });
 }
 
@@ -210,7 +212,7 @@ async function fetchSnapshot(routeCode: string) {
 
   const response = await fetch(IETT_SOURCES.vehiclePositions.endpoint, {
     method:'POST',
-    headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
+    headers:{ 'Content-Type':'text/xml; charset=utf-8', Connection:'close', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
     body:soapEnvelope(routeCode),
     cache:'no-store',
     signal:AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
