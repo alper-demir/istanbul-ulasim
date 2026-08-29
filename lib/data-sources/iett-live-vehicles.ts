@@ -3,6 +3,8 @@ import { IETT_SOURCES } from '@/lib/data-sources/iett';
 
 const CACHE_TTL_MS = 60_000;
 const UPSTREAM_TIMEOUT_MS = 8_000;
+const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
+const UPSTREAM_RATE_LIMIT = 90;
 
 type RawIettVehicle = {
   kapino?: string;
@@ -42,6 +44,7 @@ type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number };
 
 const snapshotCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
+const upstreamRequestTimes: number[] = [];
 
 function escapeXml(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
@@ -128,6 +131,11 @@ export function parseIettLiveVehicleResponse(xml: string, routeCode: string, now
 }
 
 async function fetchSnapshot(routeCode: string) {
+  const now = Date.now();
+  while (upstreamRequestTimes[0] && upstreamRequestTimes[0] <= now - UPSTREAM_RATE_WINDOW_MS) upstreamRequestTimes.shift();
+  if (upstreamRequestTimes.length >= UPSTREAM_RATE_LIMIT) throw new Error('İETT canlı araç servisinin saatlik istek bütçesi doldu');
+  upstreamRequestTimes.push(now);
+
   const response = await fetch(IETT_SOURCES.vehiclePositions.endpoint, {
     method:'POST',
     headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },

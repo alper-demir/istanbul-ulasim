@@ -2,6 +2,23 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.1 - 2026-08-29
+
+### Eklendi
+
+- Resmî İETT hat bazlı araç konum servisi için sunucu adaptörü
+- Seçili hattın gidiş ve dönüş yönlerini ayrı gösteren canlı araç katmanı
+- Araç kapı numarası, yönü, yakınındaki durak ve son konum yaşı bilgileri
+- Kaynak kesintisinde son başarılı görüntüyü kullanabilen kısa süreli önbellek
+- Eski konumları haritada soluk ve listede “ESKİ” etiketiyle ayırma
+
+### Performans
+
+- Yalnızca seçili hat sorgulanır; arka plandaki sekmelerde yenileme durur.
+- İstemci 30 saniyede kontrol eder, sunucu aynı hat yanıtını 60 saniye önbelleğe alır.
+- Eşzamanlı aynı hat istekleri tek upstream çağrısında birleştirilir.
+- Resmî servisin saatlik sınırını korumak için süreç başına 90 çağrılık bütçe uygulanır.
+
 ## 0.4.2 - 2026-08-27
 
 ### Düzeltildi

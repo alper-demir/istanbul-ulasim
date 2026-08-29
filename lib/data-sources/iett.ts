@@ -31,7 +31,7 @@ export type SourceHealth = {
   id: string;
   label: string;
   kind: 'static-network' | 'live-vehicles';
-  status: 'ready-to-import' | 'credentials-required' | 'fixture';
+  status: 'ready-to-import' | 'connected' | 'credentials-required' | 'fixture';
   detail: string;
   updatedAt: string;
   attributionUrl: string;
@@ -52,8 +52,8 @@ export function getIettSourceHealth(): SourceHealth[] {
       id: IETT_SOURCES.vehiclePositions.id,
       label: IETT_SOURCES.vehiclePositions.label,
       kind: 'live-vehicles',
-      status: 'ready-to-import',
-      detail: 'Resmî hat bazlı araç konum metodu doğrulandı; sunucu adaptörü kısa süreli önbellekle kaynağı korur.',
+      status: 'connected',
+      detail: 'Resmî hat bazlı araç konum metodu bağlı; sunucu adaptörü kısa süreli önbellek ve saatlik istek bütçesiyle kaynağı korur.',
       updatedAt: new Date().toISOString(),
       attributionUrl: IETT_SOURCES.vehiclePositions.wsdl,
     },
@@ -62,7 +62,7 @@ export function getIettSourceHealth(): SourceHealth[] {
       label: 'İstanbulum geliştirme verisi',
       kind: 'static-network',
       status: 'fixture',
-      detail: 'Arayüz şu anda yalnızca demo hat/araç verisi gösteriyor.',
+      detail: 'Geliştirme verisi yalnızca resmî statik veya canlı kaynak kullanılamadığında yedek olarak tutulur.',
       updatedAt: new Date().toISOString(),
       attributionUrl: 'https://github.com/',
     },

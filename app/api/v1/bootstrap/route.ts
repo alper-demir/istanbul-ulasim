@@ -9,7 +9,7 @@ export async function GET() {
       defaultZoom: 9.6,
       refreshIntervalMs: 30_000,
       features: {
-        liveVehicles: sourceHealth.some((source) => source.kind === 'live-vehicles' && source.status === 'ready-to-import'),
+        liveVehicles: sourceHealth.some((source) => source.kind === 'live-vehicles' && source.status === 'connected'),
         traffic: false,
         favorites: true,
       },

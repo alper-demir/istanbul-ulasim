@@ -17,7 +17,7 @@
 - Seçilen hat, yön ve durağı URL üzerinden paylaşma
 - Güzergâh başlangıç/bitiş işaretleri ve en fazla üç hatla harita karşılaştırması
 - Açık/koyu tema ve mobil uyumlu arayüz
-- Canlı araç verisi bulunmadığında açıklayıcı boş durum
+- Seçili hattın yön bazlı canlı araç konumları ve açıklayıcı hata/boş durumları
 
 ## Teknoloji
 
@@ -81,14 +81,18 @@ Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodu
 
 ## Veri kapsamı
 
-Güzergâh ve duraklar statik açık veri çıktılarıdır. Canlı araç konumu henüz bağlı değildir. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
+Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili hattın canlı araçları, resmî İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
 
 ## Sürüm
 
-Güncel MVP sürümü: `0.4.2`
+Kararlı MVP sürümü: `0.4.2`
+
+Canlı araç özellik dalı: `0.5.0-beta.1`
 
 ## Sürümleme yaklaşımı
 
 Proje `0.x.y` biçimini kullanır. Küçük düzeltmeler ve sınırlı özellik eklemeleri son haneyi yükseltir (`0.3.1` → `0.3.2`). Daha geniş kullanıcı akışları veya mimari değişiklikler orta haneyi yükseltir (`0.3.x` → `0.4.0`). Her sürüm, Git etiketi ve değişiklik günlüğüyle birlikte kaydedilir.
+
+Kararlı sürüm `main` dalında tutulur. Yeni kullanıcı özellikleri `feature/*` dallarında geliştirilir; beta sürüm doğrulandıktan sonra `main`e birleştirilir ve kararlı sürüm etiketi oluşturulur.
 
 Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.
