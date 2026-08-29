@@ -2,6 +2,14 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0 - 2026-08-29
+
+### Kararlı sürüm
+
+- Yön bazlı canlı araç konumları, araç/durak odaklama, durak odaklı canlı bilgi ve kaynak güvenilirliği açıklamaları kararlı sürüme alındı.
+- Canlı veri isteği için önbellek, aynı hat isteklerini birleştirme, kuyruk, hata sonrası geri çekilme ve eski veriye dönüş korumaları eklendi.
+- Uygulama hakkında penceresi, kullanıcı bağlam belgeleri ve arayüz tutarlılığı iyileştirmeleri tamamlandı.
+
 ## 0.5.0-beta.14 - 2026-08-29
 
 ### Dokümantasyon

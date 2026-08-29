@@ -89,9 +89,9 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Kararlı MVP sürümü: `0.4.2`
+Kararlı sürüm: `0.5.0`
 
-Canlı araç özellik dalı: `0.5.0-beta.14`
+Canlı araçlar ve performans iyileştirmeleri `main` dalına birleştirildi.
 
 ## Sürümleme yaklaşımı
 

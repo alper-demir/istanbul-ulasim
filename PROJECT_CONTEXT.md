@@ -4,9 +4,9 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Çalışma dalı: `feature/live-vehicles`
-- Özellik sürümü: `0.5.0-beta.14`
-- Son kararlı sürüm: `0.4.2` (`main`)
+- Çalışma dalı: `main`
+- Kararlı sürüm: `0.5.0`
+- Canlı araç özellikleri ve performans iyileştirmeleri `feature/live-vehicles` dalında geliştirilip bu sürümde `main`e birleştirildi.
 - Dağıtım: Henüz yapılmadı. Yerel uygulama `http://localhost:3000` üzerinden çalışır.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -61,10 +61,10 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 ## Sürüm ve Git çalışma biçimi
 
 - Biçim: `0.x.y`; küçük düzeltme/iyileştirmeler son haneyi artırır.
-- Canlı araç çalışmaları `feature/live-vehicles` dalındadır; kararlı MVP `main` dalında korunur.
+- Yeni kullanıcı özellikleri `feature/*` dallarında geliştirilir; kararlı sürümler `main` dalında tutulur.
 - Her sürümde `package.json`, `lib/app-version.ts`, `CHANGELOG.md` ve bu belge güncellenir; ardından yerel Git commit’i ve annotated etiket oluşturulur.
 - Kullanıcı istemedikçe `push`, `merge` veya `main`e alma yapılmaz.
-- Geri dönüş için etiket örneği: `git switch --detach v0.5.0-beta.14`. Yeni bir deneme dalı için: `git switch -c deneme v0.5.0-beta.14`.
+- Geri dönüş için etiket örneği: `git switch --detach v0.5.0`. Yeni bir deneme dalı için: `git switch -c deneme v0.5.0`.
 
 ## Doğrulama
 
