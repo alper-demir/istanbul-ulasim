@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.11 - 2026-08-29
+
+### Değiştirildi
+
+- Canlı konum bilgisinin yalnız bilgilendirme amaçlı olduğu; güncellik, doğruluk ve olası konum sapmasının İETT kaynağına bağlı bulunduğu açıkça belirtildi.
+
 ## 0.5.0-beta.10 - 2026-08-29
 
 ### Performans
