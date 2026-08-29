@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.6 - 2026-08-29
+
+### Düzeltildi
+
+- Statik İBB ağ verisi açıklamasındaki “anlık görüntüsü” ifadesi kaldırıldı.
+
 ## 0.5.0-beta.5 - 2026-08-29
 
 ### Değiştirildi
