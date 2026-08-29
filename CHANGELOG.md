@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.5 - 2026-08-29
+
+### Değiştirildi
+
+- Hat listesinin altındaki İBB açık veri özetine, statik anlık görüntünün veri tarihi eklendi.
+
 ## 0.5.0-beta.4 - 2026-08-29
 
 ### Eklendi

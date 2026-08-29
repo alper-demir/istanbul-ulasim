@@ -87,7 +87,7 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hatt
 
 Kararlı MVP sürümü: `0.4.2`
 
-Canlı araç özellik dalı: `0.5.0-beta.4`
+Canlı araç özellik dalı: `0.5.0-beta.5`
 
 ## Sürümleme yaklaşımı
 
