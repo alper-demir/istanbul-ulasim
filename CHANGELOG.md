@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.8 - 2026-08-29
+
+### Düzeltildi
+
+- Kaydırılmış durak listesinin işaretçileri artık sabit hat başlığının üzerinde görünmüyor.
+- Dar panel başlığındaki kaynak etiketi kompaktlaştırıldı; hat kodu ve başlık için daha fazla alan bırakıldı.
+
 ## 0.5.0-beta.7 - 2026-08-29
 
 ### Eklendi
