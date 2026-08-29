@@ -2,6 +2,18 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.2 - 2026-08-29
+
+### Eklendi
+
+- Canlı araç listesinde ve araç detay kartında belirgin “Gidiş/Dönüş” etiketi
+- Duraklardan görsel olarak ayrılan otobüs piktogramlı canlı araç işaretçisi
+
+### Düzeltildi
+
+- Listedeki veya haritadaki canlı araca basıldığında haritanın araç konumuna odaklanması
+- Canlı veri adaptörünün farklı biçimlerdeki tüm resmî hat kodlarıyla dinamik çalıştığının doğrulanması
+
 ## 0.5.0-beta.1 - 2026-08-29
 
 ### Eklendi
