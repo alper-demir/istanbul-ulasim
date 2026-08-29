@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.5.0-beta.14 - 2026-08-29
+
+### Dokümantasyon
+
+- Özellikler, veri kaynakları/sınırları, canlı veri performans yaklaşımı, sürüm düzeni ve sonraki aşamaları toplayan `PROJECT_CONTEXT.md` eklendi.
+
 ## 0.5.0-beta.13 - 2026-08-29
 
 ### Düzeltildi

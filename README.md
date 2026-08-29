@@ -91,7 +91,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 Kararlı MVP sürümü: `0.4.2`
 
-Canlı araç özellik dalı: `0.5.0-beta.13`
+Canlı araç özellik dalı: `0.5.0-beta.14`
 
 ## Sürümleme yaklaşımı
 
@@ -100,3 +100,5 @@ Proje `0.x.y` biçimini kullanır. Küçük düzeltmeler ve sınırlı özellik 
 Kararlı sürüm `main` dalında tutulur. Yeni kullanıcı özellikleri `feature/*` dallarında geliştirilir; beta sürüm doğrulandıktan sonra `main`e birleştirilir ve kararlı sürüm etiketi oluşturulur.
 
 Ayrıntılar için [CHANGELOG.md](CHANGELOG.md) dosyasına bakın.
+
+Yeni bir geliştirme oturumunda mevcut özellikler, mimari kararlar ve sonraki adımlar için [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) belgesine bakın.
