@@ -13,6 +13,10 @@ export type TransitVehicle = {
   direction: string;
   nextStop: string;
   updatedSecondsAgo: number;
+  source?: 'fixture' | 'ibb-iett-live';
+  directionId?: 'outbound' | 'return' | 'unknown';
+  nearbyStopCode?: string;
+  updatedAt?: string;
 };
 
 export type TransitDirection = {

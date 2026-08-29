@@ -22,6 +22,7 @@ export const IETT_SOURCES = {
     id: 'ibb-iett-vehicle-positions',
     label: 'İBB İETT Araç Konumları',
     wsdl: 'https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl',
+    endpoint: 'https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx',
     refresh: '30 seconds',
   },
 } as const;
@@ -30,15 +31,13 @@ export type SourceHealth = {
   id: string;
   label: string;
   kind: 'static-network' | 'live-vehicles';
-  status: 'ready-to-import' | 'credentials-required' | 'fixture';
+  status: 'ready-to-import' | 'connected' | 'credentials-required' | 'fixture';
   detail: string;
   updatedAt: string;
   attributionUrl: string;
 };
 
 export function getIettSourceHealth(): SourceHealth[] {
-  const liveConfigured = Boolean(process.env.IETT_LIVE_API_KEY);
-
   return [
     {
       id: IETT_SOURCES.routeGeometry.id,
@@ -53,10 +52,8 @@ export function getIettSourceHealth(): SourceHealth[] {
       id: IETT_SOURCES.vehiclePositions.id,
       label: IETT_SOURCES.vehiclePositions.label,
       kind: 'live-vehicles',
-      status: liveConfigured ? 'ready-to-import' : 'credentials-required',
-      detail: liveConfigured
-        ? 'Canlı kaynak anahtarı yapılandırıldı; adaptör doğrulama aşamasında.'
-        : 'Resmî servis erişim politikası doğrulanmalı; canlı veriyi bağlamak için proje anahtarı veya yetkili erişim gerekiyor.',
+      status: 'connected',
+      detail: 'Resmî hat bazlı araç konum metodu bağlı; sunucu adaptörü kısa süreli önbellek ve saatlik istek bütçesiyle kaynağı korur.',
       updatedAt: new Date().toISOString(),
       attributionUrl: IETT_SOURCES.vehiclePositions.wsdl,
     },
@@ -65,7 +62,7 @@ export function getIettSourceHealth(): SourceHealth[] {
       label: 'İstanbulum geliştirme verisi',
       kind: 'static-network',
       status: 'fixture',
-      detail: 'Arayüz şu anda yalnızca demo hat/araç verisi gösteriyor.',
+      detail: 'Geliştirme verisi yalnızca resmî statik veya canlı kaynak kullanılamadığında yedek olarak tutulur.',
       updatedAt: new Date().toISOString(),
       attributionUrl: 'https://github.com/',
     },

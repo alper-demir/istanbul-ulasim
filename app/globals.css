@@ -45,6 +45,7 @@ body {
 }
 button, input { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), a[href], [role='button']:not([aria-disabled='true']) { cursor: pointer; }
 
 .glass-panel {
   border: 1px solid var(--border);
