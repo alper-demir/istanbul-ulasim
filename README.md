@@ -1,6 +1,6 @@
 # İstanbulum
 
-İstanbul otobüs hatlarını, yön bazlı güzergâhlarını ve duraklarını tek haritada incelemeyi sağlayan web uygulaması.
+İstanbul otobüs, metrobüs ve metro hatlarını; yön bazlı güzergâhlarıyla durak/istasyonlarını tek haritada incelemeyi sağlayan web uygulaması.
 
 ## MVP özellikleri
 
@@ -18,6 +18,7 @@
 - Güzergâh başlangıç/bitiş işaretleri ve en fazla üç hatla harita karşılaştırması
 - Açık/koyu tema ve mobil uyumlu arayüz
 - Seçili hattın yön bazlı canlı araç konumları ve açıklayıcı hata/boş durumları
+- M1A, M1B, M2–M9 ve M11 için statik metro güzergâhı ve istasyonları
 
 ## Teknoloji
 
@@ -65,6 +66,16 @@ npm run data:build-iett
 
 Betik, hat detaylarına ek olarak birleşik aramada kullanılan `stop-index.json` dosyasını da üretir. Bu ters indeks her durağı, o duraktan geçen hat ve yönlerle ilişkilendirir; uygulama böylece yüzlerce hat dosyasını ayrı ayrı indirmeden durak arayabilir.
 
+### Metro verisi
+
+Metro hatları çalışma zamanında dış kaynağa bağlanmaz. `data/metro/lines.json` içindeki resmî hat manifesti ve OpenStreetMap ilişki snapshot’ı kullanılarak küçük statik JSON dosyaları üretilir:
+
+```bash
+npm run data:build-metro
+```
+
+Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz. Aynı statik katalog yaklaşımı ileride vapur ve minibüs ağları için de kullanılacaktır.
+
 ## Paylaşılabilir bağlantılar
 
 Hat, yön ve isteğe bağlı durak seçimi sorgu parametreleriyle saklanır:
@@ -83,7 +94,7 @@ Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodu
 
 Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hattın canlı araçları, hat kodundan bağımsız olarak İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Statik ağdaki 801 hat kodunun tamamı canlı sorgu doğrulamasından geçer. Bununla birlikte servis, o anda aktif aracı veya konum kaydı bulunmayan bir hat için boş liste döndürebilir. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
 
-Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; farklı hat isteklerini de sınırlı eşzamanlılıkla ortak bir kuyruğa alır. Taze yanıtlar 60 saniye, son geçerli yanıtlar en fazla 10 dakika saklanır. Kaynak hatası alan bir hat 15 saniye yeniden zorlanmaz; eski veri varsa kullanıcıya sunulur. Kuyruk beklemesi uzadığında arayüz canlı verinin sırada olduğunu açıkça bildirir. Bu korumalar tek uygulama süreci içindir. Çoklu Cloudflare/Node örnekli dağıtımda tekrarları tüm örneklerde engellemek için ayrıca ortak edge önbelleği ve hız limiti (Cloudflare Cache/KV, Durable Object veya Redis) kurulmalıdır.
+Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Taze yanıtlar varsayılan olarak 45 saniye, son geçerli yanıtlar en fazla 10 dakika saklanır. Farklı hatlar, doğrulanmamış sabit bir uygulama kotasına takılmadan sorgulanır; isteğe bağlı saatlik bütçe, cache süresi, timeout, hata bekleme süresi ve cache kapasitesi `.env` içindeki `IETT_LIVE_*` ayarlarıyla değiştirilebilir. Bu korumalar tek uygulama süreci içindir. Çoklu Cloudflare/Node örnekli dağıtımda tekrarları tüm örneklerde engellemek için ayrıca ortak edge önbelleği ve hız limiti (Cloudflare Cache/KV, Durable Object veya Redis) kurulmalıdır.
 
 Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi üzerine izdüşürür; durağı henüz geçmemiş en yakın üç aracı yaklaşık güzergâh mesafesine göre sıralar. Bu değer bir varış süresi tahmini değildir. Başka hatlar otomatik olarak sorgulanmaz; duraktan geçen başka bir hat seçildiğinde canlı sorgu o hatta geçirilir.
 

@@ -45,7 +45,9 @@ body {
 }
 button, input { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
-button:not(:disabled), a[href], [role='button']:not([aria-disabled='true']) { cursor: pointer; }
+/* Component and map-library styles can set `cursor: default` on nested icon
+   controls. Keep every enabled interactive affordance consistent. */
+button:not(:disabled), a[href], [role='button']:not([aria-disabled='true']) { cursor: pointer !important; }
 
 .glass-panel {
   border: 1px solid var(--border);

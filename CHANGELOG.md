@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## Unreleased — Metro hatları
+
+### Eklendi
+
+- M1A, M1B, M2–M9 ve M11 için yön bazlı statik güzergâh ve istasyon katalogları.
+- Hat listesindeki sade `Tümü / Otobüs / Metro` filtresi, metro istasyon araması ve paylaşılabilir `metro:` hat bağlantıları.
+- Metro İstanbul kaynak manifesti ve OpenStreetMap snapshot’ından statik çıktı üreten `data:build-metro` komutu.
+
+### Değiştirildi
+
+- Statik ulaşım veri sözleşmesi; gelecekte vapur ve minibüs ağlarını canlı veri zorunluluğu olmadan ekleyebilecek şekilde genişletildi.
+- Metro detaylarında canlı araç bölümü yerine statik hat/istasyon bilgisi gösterilir.
+
 ## 0.5.0 - 2026-08-29
 
 ### Kararlı sürüm

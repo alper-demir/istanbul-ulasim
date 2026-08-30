@@ -26,11 +26,12 @@ const USER_LOCATION_SOURCE = 'user-location';
 const ENDPOINT_SOURCE = 'route-endpoints';
 const COMPARISON_SOURCE = 'comparison-routes';
 const VEHICLE_ICON = 'live-vehicle-bus';
-const TRANSIT_DATA_VERSION = '2026-08-26.7';
+const TRANSIT_DATA_VERSION = '2026-08-29.1';
 const ROUTE_DATA_UPDATED_LABEL = '26 Ağu 2026';
 const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
 
 type LocationStatus = 'idle' | 'loading' | 'ready' | 'denied' | 'unavailable';
+type RouteModeFilter = 'all' | 'road' | 'metro';
 type ComparisonRoute = { routeId:string; directionId:string };
 type ApproachingVehicle = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean };
 type LiveVehicleResponse = {
@@ -42,10 +43,21 @@ function readRouteStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const route = params.get('route')?.trim();
   return {
-    routeId: route ? (route.startsWith('iett:') ? route : `iett:${route}`) : 'iett:500T',
-    directionId: params.get('direction') === 'return' ? 'return' : 'outbound',
+    routeId: route ? (route.includes(':') ? route : `iett:${route}`) : 'iett:500T',
+    directionId: params.get('direction')?.trim() || 'outbound',
     stopId: params.get('stop')?.trim() || null,
   };
+}
+
+function staticRouteUrl(routeId: string) {
+  if (routeId.startsWith('iett:')) return `/iett/routes/${encodeURIComponent(routeId.replace('iett:', ''))}.json`;
+  if (routeId.startsWith('metro:')) return `/metro/routes/${encodeURIComponent(routeId.replace('metro:', ''))}.json`;
+  return null;
+}
+
+async function readStaticJson<T>(path: string): Promise<T | null> {
+  const response = await fetch(path);
+  return response.ok ? response.json() as Promise<T> : null;
 }
 
 function normalizeSearch(value: string) {
@@ -242,6 +254,7 @@ export function TransitDashboard() {
   const [selectedStop, setSelectedStop] = useState<TransitStop | null>(null);
   const [pendingStop, setPendingStop] = useState<{ stopId:string; routeId:string; directionId:string } | null>(null);
   const [search, setSearch] = useState('');
+  const [routeModeFilter, setRouteModeFilter] = useState<RouteModeFilter>('all');
   const [routeListOpen, setRouteListOpen] = useState(true);
   const [nearbyOpen, setNearbyOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(() => readStoredManualLocation()?.coordinates ?? null);
@@ -264,9 +277,13 @@ export function TransitDashboard() {
   const routesQuery = useQuery({
     queryKey: ['routes', TRANSIT_DATA_VERSION],
     queryFn: async (): Promise<{ data: TransitRouteSummary[]; meta?:{ source?:string; routeCount?:number } }> => {
-      const response = await fetch(`/iett/route-index.json?v=${TRANSIT_DATA_VERSION}`);
-      if (!response.ok) throw new Error('Hat verisi alınamadı');
-      return response.json();
+      const [iett, metro] = await Promise.all([
+        readStaticJson<{ data: TransitRouteSummary[]; meta?:{ source?:string; routeCount?:number } }>(`/iett/route-index.json?v=${TRANSIT_DATA_VERSION}`),
+        readStaticJson<{ data: TransitRouteSummary[]; meta?:{ source?:string; routeCount?:number } }>(`/metro/route-index.json?v=${TRANSIT_DATA_VERSION}`),
+      ]);
+      const data = [...(iett?.data ?? []), ...(metro?.data ?? [])];
+      if (!data.length) throw new Error('Hat verisi alınamadı');
+      return { data, meta: { source: 'static-networks', routeCount: data.length } };
     },
     placeholderData: { data: fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length })) },
     staleTime: 24 * 60 * 60 * 1000,
@@ -277,9 +294,13 @@ export function TransitDashboard() {
   const stopIndexQuery = useQuery({
     queryKey: ['stops', TRANSIT_DATA_VERSION],
     queryFn: async (): Promise<{ data: TransitStopSummary[]; meta?:{ source?:string; stopCount?:number } }> => {
-      const response = await fetch(`/iett/stop-index.json?v=${TRANSIT_DATA_VERSION}`);
-      if (!response.ok) throw new Error('Durak verisi alınamadı');
-      return response.json();
+      const [iett, metro] = await Promise.all([
+        readStaticJson<{ data: TransitStopSummary[]; meta?:{ source?:string; stopCount?:number } }>(`/iett/stop-index.json?v=${TRANSIT_DATA_VERSION}`),
+        readStaticJson<{ data: TransitStopSummary[]; meta?:{ source?:string; stopCount?:number } }>(`/metro/stop-index.json?v=${TRANSIT_DATA_VERSION}`),
+      ]);
+      const data = [...(iett?.data ?? []), ...(metro?.data ?? [])];
+      if (!data.length) throw new Error('Durak verisi alınamadı');
+      return { data, meta: { source: 'static-networks', stopCount: data.length } };
     },
     enabled: normalizedSearch.length >= 2 || Boolean(selectedStop) || Boolean(userLocation) || favoriteStopIds.length > 0,
     staleTime: 24 * 60 * 60 * 1000,
@@ -287,8 +308,9 @@ export function TransitDashboard() {
   const routeQuery = useQuery({
     queryKey: ['route', TRANSIT_DATA_VERSION, selectedRouteId],
     queryFn: async (): Promise<{ data: TransitRoute }> => {
-      const response = selectedRouteId.startsWith('iett:')
-        ? await fetch(`/iett/routes/${encodeURIComponent(selectedRouteId.replace('iett:', ''))}.json?v=${TRANSIT_DATA_VERSION}`)
+      const staticUrl = staticRouteUrl(selectedRouteId);
+      const response = staticUrl
+        ? await fetch(`${staticUrl}?v=${TRANSIT_DATA_VERSION}`)
         : await fetch(`/api/v1/routes/${encodeURIComponent(selectedRouteId)}`);
       if (!response.ok) throw new Error('Hat detayı alınamadı');
       return response.json();
@@ -314,8 +336,9 @@ export function TransitDashboard() {
     queries: comparisonRouteKeys.map(({ routeId }) => ({
       queryKey:['comparison-route', TRANSIT_DATA_VERSION, routeId],
       queryFn: async (): Promise<{ data:TransitRoute }> => {
-        const response = routeId.startsWith('iett:')
-          ? await fetch(`/iett/routes/${encodeURIComponent(routeId.replace('iett:', ''))}.json?v=${TRANSIT_DATA_VERSION}`)
+        const staticUrl = staticRouteUrl(routeId);
+        const response = staticUrl
+          ? await fetch(`${staticUrl}?v=${TRANSIT_DATA_VERSION}`)
           : await fetch(`/api/v1/routes/${encodeURIComponent(routeId)}`);
         if (!response.ok) throw new Error('Karşılaştırma hattı alınamadı');
         return response.json();
@@ -352,10 +375,11 @@ export function TransitDashboard() {
   }), [comparisonQueries, comparisonRouteKeys, selectedDirection?.id, selectedRoute.id]);
   const selectedStopIndex = selectedStop ? selectedRoute.stops.findIndex((stop) => stop.id === selectedStop.id) : -1;
   const activeRoute = routeQuery.data?.data;
-  const isOfficialRoute = selectedRoute.id.startsWith('iett:');
+  const isOfficialRoute = selectedRoute.id.startsWith('iett:') || selectedRoute.id.startsWith('metro:');
+  const hasLiveVehicles = selectedRoute.supportsLiveVehicles ?? selectedRoute.id.startsWith('iett:');
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
-  const liveVehiclesLoading = isOfficialRoute && liveVehiclesQuery.isLoading;
-  const liveVehiclesUnavailable = isOfficialRoute && liveVehiclesQuery.isError;
+  const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading;
+  const liveVehiclesUnavailable = hasLiveVehicles && liveVehiclesQuery.isError;
   const liveVehicleStatusLabel = liveVehiclesLoading
     ? 'Canlı konumlar yükleniyor'
     : liveVehiclesUnavailable
@@ -378,9 +402,10 @@ export function TransitDashboard() {
         ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' ? ' · önceki yanıt' : ''}`
         : 'İETT şu an bu hat için canlı konum bildirmiyor';
   const filteredRoutes = useMemo(() => {
-    if (!normalizedSearch) return routes;
-    return routes.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalizedSearch));
-  }, [normalizedSearch, routes]);
+    const byMode = routes.filter((route) => routeModeFilter === 'all' || (routeModeFilter === 'metro' ? route.mode === 'Metro' : route.mode !== 'Metro'));
+    if (!normalizedSearch) return byMode;
+    return byMode.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalizedSearch));
+  }, [normalizedSearch, routeModeFilter, routes]);
   const filteredStops = useMemo(() => {
     if (normalizedSearch.length < 2) return [];
     return (stopIndexQuery.data?.data ?? []).filter((stop) => normalizeSearch(`${stop.name} ${stop.district}`).includes(normalizedSearch));
@@ -392,7 +417,7 @@ export function TransitDashboard() {
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 12);
   }, [stopIndexQuery.data?.data, userLocation]);
-  const routeByCode = useMemo(() => new Map(routes.map((route) => [route.code, route])), [routes]);
+  const routeByCode = useMemo(() => new Map(routes.flatMap((route) => [[route.id, route], [route.code, route]])), [routes]);
   const stopById = useMemo(() => new Map((stopIndexQuery.data?.data ?? []).map((stop) => [stop.id, stop])), [stopIndexQuery.data?.data]);
   const favoriteStops = useMemo(() => favoriteStopIds.map((id) => stopById.get(id)).filter((stop): stop is TransitStopSummary => Boolean(stop)), [favoriteStopIds, stopById]);
   const selectedStopSummary = selectedStop ? stopById.get(selectedStop.id) : undefined;
@@ -419,7 +444,7 @@ export function TransitDashboard() {
         || first.remainingMeters - second.remainingMeters)
       .slice(0, 3);
   }, [selectedRoute.coordinates, selectedRoute.vehicles, selectedStop, selectedStopIndex]);
-  const favoriteRoutes = useMemo(() => routes.filter((route) => favorites.includes(route.id)), [favorites, routes]);
+  const favoriteRoutes = useMemo(() => filteredRoutes.filter((route) => favorites.includes(route.id)), [favorites, filteredRoutes]);
   const regularRoutes = useMemo(
     () => search.trim() ? filteredRoutes : filteredRoutes.filter((route) => !favorites.includes(route.id)),
     [favorites, filteredRoutes, search],
@@ -470,7 +495,8 @@ export function TransitDashboard() {
     });
     map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
-    map.on('load', () => {
+    const initializeTransitLayers = () => {
+      if (map.getSource(ROUTE_SOURCE)) return;
       map.addSource(COMPARISON_SOURCE, { type:'geojson', data:comparisonFeatures([]) });
       map.addLayer({ id:'comparison-route-halo', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':7, 'line-opacity':0.65 } });
       map.addLayer({ id:'comparison-route-line', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':3.5, 'line-opacity':0.8, 'line-dasharray':[1.5,1.2] } });
@@ -533,7 +559,10 @@ export function TransitDashboard() {
       });
       setMapReady(true);
       fitRoute(map, initialRoute);
-    });
+    };
+    map.on('load', initializeTransitLayers);
+    map.on('style.load', initializeTransitLayers);
+    if (map.isStyleLoaded()) initializeTransitLayers();
     mapRef.current = map;
   }, [activeRoute]);
 
@@ -628,8 +657,8 @@ export function TransitDashboard() {
   };
 
   const openStopOnRoute = (stopId: string, occurrence: TransitStopOccurrence) => {
-    const [routeCode, directionId] = occurrence;
-    const routeId = `iett:${routeCode}`;
+    const [routeKey, directionId] = occurrence;
+    const routeId = routeKey.includes(':') ? routeKey : `iett:${routeKey}`;
     setPendingStop({ stopId,routeId,directionId });
     setSelectedDirectionId(directionId);
     setSelectedRouteId(routeId);
@@ -639,13 +668,13 @@ export function TransitDashboard() {
     setNearbyOpen(false);
     setSearch('');
     const stop = stopById.get(stopId);
-    if (stop) rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId, routeCode, directionId });
+    if (stop) rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId, routeCode:routeId.replace(/^[^:]+:/, ''), directionId });
   };
 
   const selectStopResult = (stop: TransitStopSummary) => {
     const currentCode = selectedRouteId.replace(/^iett:/, '');
-    const occurrence = stop.routes.find(([routeCode, directionId]) => routeCode === currentCode && directionId === selectedDirectionId)
-      ?? stop.routes.find(([routeCode]) => routeCode === currentCode)
+    const occurrence = stop.routes.find(([routeKey, directionId]) => (routeKey === selectedRouteId || routeKey === currentCode) && directionId === selectedDirectionId)
+      ?? stop.routes.find(([routeKey]) => routeKey === selectedRouteId || routeKey === currentCode)
       ?? stop.routes[0];
     if (occurrence) openStopOnRoute(stop.id, occurrence);
   };
@@ -789,11 +818,12 @@ export function TransitDashboard() {
       {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
         <section role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
           <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulum</p><h2 id="about-title" className="mt-1 text-lg font-extrabold">Uygulama hakkında</h2></div><Button variant="ghost" size="icon" aria-label="Bilgilendirme penceresini kapat" onClick={()=>setAboutOpen(false)}><X className="h-4 w-4" /></Button></div>
-          <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">İstanbulum, otobüs hatlarını, durakları ve uygun olduğunda canlı araç konumlarını haritada incelemeyi kolaylaştıran bir keşif aracıdır. Yolculuk planlama veya varış zamanı tahmini yapmaz.</p>
+          <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">İstanbulum; otobüs, metrobüs ve metro hatlarını, durak/istasyonları ve uygun olduğunda canlı araç konumlarını haritada incelemeyi kolaylaştıran bir keşif aracıdır. Yolculuk planlama veya varış zamanı tahmini yapmaz.</p>
           <div className="mt-5 space-y-3">
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Güzergâh ve duraklar</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">İBB Açık Veri’de yayımlanan resmî hat güzergâhı ve durak verilerinden işlenir. Uygulamadaki veri tarihi: {ROUTE_DATA_UPDATED_LABEL}.</p></div>
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Canlı araç konumları</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Seçili hat için İETT canlı araç konum servisi üzerinden alınır. Kaynakta gecikme, eksik kayıt veya konum sapması olabilir.</p></div>
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-amber-900 dark:text-amber-100"><p className="text-xs font-extrabold">Bilgilendirme notu</p><p className="mt-1 text-[11px] leading-relaxed opacity-85">Gösterilen bilgiler bilgilendirme amaçlıdır; güncellik ve doğruluk veri sağlayıcılarına bağlıdır. Kesin sefer, varış saati veya operasyonel bilgi olarak kullanılmamalıdır.</p></div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Otobüs ve metrobüs verisi</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Güzergâh ve duraklar <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://data.ibb.gov.tr/" target="_blank" rel="noreferrer">İBB Açık Veri</a> kaynaklarından işlenir. Uygulamadaki veri tarihi: {ROUTE_DATA_UPDATED_LABEL}.</p></div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Metro verisi</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Hat ve istasyon bilgileri <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://www.metro.istanbul/Hatlarimiz" target="_blank" rel="noreferrer">Metro İstanbul</a> kaynak doğrulamasıyla; ray geometrileri <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap katkıları</a> üzerinden alınır ve statik olarak sunulur.</p></div>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Canlı araç konumları</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Seçili otobüs veya metrobüs hattı için <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl" target="_blank" rel="noreferrer">İETT canlı araç konum servisi</a> üzerinden alınır. Kaynakta gecikme, eksik kayıt veya konum sapması olabilir.</p></div>
+            <div className="rounded-xl border border-[var(--primary)]/20 bg-[var(--primary-soft)] p-3 text-[var(--foreground)]"><p className="text-xs font-extrabold">Bilgilendirme notu</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Gösterilen bilgiler bilgilendirme amaçlıdır; güncellik ve doğruluk veri sağlayıcılarına bağlıdır. Kesin sefer, varış saati veya operasyonel bilgi olarak kullanılmamalıdır.</p></div>
           </div>
           <div className="mt-5 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-4"><span className="text-[10px] font-medium text-[var(--muted)]">v{APP_VERSION}</span><Button variant="secondary" size="sm" onClick={()=>setAboutOpen(false)}>Tamam</Button></div>
         </section>
@@ -807,11 +837,14 @@ export function TransitDashboard() {
             <div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">{nearbyOpen?'Yakındaki duraklar':search.trim()?'Arama':'Hatlar'}</p><p className="mt-0.5 text-sm font-semibold">{nearbyOpen?(locationStatus==='ready'?`${nearbyStops.length} en yakın durak`:'Konum bekleniyor'):search.trim()?`${filteredRoutes.length} hat · ${filteredStops.length} durak`:`${filteredRoutes.length} hat`}</p></div>
             <Button variant="ghost" size="icon" onClick={()=>{setRouteListOpen(false);setNearbyOpen(false);}} aria-label="Arama sonuçlarını kapat"><X className="h-4 w-4" /></Button>
           </div>
-          <div className="max-h-[42vh] space-y-1 overflow-y-auto p-2">
-            {nearbyOpen ? <><p className="px-3 pt-2 text-[10px] leading-relaxed text-[var(--muted)]">Konum yalnızca bu cihazda, en yakın durakları sıralamak için kullanılır.</p><div className="grid grid-cols-2 gap-2 px-3 pt-3"><Button variant="secondary" size="sm" onClick={chooseLocationOnMap}><MapPin className="h-3.5 w-3.5" />Haritadan seç</Button><Button variant="ghost" size="sm" onClick={findNearbyStops}><LocateFixed className="h-3.5 w-3.5" />Konumu yenile</Button></div>{locationOrigin==='manual'&&<Button variant="ghost" size="sm" className="mx-3 mt-2 w-[calc(100%-24px)]" onClick={toggleSavedManualLocation}>{savedManualLocation?'Kaydedilen konumu unut':'Bu konumu bu cihazda hatırla'}</Button>}{(locationStatus==='loading'||(locationStatus==='ready'&&stopIndexQuery.isLoading))&&<div className="px-5 py-10 text-center"><LocateFixed className="mx-auto h-6 w-6 animate-pulse text-[var(--primary)]" /><p className="mt-3 text-sm font-bold">Yakındaki duraklar hazırlanıyor</p><p className="mt-1 text-xs text-[var(--muted)]">Konum ve resmî durak verisi eşleştiriliyor.</p></div>}{locationStatus==='denied'&&<NearbyStatus title="Konum izni gerekli" description="Tarayıcı ayarlarından konum iznini verdikten sonra tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='unavailable'&&<NearbyStatus title="Konum alınamadı" description="Konum servisinin açık olduğundan emin olup tekrar deneyin." onRetry={findNearbyStops} />}{stopIndexQuery.isError&&<NearbyStatus title="Durak verisi yüklenemedi" description="Bağlantıyı kontrol edip tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='ready'&&!stopIndexQuery.isLoading&&!stopIndexQuery.isError&&nearbyStops.map(({stop,distance})=><NearbyStopResult key={stop.id} stop={stop} distance={distance} onSelect={selectStopResult} />)}</> : <>{!search.trim()&&recents.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Son bakılanlar</p>{recents.slice(0,3).map((item)=><RecentResult key={`${item.kind}-${item.id}`} item={item} onRoute={selectRoute} onStop={selectStopResult} routes={routes} stops={stopById} />)}</>}{!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat favorileri</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}</>}{!search.trim() && favoriteStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Durak favorileri</p>{favoriteStops.map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}</>}{!search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}{search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}{regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}{normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}{search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}{search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}</>}
+          {!nearbyOpen && <div className="flex gap-1.5 border-b border-[var(--border)] px-3 py-2" role="group" aria-label="Ulaşım türü filtresi">
+            {([['all','Tümü'],['road','Otobüs'],['metro','Metro']] as const).map(([value,label])=><button key={value} type="button" onClick={()=>setRouteModeFilter(value)} aria-pressed={routeModeFilter===value} className={cn('rounded-lg px-2.5 py-1 text-[10px] font-bold transition',routeModeFilter===value?'bg-[var(--primary)] text-white':'bg-[var(--surface-muted)] text-[var(--muted)] hover:text-[var(--foreground)]')}>{label}</button>)}
+          </div>}
+          <div className="max-h-[42vh] space-y-1 overflow-y-scroll overscroll-contain p-2 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+            {nearbyOpen ? <><p className="px-3 pt-2 text-[10px] leading-relaxed text-[var(--muted)]">Konum yalnızca bu cihazda, en yakın durakları sıralamak için kullanılır.</p><div className="grid grid-cols-2 gap-2 px-3 pt-3"><Button variant="secondary" size="sm" onClick={chooseLocationOnMap}><MapPin className="h-3.5 w-3.5" />Haritadan seç</Button><Button variant="ghost" size="sm" onClick={findNearbyStops}><LocateFixed className="h-3.5 w-3.5" />Konumu yenile</Button></div>{locationOrigin==='manual'&&<Button variant="ghost" size="sm" className="mx-3 mt-2 w-[calc(100%-24px)]" onClick={toggleSavedManualLocation}>{savedManualLocation?'Kaydedilen konumu unut':'Bu konumu bu cihazda hatırla'}</Button>}{(locationStatus==='loading'||(locationStatus==='ready'&&stopIndexQuery.isLoading))&&<div className="px-5 py-10 text-center"><LocateFixed className="mx-auto h-6 w-6 animate-pulse text-[var(--primary)]" /><p className="mt-3 text-sm font-bold">Yakındaki duraklar hazırlanıyor</p><p className="mt-1 text-xs text-[var(--muted)]">Konum ve resmî durak verisi eşleştiriliyor.</p></div>}{locationStatus==='denied'&&<NearbyStatus title="Konum izni gerekli" description="Tarayıcı ayarlarından konum iznini verdikten sonra tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='unavailable'&&<NearbyStatus title="Konum alınamadı" description="Konum servisinin açık olduğundan emin olup tekrar deneyin." onRetry={findNearbyStops} />}{stopIndexQuery.isError&&<NearbyStatus title="Durak verisi yüklenemedi" description="Bağlantıyı kontrol edip tekrar deneyin." onRetry={findNearbyStops} />}{locationStatus==='ready'&&!stopIndexQuery.isLoading&&!stopIndexQuery.isError&&nearbyStops.map(({stop,distance})=><NearbyStopResult key={stop.id} stop={stop} distance={distance} onSelect={selectStopResult} />)}</> : <>{!search.trim()&&recents.length>0&&<><p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Son bakılanlar</p>{recents.slice(0,3).map((item)=><RecentResult key={`${item.kind}-${item.id}`} item={item} onRoute={selectRoute} onStop={selectStopResult} routes={filteredRoutes} stops={stopById} />)}</>}{!search.trim() && favoriteRoutes.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat favorileri</p>{favoriteRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite onSelect={selectRoute} />)}</>}{!search.trim() && favoriteStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Durak favorileri</p>{favoriteStops.map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}</>}{!search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Tüm hatlar</p>}{search.trim()&&regularRoutes.length>0&&<p className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hatlar</p>}{regularRoutes.map((route)=><RouteResult key={route.id} route={route} selected={selectedRoute.id===route.id} favorite={favorites.includes(route.id)} onSelect={selectRoute} />)}{normalizedSearch.length>=2&&stopIndexQuery.isLoading&&<div className="px-4 py-5 text-center text-xs font-medium text-[var(--muted)]">Duraklar yükleniyor…</div>}{search.trim()&&filteredStops.length>0&&<><p className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Duraklar</p>{filteredStops.slice(0,20).map((stop)=><StopResult key={stop.id} stop={stop} onSelect={selectStopResult} />)}{filteredStops.length>20&&<p className="px-3 py-2 text-center text-[10px] font-medium text-[var(--muted)]">İlk 20 durak gösteriliyor · Aramayı daraltın</p>}</>}{search.trim()&&!filteredRoutes.length&&!filteredStops.length&&!stopIndexQuery.isLoading&&<div className="px-5 py-10 text-center"><Search className="mx-auto h-6 w-6 text-[var(--muted)]" /><p className="mt-3 text-sm font-bold">Sonuç bulunamadı</p><p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{normalizedSearch.length<2?'Durak aramak için en az 2 karakter yazın.':'Hat kodunu, hat adını veya durak adını farklı yazarak tekrar deneyin.'}</p><Button variant="ghost" size="sm" className="mt-3" onClick={()=>setSearch('')}>Aramayı temizle</Button></div>}</>}
           </div>
           {nearbyOpen && locationOrigin==='browser' && locationAccuracy!==null && <p className="border-t border-[var(--border)] px-4 py-2 text-[10px] font-medium text-[var(--muted)]">Tarayıcı konumu doğruluğu: yaklaşık ±{locationAccuracy} m</p>}
-          {!nearbyOpen && <div className="border-t border-[var(--border)] px-4 py-2.5 text-[10px] font-medium text-[var(--muted)]">Resmî İBB açık veri seti · Veri tarihi: {ROUTE_DATA_UPDATED_LABEL} · {routes.length.toLocaleString('tr-TR')} hat{stopIndexQuery.data?.meta?.stopCount ? ` · ${stopIndexQuery.data.meta.stopCount.toLocaleString('tr-TR')} durak` : ''}</div>}
+          {!nearbyOpen && <div className="border-t border-[var(--border)] px-4 py-2.5 text-[10px] font-medium text-[var(--muted)]">Statik ulaşım verisi · {routes.length.toLocaleString('tr-TR')} hat{stopIndexQuery.data?.meta?.stopCount ? ` · ${stopIndexQuery.data.meta.stopCount.toLocaleString('tr-TR')} durak/istasyon` : ''}</div>}
         </section>
       )}
 
@@ -830,9 +863,9 @@ export function TransitDashboard() {
         <div className="p-4">
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
           <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<><div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div><button type="button" onClick={clearComparisonRoutes} className="mt-2 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--foreground)]">Karşılaştırmayı temizle</button></>}</div>
-          <div className="grid grid-cols-3 gap-2"><Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" /><Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label="durak" /><Metric icon={<Clock3 />} value={`${selectedRoute.durationMinutes} dk`} label="tek yön" /></div>
-          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî kaynak' : 'Demo veri'}</span></div>{isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {ROUTE_DATA_UPDATED_LABEL}</span><span>{liveSourceUpdatedLabel}</span></div><p className="mt-1">Canlı konumlar bilgilendirme amaçlıdır; güncellik, doğruluk ve konum sapması İETT kaynağına bağlıdır. Kesin sefer veya varış bilgisi değildir.</p></div>}</div>
-          <div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
+          <div className="grid grid-cols-3 gap-2">{hasLiveVehicles?<Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" />:<Metric icon={<TramFront />} value="Statik" label="hat verisi" />}<Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label={selectedRoute.mode==='Metro'?'istasyon':'durak'} /><Metric icon={<Clock3 />} value={selectedRoute.durationMinutes?`${selectedRoute.durationMinutes} dk`:'—'} label="tek yön" /></div>
+          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Resmî kaynak' : 'Demo veri'}</span></div>{isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; kesin sefer veya varış bilgisi değildir.':'Bu hat statik güzergâh ve istasyon verisiyle gösterilir; canlı araç konumu sorgulanmaz.'}</p></div>}</div>
+          {hasLiveVehicles&&<><div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
           <div className="mt-2 space-y-2">
             {!selectedRoute.vehicles.length&&<div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-center"><BusFront className={cn('mx-auto h-5 w-5 text-[var(--muted)]',liveVehiclesLoading&&'animate-pulse text-[var(--primary)]')} /><p className="mt-2 text-xs font-bold">{liveVehiclesLoading?'Canlı araçlar aranıyor':liveVehiclesUnavailable?'Canlı veri geçici olarak alınamadı':'Bu yönde aktif araç bulunamadı'}</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">{liveVehiclesUnavailable?'Güzergâh ve duraklar kullanılmaya devam ediyor.':'Yön değiştirerek diğer araçları görebilirsiniz.'}</p></div>}
             {selectedRoute.vehicles.map((vehicle)=>(
@@ -842,11 +875,11 @@ export function TransitDashboard() {
                 <span className="text-right text-xs"><span className={cn('block font-bold',vehicle.updatedSecondsAgo>180?'text-amber-600 dark:text-amber-300':'text-emerald-600 dark:text-emerald-300')}>{vehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'}</span><span className="text-[var(--muted)]">{vehicle.updatedSecondsAgo} sn önce</span></span>
               </button>
             ))}
-          </div>
-          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh durakları</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Resmî durak verisi bekleniyor'}</span></div>
+          </div></>}
+          <div className="mt-5 flex items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh {selectedRoute.mode==='Metro'?'istasyonları':'durakları'}</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Veri bekleniyor'}</span></div>
           <div className="relative mt-3 space-y-0 pl-1">
             {selectedRoute.stops.map((stop,index)=>{const isStart=index===0;const isEnd=index===selectedRoute.stops.length-1;return (
-              <button key={stop.id} onClick={()=>{setSelectedVehicle(null);setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
+              <button key={`${stop.id}-${index}`} onClick={()=>{setSelectedVehicle(null);setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>
             );})}
           </div>
         </div>
@@ -883,7 +916,7 @@ export function TransitDashboard() {
             <Button variant="ghost" size="icon" onClick={()=>setSelectedStop(null)} aria-label="Durak kartını kapat"><X className="h-4 w-4" /></Button>
           </div>
 
-          {isOfficialRoute && (
+          {hasLiveVehicles && (
             <div className="mt-3 border-t border-[var(--border)] pt-3">
               <div className="mb-2 flex items-center justify-between gap-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Bu durağa yaklaşan araçlar</p>
@@ -916,7 +949,7 @@ function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; labe
 function RouteResult({ route,selected,favorite,onSelect }: { route:TransitRouteSummary; selected:boolean; favorite:boolean; onSelect:(route:TransitRouteSummary)=>void }) {
   return <button onClick={()=>onSelect(route)} className={cn('flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-[var(--surface-muted)]',selected&&'bg-[var(--primary-soft)]')}>
     <span className="grid h-11 min-w-14 place-items-center rounded-xl text-sm font-black text-white" style={{background:route.color}}>{route.code}</span>
-    <span className="min-w-0 flex-1"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-bold">{route.name}</span>{favorite&&<Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-500" />}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Metrobüs'?<TramFront className="h-3.5 w-3.5" />:<BusFront className="h-3.5 w-3.5" />}{route.mode} · {route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh'}</span></span>
+    <span className="min-w-0 flex-1"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-bold">{route.name}</span>{favorite&&<Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-500" />}</span><span className="mt-1 flex items-center gap-2 text-xs text-[var(--muted)]">{route.mode==='Otobüs'?<BusFront className="h-3.5 w-3.5" />:<TramFront className="h-3.5 w-3.5" />}{route.mode} · {route.mode==='Metro'?`${route.stopCount} istasyon`:(route.vehicleCount ? `${route.vehicleCount} araç` : 'Resmî güzergâh')}</span></span>
     <ChevronRight className="h-4 w-4 text-[var(--muted)]" />
   </button>;
 }
