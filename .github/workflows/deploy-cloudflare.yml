@@ -27,10 +27,16 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - name: Prepare deploy configuration
+        run: >-
+          node --input-type=module -e "import fs from 'node:fs'; const config =
+          JSON.parse(fs.readFileSync('dist/server/wrangler.json', 'utf8'));
+          config.main = 'dist/server/index.js'; config.assets.directory =
+          'dist/client'; fs.writeFileSync('wrangler.deploy.json',
+          JSON.stringify(config));"
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: dist/server
-          command: deploy --name istanbulum
+          command: deploy --config wrangler.deploy.json --name istanbulum
