@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.6.0-rc.3 — Hosted harita düzeltmesi
+
+### Düzeltildi
+
+- MapLibre işçisinin bağımlı ortak modülü de yayın paketine eklendi; hosted preview’da güzergâh, durak ve istasyon katmanlarının çizilmesini engelleyen 404 giderildi.
+
 ## 0.6.0-rc.2 — Preview düzeltmesi
 
 ### Düzeltildi

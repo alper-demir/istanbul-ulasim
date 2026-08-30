@@ -1,5 +1,6 @@
 import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
+import { readFileSync } from 'node:fs';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json' with { type: 'json' };
@@ -8,6 +9,23 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   '00000000-0000-4000-8000-000000000000';
 
 const { d1, r2 } = hostingConfig;
+
+// MapLibre's worker imports this sibling with a stable relative URL. Vinext
+// emits the worker itself for `?url`, but does not discover that nested module.
+// Keep the sibling at the exact location expected by the emitted worker.
+function maplibreWorkerSharedAsset() {
+  return {
+    name: 'maplibre-worker-shared-asset',
+    apply: 'build' as const,
+    generateBundle(this: { emitFile: (asset: { type:'asset'; fileName:string; source:string }) => void }) {
+      this.emitFile({
+        type: 'asset',
+        fileName: '_next/static/media/maplibre-gl-shared.mjs',
+        source: readFileSync(new URL('./node_modules/maplibre-gl/dist/maplibre-gl-shared.mjs', import.meta.url), 'utf8'),
+      });
+    },
+  };
+}
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
@@ -51,6 +69,7 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
+      maplibreWorkerSharedAsset(),
       vinext(),
       sites(),
       cloudflare({

@@ -500,8 +500,8 @@ export function TransitDashboard() {
     const initialRoute = activeRoute;
     void maplibrePromise.then((maplibregl) => {
       if (cancelled || !mapContainerRef.current || mapRef.current) return;
-      // Vinext emits MapLibre separately. Declare its module worker as a Vite
-      // asset so the hosted build does not fall back to a missing sibling file.
+      // The worker and its colocated shared module are emitted as Vite assets
+      // (see vite.config.ts), so hosted builds can resolve both modules.
       maplibregl.setWorkerUrl(maplibreWorkerUrl);
       const map = new maplibregl.Map({
       container:mapContainerRef.current,
