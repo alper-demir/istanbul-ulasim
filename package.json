@@ -9,6 +9,8 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
+    "preview:cloudflare": "npm run build && wrangler dev --config dist/server/wrangler.json",
+    "deploy:cloudflare": "npm run build && wrangler deploy --config dist/server/wrangler.json --name istanbulum",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

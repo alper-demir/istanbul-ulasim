@@ -10,6 +10,17 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 
 const { d1, r2 } = hostingConfig;
 
+const cloudflareRuntimeVars = {
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://istanbulum.alperdemir-ceng.workers.dev',
+  IETT_LIVE_CACHE_TTL_MS: process.env.IETT_LIVE_CACHE_TTL_MS ?? '45000',
+  IETT_LIVE_STALE_TTL_MS: process.env.IETT_LIVE_STALE_TTL_MS ?? '600000',
+  IETT_LIVE_TIMEOUT_MS: process.env.IETT_LIVE_TIMEOUT_MS ?? '10000',
+  IETT_LIVE_FAILURE_BACKOFF_MS: process.env.IETT_LIVE_FAILURE_BACKOFF_MS ?? '15000',
+  IETT_LIVE_MAX_REQUESTS_PER_HOUR: process.env.IETT_LIVE_MAX_REQUESTS_PER_HOUR ?? '360',
+  IETT_LIVE_MAX_CACHE_ENTRIES: process.env.IETT_LIVE_MAX_CACHE_ENTRIES ?? '900',
+  IETT_LIVE_MAX_RESPONSE_BYTES: process.env.IETT_LIVE_MAX_RESPONSE_BYTES ?? '1000000',
+};
+
 // MapLibre's worker imports this sibling with a stable relative URL. Vinext
 // emits the worker itself for `?url`, but does not discover that nested module.
 // Keep the sibling at the exact location expected by the emitted worker.
@@ -33,6 +44,7 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 const localBindingConfig = {
   main: 'vinext/server/app-router-entry',
   compatibility_flags: ['nodejs_compat'],
+  vars: cloudflareRuntimeVars,
   d1_databases: d1
     ? [
         {
