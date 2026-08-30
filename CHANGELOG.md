@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.6.0-rc.2 — Preview düzeltmesi
+
+### Düzeltildi
+
+- Ayrı yüklenen MapLibre worker dosyası Vite asset’i olarak açıkça paketlendi; hosted preview’da haritanın boş kalmasına ve rota/durak/istasyonların görünmemesine neden olan 404 giderildi.
+
 ## 0.6.0-rc.1 — Yayın öncesi sağlamlaştırma
 
 ### Eklendi

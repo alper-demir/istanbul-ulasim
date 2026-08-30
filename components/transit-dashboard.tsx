@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import type { ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
@@ -499,6 +500,9 @@ export function TransitDashboard() {
     const initialRoute = activeRoute;
     void maplibrePromise.then((maplibregl) => {
       if (cancelled || !mapContainerRef.current || mapRef.current) return;
+      // Vinext emits MapLibre separately. Declare its module worker as a Vite
+      // asset so the hosted build does not fall back to a missing sibling file.
+      maplibregl.setWorkerUrl(maplibreWorkerUrl);
       const map = new maplibregl.Map({
       container:mapContainerRef.current,
       style: ISTANBUL_BASEMAP_STYLE,

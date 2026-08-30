@@ -5,7 +5,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 ## Mevcut durum
 
 - Çalışma dalı: `hardening/predeploy` (taban: güncel `main`, metro hatları birleşimi `0acb093`)
-- Yayın adayı: `0.6.0-rc.1`
+- Yayın adayı: `0.6.0-rc.2`
 - Canlı araç özellikleri ve performans iyileştirmeleri `feature/live-vehicles` dalında geliştirilip bu sürümde `main`e birleştirildi.
 - Dağıtım: Henüz yapılmadı. Cloudflare Workers/CDN hedefi için yayın öncesi sağlamlaştırma tamamlanıyor.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
@@ -59,6 +59,7 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 - Birim testleri, İETT SOAP/JSON normalizasyonu, güvenlik başlıkları ve hız limiti davranışını kapsar. Kalite kapısı `test`, `typecheck`, `lint`, `build` ve `npm audit` adımlarından oluşur.
 - Bağımlılıklar, yayın öncesi bilinen yüksek riskli geliştirme ve React server bileşen açıklarını kapatan sürümlere yükseltildi.
 - MapLibre ayrı dinamik pakete taşındı; ana kontrol paneli istemci paketi yaklaşık 1,05 MB’dan 108 KB’a indi.
+- Worker paketi hosted asset olarak açıkça tanımlandı; preview’daki 404 nedeniyle boş kalan harita düzeltildi.
 
 ## Teknik yapı
 
