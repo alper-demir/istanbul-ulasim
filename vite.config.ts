@@ -11,7 +11,7 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 const { d1, r2 } = hostingConfig;
 
 const cloudflareRuntimeVars = {
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://istanbulum.alperdemir-ceng.workers.dev',
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://istanbulum.alper-apps.workers.dev',
   IETT_LIVE_CACHE_TTL_MS: process.env.IETT_LIVE_CACHE_TTL_MS ?? '45000',
   IETT_LIVE_STALE_TTL_MS: process.env.IETT_LIVE_STALE_TTL_MS ?? '600000',
   IETT_LIVE_TIMEOUT_MS: process.env.IETT_LIVE_TIMEOUT_MS ?? '10000',
