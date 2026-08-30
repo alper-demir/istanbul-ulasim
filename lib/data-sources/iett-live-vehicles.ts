@@ -15,11 +15,11 @@ const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 45_000);
 const STALE_CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_STALE_TTL_MS', 10 * 60 * 1_000);
 const UPSTREAM_TIMEOUT_MS = configuredMilliseconds('IETT_LIVE_TIMEOUT_MS', 10_000);
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
-// Zero disables the optional application-side budget. The upstream may still
-// enforce its own limits; set this in the environment when a measured budget
-// is available instead of hard-coding a guess that hides live data from users.
-const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 0);
-const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 5_000);
+// This deliberately conservative default protects an undocumented upstream
+// quota. Hosting can raise it only after observing source health in production.
+const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 360);
+const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 15_000);
+const MAX_UPSTREAM_RESPONSE_BYTES = configuredLimit('IETT_LIVE_MAX_RESPONSE_BYTES', 1_000_000);
 const MAX_CACHE_ENTRIES = configuredLimit('IETT_LIVE_MAX_CACHE_ENTRIES', 900);
 
 type RawIettVehicle = {
@@ -182,6 +182,10 @@ async function fetchSnapshot(routeCode: string) {
     signal:AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
+  const contentLength = Number(response.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
+    throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+  }
   return parseIettLiveVehicleResponse(await response.text(), routeCode);
 }
 

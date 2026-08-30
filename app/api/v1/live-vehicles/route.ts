@@ -23,7 +23,9 @@ export async function GET(request: Request) {
       },
     }, {
       headers:{
-        'Cache-Control':'public, max-age=15, stale-while-revalidate=45',
+        // Keep browser freshness under the polling interval while allowing the
+        // CDN to collapse requests from different Worker instances.
+        'Cache-Control':'public, max-age=0, s-maxage=30, stale-while-revalidate=60, stale-if-error=600',
         'X-Live-Data-Cache':snapshot.cacheStatus,
       },
     });

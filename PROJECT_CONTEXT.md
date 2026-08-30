@@ -4,10 +4,10 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Çalışma dalı: `main`
-- Kararlı sürüm: `0.5.0`
+- Çalışma dalı: `hardening/predeploy` (taban: güncel `main`, metro hatları birleşimi `0acb093`)
+- Yayın adayı: `0.6.0-rc.1`
 - Canlı araç özellikleri ve performans iyileştirmeleri `feature/live-vehicles` dalında geliştirilip bu sürümde `main`e birleştirildi.
-- Dağıtım: Henüz yapılmadı. Yerel uygulama `http://localhost:3000` üzerinden çalışır.
+- Dağıtım: Henüz yapılmadı. Cloudflare Workers/CDN hedefi için yayın öncesi sağlamlaştırma tamamlanıyor.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
 Uygulama, İstanbul otobüs/metrobüs ve metro hatlarını, yön bazlı durak/istasyonlarıyla haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
@@ -45,11 +45,20 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 - İstemci yalnız seçili hattı sorgular; sayfa arka plandayken yenileme yapılmaz.
 - İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı varsayılan olarak 45 saniye kullanılır ve `IETT_LIVE_*` ortam ayarlarıyla değiştirilebilir.
 - Aynı hat için eşzamanlı istekler tek İETT isteğinde birleştirilir.
-- Farklı hat istekleri, en fazla iki eşzamanlı istek ve istekler arasında kısa aralıkla çalışan süreç içi bir kuyruğa alınır.
+- Üst İETT kaynağı için varsayılan küresel süreç bütçesi saatte 360 istektir; üst kaynak yanıtı 1 MB ile sınırlıdır.
 - Son başarılı yanıt 10 dakika boyunca geri dönüş verisi olarak tutulur. Bir kaynağın hatası sonrasında aynı hat 15 saniye yeniden zorlanmaz.
 - Bellek içi önbellek sınırlıdır; uzun çalışan süreçte büyümesi kontrol edilir.
+- Her istemci, canlı araç API’sine dakikada en fazla 12 istek gönderebilir. CDN yanıtı 30 saniye saklamalı, 10 dakikaya kadar eski veriyi hata durumunda sunabilmelidir.
 
 Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım öncesinde ortak edge önbelleği ve kota katmanı kurulmalıdır: Cloudflare Cache/KV + Durable Object veya Redis uygundur. İETT’nin herkese açık, taahhütlü yüksek hacim kotası varsayılmamalıdır.
+
+## Yayın öncesi sağlamlaştırma
+
+- `proxy.ts`, tüm uygulama yanıtlarına CSP, HSTS, no-sniff, frame koruması, referrer ve izin politikası ekler; MapLibre ve OpenStreetMap tile kaynağı CSP’de açıkça tanımlıdır.
+- Canlı araç endpointi, IP kimliğine göre sabit pencereli hız limitine sahiptir; Cloudflare’nin `CF-Connecting-IP` başlığı önceliklidir.
+- Birim testleri, İETT SOAP/JSON normalizasyonu, güvenlik başlıkları ve hız limiti davranışını kapsar. Kalite kapısı `test`, `typecheck`, `lint`, `build` ve `npm audit` adımlarından oluşur.
+- Bağımlılıklar, yayın öncesi bilinen yüksek riskli geliştirme ve React server bileşen açıklarını kapatan sürümlere yükseltildi.
+- MapLibre ayrı dinamik pakete taşındı; ana kontrol paneli istemci paketi yaklaşık 1,05 MB’dan 108 KB’a indi.
 
 ## Teknik yapı
 
@@ -74,13 +83,14 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 npm run typecheck
 npm run lint
 npm run build
+npm run test
 ```
 
 Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehicles?route=HATKODU` yanıtı ve önbellek başlığı kontrol edilir. Harita/arayüz değişikliğinde yerel uygulama tarayıcıda açılarak ilgili akış sınanır.
 
 ## Sonraki mantıklı aşamalar
 
-1. **Canlı dağıtım altyapısı:** Cloudflare üzerinde ortak cache/KV, küresel hız limiti, kuyruk/yeniden deneme görünürlüğü ve hata metrikleri.
+1. **Preview dağıtımı:** Cloudflare üzerinde cache başlıkları, rate limit ve sağlık uçlarını gerçek edge ortamında doğrulama; ardından public demo sürümü.
 2. **İETT servis anlaşması:** Yayımlanmış kota yoksa İETT’den yüksek hacimli erişim koşulu veya resmî API anahtarı hakkında bilgi alma.
 3. **Dağıtım hattı:** `main`e birleşince otomatik Cloudflare deploy, önizleme dağıtımları ve temel sağlık kontrolü.
 4. **Veri yenileme süreci:** Statik İBB/GTFS kaynaklarını düzenli indirip doğrulayan ve yeni veri tarihini yayımlayan kontrollü iş akışı.

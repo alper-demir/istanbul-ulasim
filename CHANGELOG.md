@@ -2,7 +2,7 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
-## Unreleased — Metro hatları
+## 0.6.0-rc.1 — Yayın öncesi sağlamlaştırma
 
 ### Eklendi
 
@@ -14,6 +14,15 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
 - Statik ulaşım veri sözleşmesi; gelecekte vapur ve minibüs ağlarını canlı veri zorunluluğu olmadan ekleyebilecek şekilde genişletildi.
 - Metro detaylarında canlı araç bölümü yerine statik hat/istasyon bilgisi gösterilir.
+
+### Güvenlik ve kalite
+
+- Uygulama genelinde Content Security Policy, HSTS, anti-framing, içerik türü, referrer ve izin politikaları eklendi.
+- Canlı araç API’sine kullanıcı başına dakikada 12 istek sınırı, üst kaynağa varsayılan saatlik istek bütçesi, daha uzun hata geri çekilmesi ve yanıt boyutu sınırı eklendi.
+- CDN için canlı veri cache sözleşmesi `s-maxage`, stale-while-revalidate ve stale-if-error direktifleriyle netleştirildi.
+- Vitest ile canlı veri normalizasyonu, güvenlik başlıkları ve hız limiti testleri eklendi.
+- Cloudflare/Vite/Vinext ve React server bileşen bağımlılıkları güvenlik güncellemeleriyle yükseltildi; tam `npm audit` sonucu temizdir.
+- MapLibre harita motoru, ilk uygulama kabuğunu hızlandırmak için ayrı yüklenen bir pakete taşındı.
 
 ## 0.5.0 - 2026-08-29
 

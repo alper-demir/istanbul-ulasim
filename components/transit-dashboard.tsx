@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
-import * as maplibregl from 'maplibre-gl';
-import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import type { ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
@@ -28,7 +27,10 @@ const COMPARISON_SOURCE = 'comparison-routes';
 const VEHICLE_ICON = 'live-vehicle-bus';
 const TRANSIT_DATA_VERSION = '2026-08-29.1';
 const ROUTE_DATA_UPDATED_LABEL = '26 Ağu 2026';
-const STOP_RADIUS: maplibregl.ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
+const STOP_RADIUS: ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
+// MapLibre is substantial. Load it only after the lightweight application shell,
+// route index, and selected route are ready to keep the first interaction fast.
+const maplibrePromise = import('maplibre-gl');
 
 type LocationStatus = 'idle' | 'loading' | 'ready' | 'denied' | 'unavailable';
 type RouteModeFilter = 'all' | 'road' | 'metro';
@@ -231,10 +233,17 @@ function readStoredManualLocation(): SavedManualLocation | null {
 }
 
 function fitRoute(map: MapLibreMap, route: TransitRoute) {
-  const bounds = route.coordinates.reduce(
-    (result, coordinate) => result.extend(coordinate),
-    new maplibregl.LngLatBounds(route.coordinates[0], route.coordinates[0]),
-  );
+  const firstCoordinate = route.coordinates[0]!;
+  const bounds: [[number, number], [number, number]] = [
+    [...firstCoordinate],
+    [...firstCoordinate],
+  ];
+  for (const [longitude, latitude] of route.coordinates) {
+    bounds[0][0] = Math.min(bounds[0][0], longitude);
+    bounds[0][1] = Math.min(bounds[0][1], latitude);
+    bounds[1][0] = Math.max(bounds[1][0], longitude);
+    bounds[1][1] = Math.max(bounds[1][1], latitude);
+  }
   const compact = window.innerWidth < 768;
   map.fitBounds(bounds, {
     padding: compact ? { top:100, right:35, bottom:210, left:35 } : { top:120, right:400, bottom:90, left:360 },
@@ -486,16 +495,19 @@ export function TransitDashboard() {
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current || !activeRoute) return;
+    let cancelled = false;
     const initialRoute = activeRoute;
-    const map = new maplibregl.Map({
+    void maplibrePromise.then((maplibregl) => {
+      if (cancelled || !mapContainerRef.current || mapRef.current) return;
+      const map = new maplibregl.Map({
       container:mapContainerRef.current,
       style: ISTANBUL_BASEMAP_STYLE,
       center:[29.01,41.035], zoom:9.6, minZoom:8, maxZoom:18,
       attributionControl:false,
     });
-    map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
-    map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
-    const initializeTransitLayers = () => {
+      map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-right');
+      map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
+      const initializeTransitLayers = () => {
       if (map.getSource(ROUTE_SOURCE)) return;
       map.addSource(COMPARISON_SOURCE, { type:'geojson', data:comparisonFeatures([]) });
       map.addLayer({ id:'comparison-route-halo', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':7, 'line-opacity':0.65 } });
@@ -559,11 +571,13 @@ export function TransitDashboard() {
       });
       setMapReady(true);
       fitRoute(map, initialRoute);
-    };
-    map.on('load', initializeTransitLayers);
-    map.on('style.load', initializeTransitLayers);
-    if (map.isStyleLoaded()) initializeTransitLayers();
-    mapRef.current = map;
+      };
+      map.on('load', initializeTransitLayers);
+      map.on('style.load', initializeTransitLayers);
+      if (map.isStyleLoaded()) initializeTransitLayers();
+      mapRef.current = map;
+    });
+    return () => { cancelled = true; };
   }, [activeRoute]);
 
   useEffect(() => () => {

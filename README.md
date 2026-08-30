@@ -41,6 +41,7 @@ Uygulama varsayılan olarak `http://localhost:3000` adresinde açılır.
 Kalite kontrolleri:
 
 ```bash
+npm run test
 npm run typecheck
 npm run lint
 npm run build
@@ -94,13 +95,23 @@ Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodu
 
 Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hattın canlı araçları, hat kodundan bağımsız olarak İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Statik ağdaki 801 hat kodunun tamamı canlı sorgu doğrulamasından geçer. Bununla birlikte servis, o anda aktif aracı veya konum kaydı bulunmayan bir hat için boş liste döndürebilir. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
 
-Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Taze yanıtlar varsayılan olarak 45 saniye, son geçerli yanıtlar en fazla 10 dakika saklanır. Farklı hatlar, doğrulanmamış sabit bir uygulama kotasına takılmadan sorgulanır; isteğe bağlı saatlik bütçe, cache süresi, timeout, hata bekleme süresi ve cache kapasitesi `.env` içindeki `IETT_LIVE_*` ayarlarıyla değiştirilebilir. Bu korumalar tek uygulama süreci içindir. Çoklu Cloudflare/Node örnekli dağıtımda tekrarları tüm örneklerde engellemek için ayrıca ortak edge önbelleği ve hız limiti (Cloudflare Cache/KV, Durable Object veya Redis) kurulmalıdır.
+Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Taze yanıtlar varsayılan olarak 45 saniye, son geçerli yanıtlar en fazla 10 dakika saklanır. Üst kaynağın yayımlanmış kotası olmadığı için uygulama varsayılan olarak saatte en fazla 360 kaynak isteği yapar; limit, kaynak sağlığı ölçüldükten sonra hosting ortamından değiştirilebilir. Başarısız kaynak 15 saniye boyunca tekrar zorlanmaz ve 1 MB’ı aşan yanıtlar işlenmez. Canlı API, kullanıcı başına dakikada 12 istekle sınırlıdır; CDN yanıtı 30 saniye saklayarak farklı Worker örneklerinden gelen aynı hat isteklerini birleştirmelidir.
+
+## Canlıya çıkış kontrol listesi
+
+1. Hosting ortamında `NEXT_PUBLIC_SITE_URL` gerçek HTTPS adresiyle ayarlanır; İETT kimlik bilgileri varsa yalnızca hosting secret olarak eklenir.
+2. `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build` ve bağımlılık taraması temiz geçer.
+3. Preview URL’de `/api/v1/health` 200 döndürür; temel harita, arama, mobil görünüm ve canlı kaynak kesintisi akışları sınanır.
+4. Cloudflare CDN’de canlı araç endpointi için `s-maxage=30` ve `stale-if-error=600` davranışı doğrulanır; ilk haftada kaynak hata oranı ve üst kaynak isteği izlenir.
+5. Özel bir alan adı kullanılacaksa HTTPS etkinleştirilir. Uygulamanın gönderdiği CSP, HSTS, tıklama çerçevesi ve izin politikası başlıkları HTTP yanıtından kontrol edilir.
+
+Uygulama ücretsiz Cloudflare Workers/CDN kotası içinde küçük bir kamu demosu için tasarlanmıştır. İETT kaynağının resmî yüksek hacim sözleşmesi olmadan saatlik kaynak bütçesi yükseltilmemelidir.
 
 Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi üzerine izdüşürür; durağı henüz geçmemiş en yakın üç aracı yaklaşık güzergâh mesafesine göre sıralar. Bu değer bir varış süresi tahmini değildir. Başka hatlar otomatik olarak sorgulanmaz; duraktan geçen başka bir hat seçildiğinde canlı sorgu o hatta geçirilir.
 
 ## Sürüm
 
-Kararlı sürüm: `0.5.0`
+Yayın adayı: `0.6.0-rc.1`
 
 Canlı araçlar ve performans iyileştirmeleri `main` dalına birleştirildi.
 
