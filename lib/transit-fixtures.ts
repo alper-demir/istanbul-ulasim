@@ -25,6 +25,9 @@ export type TransitDirection = {
   durationMinutes: number;
   coordinates: [number, number][];
   stops: TransitStop[];
+  geometrySource?: string;
+  geometrySourceUpdatedAt?: string;
+  geometrySourceUrl?: string;
 };
 
 export type TransitRoute = {
@@ -37,17 +40,27 @@ export type TransitRoute = {
    * by the small offline fixture. New static networks should use the same
    * contract rather than creating mode-specific route shapes.
    */
-  mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Vapur' | 'Minibüs';
+  mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Tramvay' | 'Füniküler' | 'Marmaray' | 'Vapur' | 'Minibüs';
   fareLabel: string;
+  fareProfileId?: string;
+  fareVerification?: 'route-verified' | 'group-verified' | 'general-only';
+  fareSourceUrl?: string;
+  fareEffectiveFrom?: string;
+  fareVerifiedAt?: string;
   durationMinutes: number;
   coordinates: [number, number][];
   stops: TransitStop[];
   vehicles: TransitVehicle[];
   directions?: TransitDirection[];
   operator?: string;
-  source?: 'fixture' | 'ibb-open-data' | 'metro-istanbul' | 'osm';
+  source?: 'fixture' | 'ibb-open-data' | 'metro-istanbul' | 'marmaray' | 'sehir-hatlari' | 'osm';
+  sourceLabel?: string;
+  sourceUrl?: string;
   sourceUpdatedAt?: string;
   supportsLiveVehicles?: boolean;
+  geometrySource?: string;
+  geometrySourceUpdatedAt?: string;
+  geometrySourceUrl?: string;
 };
 
 export const routes: TransitRoute[] = [

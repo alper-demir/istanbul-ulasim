@@ -1,0 +1,6433 @@
+{
+  "schemaVersion": 1,
+  "retrievedAt": "2026-08-31T21:04:47.444Z",
+  "source": {
+    "label": "İETT hat detayları",
+    "urlTemplate": "https://iett.istanbul/RouteDetail?hkod={hatKodu}",
+    "purpose": "Hat bazındaki tarife sınıfını statik olarak denetleme"
+  },
+  "summary": {
+    "İNDİRİMLİ": 35,
+    "TEK BİLETLİ": 601,
+    "UNRESOLVED": 29,
+    "2 BİLETLİ": 16,
+    "KADEMELİ TARİFE": 19,
+    "2 TAM BİLETLİ": 14,
+    "1 TAM BİLETLİ": 7,
+    "METROBÜS": 9,
+    "METRO ENTEGRE": 52,
+    "1 TAM, 1 İND.": 2,
+    "ÖZEL TARİFE": 16,
+    "3 TAM BİLETLİ": 1
+  },
+  "routes": [
+    {
+      "routeId": "iett:1",
+      "code": "1",
+      "name": "KİRAZLITEPE — ACIBADEM — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=1",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:10",
+      "code": "10",
+      "name": "Ü.EĞT.ARŞ.HASTANESİ — ATAŞEHİR / BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:10A",
+      "code": "10A",
+      "name": "ESATPAŞA — YEDİTEPE ÜNİVERSİTESİ / FERHATPAŞA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:10B",
+      "code": "10B",
+      "name": "BOSTANCI — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10B",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:10E",
+      "code": "10E",
+      "name": "ESATPAŞA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:10EK",
+      "code": "10EK",
+      "name": "ESATPAŞA / ATAŞEHİR — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10EK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:10F",
+      "code": "10F",
+      "name": "ÜMRANİYE / FİNANS MERKEZİ — BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:10G",
+      "code": "10G",
+      "name": "ÜMRANİYE / ESATPAŞA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=10G",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:11",
+      "code": "11",
+      "name": "YENİDOĞAN — ALTUNİZADE METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11A",
+      "code": "11A",
+      "name": "ÖZYEĞİN ÜNİVERSİTESİ / ALEMDAĞ — ALTUNİZADE METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11BE",
+      "code": "11BE",
+      "name": "BURHANİYE MAHALLESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11BE",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:11C",
+      "code": "11C",
+      "name": "BURHANİYE MAHALLESİ — ÜSKÜDAR MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11C",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:11CÜ",
+      "code": "11CÜ",
+      "name": "BURHANİYE MAHALLESİ — ÜMRANİYE METRO/RİNG",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11C%C3%9C",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:11ÇB",
+      "code": "11ÇB",
+      "name": "KAVACIK / ÇAVUŞBAŞI — ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11%C3%87B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11D",
+      "code": "11D",
+      "name": "İNKILAP MAHALLESİ — ÜMRANİYE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11E",
+      "code": "11E",
+      "name": "ESATPAŞA — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11ES",
+      "code": "11ES",
+      "name": "ESENEVLER — ACIBADEM METROBÜS / ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11ES",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11G",
+      "code": "11G",
+      "name": "YENİDOĞAN — NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11H",
+      "code": "11H",
+      "name": "ORTAÇEŞME — ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11K",
+      "code": "11K",
+      "name": "KAZIM KARABEKİR MAHALLESİ — ÜMRANİYE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11L",
+      "code": "11L",
+      "name": "ESATPAŞA / BULGURLU — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11M",
+      "code": "11M",
+      "name": "EVTAŞ BLOKLARI — BULGURLU METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11P",
+      "code": "11P",
+      "name": "EMEK MAHALLESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11R",
+      "code": "11R",
+      "name": "REŞADİYE — NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11SA",
+      "code": "11SA",
+      "name": "UĞUR MUMCU / SAMANDIRA — YENİDOĞAN PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11SA",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11ST",
+      "code": "11ST",
+      "name": "DUMLUPINAR — ÜMRANIYE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11ST",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11T",
+      "code": "11T",
+      "name": "ACARLAR SİTESİ — HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11Ü",
+      "code": "11Ü",
+      "name": "ESATPAŞA / ÜNALAN — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11%C3%9C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11ÜS",
+      "code": "11ÜS",
+      "name": "SULTANBEYLİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11%C3%9CS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:11Y",
+      "code": "11Y",
+      "name": "YAVUZTÜRK MAHALLESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=11Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:12",
+      "code": "12",
+      "name": "KADIKÖY — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=12",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:121A",
+      "code": "121A",
+      "name": "BEYKOZ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=121A",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:121B",
+      "code": "121B",
+      "name": "KAVACIK — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=121B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:121BS",
+      "code": "121BS",
+      "name": "SULTANİYE / SOĞUKSU MAHALLESİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=121BS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:122C",
+      "code": "122C",
+      "name": "TEPEÜSTÜ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:122ÇK",
+      "code": "122ÇK",
+      "name": "ŞAHİNBEY — KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122%C3%87K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:122D",
+      "code": "122D",
+      "name": "ATATÜRK MAHALLESİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122D",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:122H",
+      "code": "122H",
+      "name": "S.GÖKÇEN HAVALİMANI / YENİŞEHİR — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122H",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:122M",
+      "code": "122M",
+      "name": "ŞAHİNBEY — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122M",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:122V",
+      "code": "122V",
+      "name": "VEYSEL KARANİ — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122V",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:122Y",
+      "code": "122Y",
+      "name": "ÇEKMEKÖY — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=122Y",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:129L",
+      "code": "129L",
+      "name": "KOZYATAĞI — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=129L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:129T",
+      "code": "129T",
+      "name": "BOSTANCI — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=129T",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:12A",
+      "code": "12A",
+      "name": "KADIKÖY — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=12A",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:12C",
+      "code": "12C",
+      "name": "ÜSKÜDAR DEVLET HASTANESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=12C",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:13",
+      "code": "13",
+      "name": "ATAŞEHİR / ÇAKMAK MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130A",
+      "code": "130A",
+      "name": "DENİZ HARP OKULU — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130E",
+      "code": "130E",
+      "name": "TUZLA / EVORA KONUTLARI — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130H",
+      "code": "130H",
+      "name": "DENİZ HARP OKULU — SABİHA GÖKÇEN HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130Ş",
+      "code": "130Ş",
+      "name": "ŞİFA MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130ŞT",
+      "code": "130ŞT",
+      "name": "ŞİFA MAHALLESİ — TAVŞANTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130%C5%9ET",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:130T",
+      "code": "130T",
+      "name": "AYDINLI TOKİ KONUTLARI — TUZLA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=130T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:131K",
+      "code": "131K",
+      "name": "YEŞİLTEPE / ŞAHİNBEY — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:131SB",
+      "code": "131SB",
+      "name": "SULTANBEYLİ MERKEZ-SULTANBEYLİ YENİ DEVLET HAST.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131SB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:131T",
+      "code": "131T",
+      "name": "ATATÜRK MAH./ TAŞDELEN — İMES/ ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:131V",
+      "code": "131V",
+      "name": "VEYSEL KARANİ — YAKACIK / KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131V",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:131Y",
+      "code": "131Y",
+      "name": "ÇEKMEKÖY/SAMANDIRA-KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:131YS",
+      "code": "131YS",
+      "name": "SULTANBEYLİ DEVLET HASTANESİ — YENİDOĞAN — ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=131YS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132",
+      "code": "132",
+      "name": "AKFIRAT / TEPEÖREN — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132A",
+      "code": "132A",
+      "name": "ÇAMLIK MAHALLESİ — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132B",
+      "code": "132B",
+      "name": "AKFIRAT EVLERİ — KARTAL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132C",
+      "code": "132C",
+      "name": "SULTANBEYLİ GÖLET — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132ÇK",
+      "code": "132ÇK",
+      "name": "ÇEKMEKÖY — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132%C3%87K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132D",
+      "code": "132D",
+      "name": "KURTDOĞMUŞ / BALLICA — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132E",
+      "code": "132E",
+      "name": "EMİRLİ / KURNAKÖY — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132F",
+      "code": "132F",
+      "name": "ESENLER — TAVŞANTEPE METRO/ KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132G",
+      "code": "132G",
+      "name": "GÖZDAĞI — PENDİK YHT/PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132H",
+      "code": "132H",
+      "name": "PENDİK/PENDİK YHT — SABİHA GÖKÇEN HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132K",
+      "code": "132K",
+      "name": "YENİŞEHİR — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132M",
+      "code": "132M",
+      "name": "SULTANBEYLİ MİMARSİNAN — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132N",
+      "code": "132N",
+      "name": "ÖZYEĞİN ÜNİ./NİŞANTEPE/BÜYÜKBAKKALKÖY-KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132P",
+      "code": "132P",
+      "name": "VEYSEL KARANİ / SULTANBEYLİ — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132S",
+      "code": "132S",
+      "name": "YENİDOĞAN — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132SB",
+      "code": "132SB",
+      "name": "SULTANBEYLİ DEVLET HAST.- MARMARA ÜNİV. BAŞIBÜYÜK KAMPÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132SB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132SP",
+      "code": "132SP",
+      "name": "SULTANBEYLİ PERONLAR-PENDİK YHT/PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132SP",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132T",
+      "code": "132T",
+      "name": "TEPEÖREN — KARTAL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132Y",
+      "code": "132Y",
+      "name": "HİLAL KONUTLARI / YAYALAR — KARTAL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132YB",
+      "code": "132YB",
+      "name": "YENİDOĞAN — MARMARA ÜNİVERSİTESİ BAŞIBÜYÜK KAMPÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132YB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132YM",
+      "code": "132YM",
+      "name": "YEŞİLTEPE-MARMARA EĞİTİM KÖYÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132YM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132YS",
+      "code": "132YS",
+      "name": "YENİDOĞAN/SULTANBEYLİ DEVLET HAST.-SULTANBEYLİ PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132YS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:132Z",
+      "code": "132Z",
+      "name": "SULTANBEYLİ UZUNDERE — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=132Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133A",
+      "code": "133A",
+      "name": "AYDINLI BAHÇELER — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133AK",
+      "code": "133AK",
+      "name": "TEPEÖREN — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133AK",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:133F",
+      "code": "133F",
+      "name": "ACARLAR SİTESİ — MALTEPE / CEVİZLİ PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133G",
+      "code": "133G",
+      "name": "GÜLENSU MAHALLESİ — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133GP",
+      "code": "133GP",
+      "name": "GÖÇBEYLİ — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133GP",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133K",
+      "code": "133K",
+      "name": "KURTKÖY SANAYİ MAHALLESİ / KAVAKPINAR — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133KT",
+      "code": "133KT",
+      "name": "AYDINLI TOKİ KONUTLARI — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133KT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133M",
+      "code": "133M",
+      "name": "TUZLA ORGANİZE SANAYİ — KAFKALE TUZLA SAHİL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133N",
+      "code": "133N",
+      "name": "MALTEPE ÜNİVERSİTESİ — MALTEPE METRO / KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133P",
+      "code": "133P",
+      "name": "TEPEÖREN — TUZLA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133P",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:133Ş",
+      "code": "133Ş",
+      "name": "ÇAĞDAŞKENT/ ŞEKERPINAR MAH. — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133T",
+      "code": "133T",
+      "name": "DENİZ HARP OKULU-MALTEPE PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133TM",
+      "code": "133TM",
+      "name": "AYDINLI TOKİ/MİMARSİNAN MAHALLESİ — TUZLA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133TM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:133Ü",
+      "code": "133Ü",
+      "name": "GAZİ BULVARI/ ORHANLI — PENDİK METRO/YHT/PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=133%C3%9C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:134",
+      "code": "134",
+      "name": "VIAPORT / HİLAL KONUTLARI — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=134",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:134CK",
+      "code": "134CK",
+      "name": "ŞEYHLİ MEZARLIK/CEZAEVİ — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=134CK",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:134GK",
+      "code": "134GK",
+      "name": "UĞURMUMCU/ GÜMÜŞPINAR — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=134GK",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:134UK",
+      "code": "134UK",
+      "name": "UĞURMUMCU — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=134UK",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:134YK",
+      "code": "134YK",
+      "name": "UĞURMUMCU — YAKACIK — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=134YK",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:135",
+      "code": "135",
+      "name": "POYRAZKÖY — SULTANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=135",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:135A",
+      "code": "135A",
+      "name": "ACARKENT / GÖRELE MAHALLESİ — KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=135A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:135G",
+      "code": "135G",
+      "name": "TOKATKÖY — ÇAVUŞBAŞI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=135G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:135K",
+      "code": "135K",
+      "name": "KARLITEPE — ORTAÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=135K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:135T",
+      "code": "135T",
+      "name": "ARKBOYU — TOKATKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=135T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:136",
+      "code": "136",
+      "name": "DEĞİRMENDERE — SULTANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=136",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:136B",
+      "code": "136B",
+      "name": "TÜRK ALMAN ÜNİVERSİTESİ — KAVACIK/HEKİMBAŞI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=136B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:136R",
+      "code": "136R",
+      "name": "RİVA — KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=136R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:136T",
+      "code": "136T",
+      "name": "TOYGAR / SULTANİYE — KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=136T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:136Z",
+      "code": "136Z",
+      "name": "ALİ BAHADIR / ZERZEVAT — SULTANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=136Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:137",
+      "code": "137",
+      "name": "CUMHURİYET KÖYÜ / RİVA — BEYKOZ / SULTANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=137",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:138",
+      "code": "138",
+      "name": "CUMHURİYET KÖYÜ / ÖMERLİ — ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=138",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:138B",
+      "code": "138B",
+      "name": "GÖLLÜ/ÖMERLİ-ÜMRANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=138B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:139",
+      "code": "139",
+      "name": "ÜSKÜDAR — ŞİLE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=139",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:139A",
+      "code": "139A",
+      "name": "ÜSKÜDAR — ŞİLE / AĞVA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=139A",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:139D",
+      "code": "139D",
+      "name": "NECİP FAZIL METRO-DARLIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=139D",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:139S",
+      "code": "139S",
+      "name": "NECİP FAZIL METRO-SOFULAR KÖYÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=139S",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:139T",
+      "code": "139T",
+      "name": "TEPEÜSTÜ — ŞİLE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=139T",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:13AB",
+      "code": "13AB",
+      "name": "KISIKLI — ATAŞEHİR / BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13AB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:13B",
+      "code": "13B",
+      "name": "YENİŞEHİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:13FY",
+      "code": "13FY",
+      "name": "BATI ATAŞEHİR / FİNANS MERKEZİ — MEVLANA METRO / FERHATPAŞA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13FY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:13H",
+      "code": "13H",
+      "name": "EVTAŞ BLOKLARI — ÜMRANİYE METRO / Ü.EĞT.ARŞ.HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:13M",
+      "code": "13M",
+      "name": "ŞERİFALİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:13Y",
+      "code": "13Y",
+      "name": "ÇAKMAK MAHALLESİ / YENİSAHRA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=13Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14",
+      "code": "14",
+      "name": "YENİDOĞAN/ ÜMRANİYE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:141A",
+      "code": "141A",
+      "name": "ATAKENT — K.S.S. HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=141A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:141K",
+      "code": "141K",
+      "name": "K.S.S. HASTANESİ — MAHMUTBEY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=141K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:141M",
+      "code": "141M",
+      "name": "K.S.S. HASTANESİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=141M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:142",
+      "code": "142",
+      "name": "BOĞAZKÖY — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:142A",
+      "code": "142A",
+      "name": "BOĞAZKÖY — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142A",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:142B",
+      "code": "142B",
+      "name": "K.S.S. HASTANESİ — BÜYÜKÇEKMECE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:142E",
+      "code": "142E",
+      "name": "ESENYURT KİPTAŞ 4. ETAP — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:142ES",
+      "code": "142ES",
+      "name": "İ.Ü.CERRAHPAŞA KAMPÜS — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142ES",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:142F",
+      "code": "142F",
+      "name": "YEŞİLKENT — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142F",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:142K",
+      "code": "142K",
+      "name": "ESENYURT KİPTAŞ 4.ETAP — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142K",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:142T",
+      "code": "142T",
+      "name": "TÜYAP METROBÜS-K.S.S HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=142T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:143",
+      "code": "143",
+      "name": "KÜÇÜKÇEKMECE — İSTOÇ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=143",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144",
+      "code": "144",
+      "name": "BOĞAZKÖY/BAHÇEKENT-HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144A",
+      "code": "144A",
+      "name": "DELİKLİKAYA — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144B",
+      "code": "144B",
+      "name": "DELİKLİKAYA — YEŞİLBAYIR KÖYÜ — SU ÜRÜNLERİ HALİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144H",
+      "code": "144H",
+      "name": "HEYBETLİ SOK./DELİKLİKAYA — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144K",
+      "code": "144K",
+      "name": "ÖMERLİ KİPTAŞ-ESENKENT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:144M",
+      "code": "144M",
+      "name": "DELİKLİKAYA-MAHMUTBEY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=144M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:145",
+      "code": "145",
+      "name": "İHLAS MARMARA EVLERİ — KÜÇÜKÇEKMECE MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=145",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:145M",
+      "code": "145M",
+      "name": "BEYKENT — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=145M",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:145T",
+      "code": "145T",
+      "name": "BEYLİKDÜZÜ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=145T",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:146",
+      "code": "146",
+      "name": "BOĞAZKÖY / BAHÇEŞEHİR — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:146A",
+      "code": "146A",
+      "name": "ESENKENT — BİRLİK MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:146B",
+      "code": "146B",
+      "name": "METROKENT-EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:146F",
+      "code": "146F",
+      "name": "ŞEHİR HASTANESİ/ ESENKENT — ESENYURT DEVLET HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:146M",
+      "code": "146M",
+      "name": "METROKENT — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:146T",
+      "code": "146T",
+      "name": "BOĞAZKÖY / BAHÇEŞEHİR — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=146T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:147",
+      "code": "147",
+      "name": "ŞAHİNTEPE İGTOT — AVCILAR CİHANGİR MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=147",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14A",
+      "code": "14A",
+      "name": "ÖZYEĞİN ÜNİVERSİTESİ / ALEMDAĞ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14AK",
+      "code": "14AK",
+      "name": "ÖZYEĞİN ÜNİ. / ALEMDAĞ — ZİVERBEY / KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14AK",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:14B",
+      "code": "14B",
+      "name": "ADEM YAVUZ MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14BK",
+      "code": "14BK",
+      "name": "ÇEKMEKÖY/PARSELLER MAH-KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14BK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14C",
+      "code": "14C",
+      "name": "ÜSKÜDAR DEVLET HASTANESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14C",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:14CE",
+      "code": "14CE",
+      "name": "ÇEKMEKÖY — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14CE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14ÇK",
+      "code": "14ÇK",
+      "name": "ŞAHİNBEY — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14%C3%87K",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:14D",
+      "code": "14D",
+      "name": "DUMLUPINAR / KAZIMKARABEKİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14DK",
+      "code": "14DK",
+      "name": "İNKILAP MAHALLESİ — LİBADİYE CADDESİ / KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14DK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14E",
+      "code": "14E",
+      "name": "KAZIM KARABEKİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14E",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:14ES",
+      "code": "14ES",
+      "name": "ESENŞEHİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14ES",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14F",
+      "code": "14F",
+      "name": "KÜPLÜCE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14FD",
+      "code": "14FD",
+      "name": "FERAH MAHALLESİ — ÜSKÜDAR DEVLET HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14FD",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14K",
+      "code": "14K",
+      "name": "KAZIM KARABEKİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14KS",
+      "code": "14KS",
+      "name": "SULTANBEYLİ GÖLET — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14KS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14M",
+      "code": "14M",
+      "name": "KAVACIK YENİ CAMİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14R",
+      "code": "14R",
+      "name": "RASATHANE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14S",
+      "code": "14S",
+      "name": "SULTANBEYLİ — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14ŞB",
+      "code": "14ŞB",
+      "name": "ŞAHİNBEY — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14%C5%9EB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14T",
+      "code": "14T",
+      "name": "ATATÜRK MAH./ TAŞDELEN — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14TM",
+      "code": "14TM",
+      "name": "TEPEÜSTÜ-MALTEPE METRO/CEVİZLİ PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14TM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14Y",
+      "code": "14Y",
+      "name": "YAVUZTÜRK MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14YE",
+      "code": "14YE",
+      "name": "YAVUZTÜRK MAHALLESİ / ÜMRANİYE — EMEK MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14YE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:14YK",
+      "code": "14YK",
+      "name": "YENİDOĞAN / ŞİLE YOLU — AYRILIKÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=14YK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15",
+      "code": "15",
+      "name": "BEYKOZ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:150",
+      "code": "150",
+      "name": "HACIOSMAN METRO — RUMELİFENERİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=150",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:151",
+      "code": "151",
+      "name": "HACIOSMAN METRO — KİLYOS / DEMİRCİKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=151",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:152",
+      "code": "152",
+      "name": "HACIOSMAN METRO — ZEKERİYAKÖY / KISIRKAYA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=152",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:153",
+      "code": "153",
+      "name": "BAHÇEKÖY — SARIYER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=153",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:154",
+      "code": "154",
+      "name": "HACIOSMAN METRO — KOÇ ÜNİVERSİTESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=154",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15A",
+      "code": "15A",
+      "name": "ANADOLUKAVAĞI — KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15B",
+      "code": "15B",
+      "name": "TOPAĞACI MAHALLESİ / GÜZELTEPE — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15BK",
+      "code": "15BK",
+      "name": "DERESEKİ / BEYKOZ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15BK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15C",
+      "code": "15C",
+      "name": "BÜYÜK ÇAMLICA CAMİİ/FERAH MAHALLESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15C",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:15CA",
+      "code": "15CA",
+      "name": "BÜYÜK ÇAMLICA CAMİİ / BULGURLU METRO — GÖZTEPE KÖPRÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15CA",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15ÇB",
+      "code": "15ÇB",
+      "name": "KAVACIK — ÇAVUŞBAŞI / ÇENGELDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15%C3%87B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15ÇK",
+      "code": "15ÇK",
+      "name": "GÜZELTEPE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15%C3%87K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15D",
+      "code": "15D",
+      "name": "ANADOLUFENERİ /KAYNARCA / DERESEKİ — SULTANİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15E",
+      "code": "15E",
+      "name": "TEKKE MEVKİİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15F",
+      "code": "15F",
+      "name": "BEYKOZ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15H",
+      "code": "15H",
+      "name": "HEKİMBAŞI — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15K",
+      "code": "15K",
+      "name": "KİRAZLITEPE — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15K",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:15KB",
+      "code": "15KB",
+      "name": "KAVACIK — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15KB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15KÇ",
+      "code": "15KÇ",
+      "name": "KARANLIKDERE / ÇAVUŞBAŞI — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15K%C3%87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15M",
+      "code": "15M",
+      "name": "KAVACIK YENİ CAMİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15N",
+      "code": "15N",
+      "name": "ARKBOYU — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15P",
+      "code": "15P",
+      "name": "SOĞUKSU MAHALLESİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15R",
+      "code": "15R",
+      "name": "RASATHANE — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15S",
+      "code": "15S",
+      "name": "SULTANMURAT — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15SD",
+      "code": "15SD",
+      "name": "ORTAÇEŞME/SULTANİYE-DUDULLU İMES",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15SD",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15SK",
+      "code": "15SK",
+      "name": "SULTANMURAT — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15SK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15ŞN",
+      "code": "15ŞN",
+      "name": "ŞENEVLER — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15%C5%9EN",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15T",
+      "code": "15T",
+      "name": "TOKATKÖY — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15TA",
+      "code": "15TA",
+      "name": "TÜRK ALMAN ÜNİVERSİTESİ-KAVACIK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15TA",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:15TK",
+      "code": "15TK",
+      "name": "TOKATKÖY-KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15TK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15TY",
+      "code": "15TY",
+      "name": "TOKATKÖY / BEYKOZ — YENİMAHALLE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15TY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15U",
+      "code": "15U",
+      "name": "TUFAN — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15U",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15Y",
+      "code": "15Y",
+      "name": "YENİMAHALLE — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15YK",
+      "code": "15YK",
+      "name": "YENİMAHALLE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15YK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:15Z",
+      "code": "15Z",
+      "name": "GÜZELTEPE — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=15Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:16",
+      "code": "16",
+      "name": "PENDİK — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:16A",
+      "code": "16A",
+      "name": "PENDİK — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:16D",
+      "code": "16D",
+      "name": "ALTKAYNARCA / PENDİK — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16D",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:16F",
+      "code": "16F",
+      "name": "FINDIKLI MAHALLESİ — HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:16M",
+      "code": "16M",
+      "name": "ACARLAR SİTESİ / ATAŞEHİR — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:16S",
+      "code": "16S",
+      "name": "S. G. HAVALİMANI — UZUNÇAYIR METROBÜS/HAREM PERONLAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16S",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:16U",
+      "code": "16U",
+      "name": "UĞURMUMCU — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16U",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:16YK",
+      "code": "16YK",
+      "name": "Y.TEPE ÜNİV. / FINDIKLI MAHALLESİ — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=16YK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:17",
+      "code": "17",
+      "name": "PENDİK — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=17",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:17L",
+      "code": "17L",
+      "name": "KÜÇÜKYALI LOJMANLARI / MARMARA ÜNİV. — BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=17L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:17S",
+      "code": "17S",
+      "name": "UĞURMUMCU — BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=17S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:18",
+      "code": "18",
+      "name": "SULTANBEYLİ — UZUNÇAYIR METROBÜS/ ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18A",
+      "code": "18A",
+      "name": "SULTANBEYLİ — ACIBADEM METRO/HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18A",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18D",
+      "code": "18D",
+      "name": "SULTANBEYLİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18D",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:18E",
+      "code": "18E",
+      "name": "YENİDOĞAN / SAMANDIRA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18E",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18F",
+      "code": "18F",
+      "name": "VEYSEL KARANİ / FATİH MAH. — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18F",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18K",
+      "code": "18K",
+      "name": "SULTANBEYLİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:18M",
+      "code": "18M",
+      "name": "SULTANBEYLİ MİMARSİNAN — UZUNÇAYIR METROBÜS/HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18M",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18UK",
+      "code": "18UK",
+      "name": "UZUNDERE-KOZYATAĞI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18UK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:18Ü",
+      "code": "18Ü",
+      "name": "SULTANBEYLİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18%C3%9C",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18V",
+      "code": "18V",
+      "name": "VEYSEL KARANİ / SAMANDIRA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18V",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18Y",
+      "code": "18Y",
+      "name": "YENİDOĞAN / SAMANDIRA — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18Y",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:18YS",
+      "code": "18YS",
+      "name": "YENİDOĞAN-SULTANBEYLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=18YS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19",
+      "code": "19",
+      "name": "FERHATPAŞA / YEDİTEPE ÜNİVERSİTESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19A",
+      "code": "19A",
+      "name": "YENİDOĞAN — AYRILIKÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19D",
+      "code": "19D",
+      "name": "ÜMRANİYE — BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19E",
+      "code": "19E",
+      "name": "YENİDOĞAN/ ATAŞEHİR — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19EK",
+      "code": "19EK",
+      "name": "YENİDOĞAN/ ATAŞEHİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19EK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19ES",
+      "code": "19ES",
+      "name": "ESENŞEHİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19ES",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:19F",
+      "code": "19F",
+      "name": "YEDİTEPE ÜNİV. / FINDIKLI MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19FB",
+      "code": "19FB",
+      "name": "FINDIKLI MAHALLESİ — BOSTANCI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19FB",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:19FS",
+      "code": "19FS",
+      "name": "FERHATPAŞA — SOYAK YENİŞEHİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19FS",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:19K",
+      "code": "19K",
+      "name": "ACARLAR SİTESİ / KAYIŞDAĞI — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19M",
+      "code": "19M",
+      "name": "ACARLAR SİTESİ / ATAŞEHİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19S",
+      "code": "19S",
+      "name": "YENİDOĞAN / SARIGAZİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19SK",
+      "code": "19SK",
+      "name": "YENIDOĞAN/SARIGAZI-KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19SK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19T",
+      "code": "19T",
+      "name": "FERHATPAŞA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19V",
+      "code": "19V",
+      "name": "VEYSEL KARANİ / SAMANDIRA — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19V",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19Y",
+      "code": "19Y",
+      "name": "FERHATPAŞA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:19YK",
+      "code": "19YK",
+      "name": "YENİDOĞAN-KAYIŞDAĞI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=19YK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:2",
+      "code": "2",
+      "name": "BOSTANCI — HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:20",
+      "code": "20",
+      "name": "ORTAÇEŞME / KAVACIK — Ü.EĞT.ARŞ.HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=20",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:20D",
+      "code": "20D",
+      "name": "SARIGAZİ/YENİŞEHİR-KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=20D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:20E",
+      "code": "20E",
+      "name": "ESATPAŞA — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=20E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:20K",
+      "code": "20K",
+      "name": "KAZIM KARABEKİR — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=20K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:20Ü",
+      "code": "20Ü",
+      "name": "ÜMRANİYE TEPEÜSTÜ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=20%C3%9C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:22",
+      "code": "22",
+      "name": "İSTİNYE DEREİÇİ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=22",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:22B",
+      "code": "22B",
+      "name": "BEBEK — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=22B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:22RE",
+      "code": "22RE",
+      "name": "FATİH SULTAN MEHMET — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=22RE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:25",
+      "code": "25",
+      "name": "HACIOSMAN METRO — HAVANTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:251",
+      "code": "251",
+      "name": "PENDİK — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=251",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:256",
+      "code": "256",
+      "name": "YEDİTEPE ÜNİVERSİTESİ / ATAŞEHİR — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=256",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:25A",
+      "code": "25A",
+      "name": "RUMELİKAVAĞI — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:25C",
+      "code": "25C",
+      "name": "TARABYAÜSTÜ / FERAHEVLER — İSTİNYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:25E",
+      "code": "25E",
+      "name": "SARIYER — BALTALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:25G",
+      "code": "25G",
+      "name": "SARIYER — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25G",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:25S1",
+      "code": "25S1",
+      "name": "HACIOSMAN METRO-SARIYER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25S1",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:25S2",
+      "code": "25S2",
+      "name": "HACIOSMAN METRO-SARIYER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25S2",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:25Y",
+      "code": "25Y",
+      "name": "HACIOSMAN METRO — YENİ UYUM SİTESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=25Y",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:26",
+      "code": "26",
+      "name": "DİKİLİTAŞ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=26",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:26A",
+      "code": "26A",
+      "name": "FULYA MAHALLESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=26A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:26B",
+      "code": "26B",
+      "name": "FULYA MAHALLESİ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=26B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:27E",
+      "code": "27E",
+      "name": "ŞİRİNTEPE — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=27E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:27SE",
+      "code": "27SE",
+      "name": "SEYRANTEPE — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=27SE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:27T",
+      "code": "27T",
+      "name": "ŞİRİNTEPE — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=27T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:28",
+      "code": "28",
+      "name": "TOPKAPI / EDİRNEKAPI — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=28",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:28T",
+      "code": "28T",
+      "name": "TOPKAPI — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=28T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29",
+      "code": "29",
+      "name": "İSTİNYE DEREİÇİ — ZİNCİRLİKUYU METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29A",
+      "code": "29A",
+      "name": "DERBENT MAHALLESİ — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29B",
+      "code": "29B",
+      "name": "FATİH SULTAN MEHMET — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29C",
+      "code": "29C",
+      "name": "TARABYAÜSTÜ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29D",
+      "code": "29D",
+      "name": "FERAHEVLER — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29E",
+      "code": "29E",
+      "name": "MASLAK GAZETECİLER SİTESİ — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29GM",
+      "code": "29GM",
+      "name": "MASLAK GAZETECİLER SİTESİ — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29GM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29M1",
+      "code": "29M1",
+      "name": "HACIOSMAN METRO — FERAHEVLER / İSTİNYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29M1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29M2",
+      "code": "29M2",
+      "name": "HACIOSMAN METRO — İSTİNYE / FERAHEVLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29M2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29P",
+      "code": "29P",
+      "name": "POLİGON MAHALLESİ — ZİNCİRLİKUYU METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29P",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:29Ş",
+      "code": "29Ş",
+      "name": "İSTİNYE DEREİÇİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:29T",
+      "code": "29T",
+      "name": "TARABYAÜSTÜ / DARÜŞŞAFAKA — İSTİNYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=29T",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:3",
+      "code": "3",
+      "name": "BURHANİYE MAHALLESİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=3",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:300",
+      "code": "300",
+      "name": "SİLİVRİ-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:300B",
+      "code": "300B",
+      "name": "SİLİVRİ BÜYÜKÇAVUŞLU-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300B",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:300C",
+      "code": "300C",
+      "name": "SİLİVRİ ÇANTA/SANCAKTEPE-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300C",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:300D",
+      "code": "300D",
+      "name": "SİLİVRİ DEĞİRMENKÖY-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300D",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:300G",
+      "code": "300G",
+      "name": "SİLİVRİ GÜMÜŞYAKA-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300G",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:300M",
+      "code": "300M",
+      "name": "SİLİVRİ MİMARSİNAN/KAVAKLI-TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=300M",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:303A",
+      "code": "303A",
+      "name": "SİLİVRİ — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=303A",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:303B",
+      "code": "303B",
+      "name": "MARMARA CEZAEVİ — OTOGAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=303B",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:30A",
+      "code": "30A",
+      "name": "BEŞİKTAŞ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=30A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:30D",
+      "code": "30D",
+      "name": "ORTAKÖY DEREBOYU — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=30D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:30M",
+      "code": "30M",
+      "name": "BEŞİKTAŞ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=30M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:31",
+      "code": "31",
+      "name": "KUYUMCUKENT — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=31",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:319",
+      "code": "319",
+      "name": "KAYIŞDAĞI — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=319",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:31E",
+      "code": "31E",
+      "name": "KUYUMCUKENT — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=31E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:31Y",
+      "code": "31Y",
+      "name": "TOKİ AYAZMA — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=31Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:32",
+      "code": "32",
+      "name": "CEVATPAŞA — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=32",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:320",
+      "code": "320",
+      "name": "FERHATPAŞA — ÜMRANİYE METRO/ÇAMLICA CAMİİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=320",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:320A",
+      "code": "320A",
+      "name": "SULTANBEYLİ MİMARSİNAN / SAMANDIRA — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=320A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:320Y",
+      "code": "320Y",
+      "name": "YENİDOĞAN — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=320Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:32A",
+      "code": "32A",
+      "name": "CEVATPAŞA — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=32A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:32M",
+      "code": "32M",
+      "name": "CEVATPAŞA — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=32M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:32T",
+      "code": "32T",
+      "name": "CEVATPAŞA — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=32T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33",
+      "code": "33",
+      "name": "GİYİMKENT / TURGUTREİS — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336",
+      "code": "336",
+      "name": "ARNAVUTKÖY — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336A",
+      "code": "336A",
+      "name": "BALABAN KÖYÜ — MESCİDİ SELAM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336E",
+      "code": "336E",
+      "name": "SULTANÇİFTLİĞİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336G",
+      "code": "336G",
+      "name": "TAŞOLUK PERON — TEKSTİLKENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336H",
+      "code": "336H",
+      "name": "HADIMKÖY — MESCİDİ SELAM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336K",
+      "code": "336K",
+      "name": "YENİKÖY / KARABURUN — MESCİDİ SELAM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336M",
+      "code": "336M",
+      "name": "ARNAVUTKÖY — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:336Y",
+      "code": "336Y",
+      "name": "CEBECİ — YENİKAPI MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=336Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33B",
+      "code": "33B",
+      "name": "GİYİMKENT / BİRLİK MAHALLESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33E",
+      "code": "33E",
+      "name": "ATIŞALANI YANYOL — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33E",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:33ES",
+      "code": "33ES",
+      "name": "GİYİMKENT — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33ES",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33M",
+      "code": "33M",
+      "name": "GİYİMKENT — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33TE",
+      "code": "33TE",
+      "name": "ESENLER TURGUTREİS — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33TE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33TM",
+      "code": "33TM",
+      "name": "GİYİMKENT / TURGUTREİS — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33TM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:33Y",
+      "code": "33Y",
+      "name": "GİYİMKENT / YÜZYIL MAHALLESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=33Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:34",
+      "code": "34",
+      "name": "AVCILAR-ZİNCİRLİKUYU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34A",
+      "code": "34A",
+      "name": "CEVİZLİBAĞ — SÖĞÜTLÜÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34A",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34AS",
+      "code": "34AS",
+      "name": "AVCILAR — SÖĞÜTLÜÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34AS",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34B",
+      "code": "34B",
+      "name": "BEYLİKDÜZÜ-AVCILAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34B",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34BZ",
+      "code": "34BZ",
+      "name": "BEYLİKDÜZÜ — ZİNCİRLİKUYU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34BZ",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34C",
+      "code": "34C",
+      "name": "BEYLİKDÜZÜ-CEVİZLİBAĞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34C",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34G",
+      "code": "34G",
+      "name": "BEYLİKDÜZÜ-SÖĞÜTLÜÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34G",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34T",
+      "code": "34T",
+      "name": "AVCILAR -TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34T",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34U",
+      "code": "34U",
+      "name": "ZİNCİRLİKUYU-UZUNÇAYIR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34U",
+      "status": 200,
+      "tariff": "METROBÜS"
+    },
+    {
+      "routeId": "iett:34Z",
+      "code": "34Z",
+      "name": "ZİNCİRLİKUYU-SÖĞÜTLÜÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=34Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:35",
+      "code": "35",
+      "name": "KOCAMUSTAFAPAŞA — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=35",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:35C",
+      "code": "35C",
+      "name": "KOCAMUSTAFAPAŞA — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=35C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:35D",
+      "code": "35D",
+      "name": "KOCAMUSTAFAPAŞA — BALAT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=35D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36",
+      "code": "36",
+      "name": "YENİ MAHALLE METRO — AKSARAY RİNG",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36A",
+      "code": "36A",
+      "name": "CEBECİ — VEZNECİLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36A",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:36AS",
+      "code": "36AS",
+      "name": "TAŞOLUK PERON — SEFAKÖY METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36AS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36AY",
+      "code": "36AY",
+      "name": "ARNAVUTKÖY — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36AY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36B",
+      "code": "36B",
+      "name": "BOLLUCA / BOĞAZKÖY — CEBECİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36C",
+      "code": "36C",
+      "name": "ARNAVUTKÖY-CEBECI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36CB",
+      "code": "36CB",
+      "name": "CEBECİ KÖYÜ — HABİPLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36CB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36CY",
+      "code": "36CY",
+      "name": "CEBECİ — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36CY",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:36D",
+      "code": "36D",
+      "name": "ARNAVUTKÖY — DELİKLİKAYA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36ES",
+      "code": "36ES",
+      "name": "SULTANGAZİ PERON — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36ES",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36F",
+      "code": "36F",
+      "name": "CEBECİ — FENERTEPE/OLİMPİYATKÖY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36G",
+      "code": "36G",
+      "name": "SULTANGAZİ PERON-BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36HT",
+      "code": "36HT",
+      "name": "FATİH MAHALLESİ- HARAÇÇI — CEBECİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36HT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36KE",
+      "code": "36KE",
+      "name": "YENİ MAHALLE METRO — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36KE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36L",
+      "code": "36L",
+      "name": "MESCİD-İ SELAM — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36M",
+      "code": "36M",
+      "name": "CEBECİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36M",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:36S",
+      "code": "36S",
+      "name": "HABİPLER — YENİMAHALLE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36S",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:36TC",
+      "code": "36TC",
+      "name": "TAŞOLUK PERON- CEBECİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36TC",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:36V",
+      "code": "36V",
+      "name": "YAYLA MAHALLESİ — VEZNECİLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36V",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36Y",
+      "code": "36Y",
+      "name": "TAŞOLUK PERON — MAHMUTBEY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36YS",
+      "code": "36YS",
+      "name": "YASSIÖREN — ARNAVUTKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36YS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:36Z",
+      "code": "36Z",
+      "name": "CEBECİ-ZİNCİRLİKUYU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=36Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:38",
+      "code": "38",
+      "name": "SULTANGAZİ PERON-AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=38",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:38B",
+      "code": "38B",
+      "name": "SULTANGAZİ PERON-VEZNECİLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=38B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:38E",
+      "code": "38E",
+      "name": "G.O.P. DEVLET HASTANESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=38E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:38H",
+      "code": "38H",
+      "name": "ZÜBEYDE HANIM MAHALLESİ — HABİBLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=38H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:38Z",
+      "code": "38Z",
+      "name": "ZÜBEYDE HANIM MAHALLESİ — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=38Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:3A",
+      "code": "3A",
+      "name": "KADIKÖY — ÜNALAN MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=3A",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:3B",
+      "code": "3B",
+      "name": "KADIKÖY — ÜNALAN MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=3B",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:4",
+      "code": "4",
+      "name": "MALTEPE SAHİL — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:40",
+      "code": "40",
+      "name": "RUMELİFENERİ / GARİPÇE — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=40",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:400A",
+      "code": "400A",
+      "name": "BEYKENT — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=400A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:401",
+      "code": "401",
+      "name": "ÇATALCA — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=401",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:401T",
+      "code": "401T",
+      "name": "AREL ÜNİVERSİTESİ -TEPEKENT — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=401T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:402",
+      "code": "402",
+      "name": "BİNKILIÇ — ÇATALCA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=402",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:403",
+      "code": "403",
+      "name": "ÇİFTLİKKÖY — ÇATALCA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=403",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:404",
+      "code": "404",
+      "name": "YALIKÖY / KARACAKÖY — ÇATALCA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=404",
+      "status": 200,
+      "tariff": "KADEMELİ TARİFE"
+    },
+    {
+      "routeId": "iett:40B",
+      "code": "40B",
+      "name": "SARIYER — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=40B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:40T",
+      "code": "40T",
+      "name": "İSTİNYE DEREİÇİ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=40T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41",
+      "code": "41",
+      "name": "SİNPAŞ SİTESİ — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:418",
+      "code": "418",
+      "name": "HADIMKÖY — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=418",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41A",
+      "code": "41A",
+      "name": "AYAZAĞA — 4. LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41AT",
+      "code": "41AT",
+      "name": "AYAZAĞA — DAVUTPAŞA Y.T.Ü",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41AT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41C",
+      "code": "41C",
+      "name": "AYAZAĞA — SARIYER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41E",
+      "code": "41E",
+      "name": "AYAZAĞA — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41N",
+      "code": "41N",
+      "name": "NİŞANTAŞI ÜNİVERSİTESİ — MASLAK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41SF",
+      "code": "41SF",
+      "name": "SARIYER — FATİH SULTAN MEHMET",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41SF",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41SM",
+      "code": "41SM",
+      "name": "YENİ AYAZAĞA MEZARLIĞI- 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41SM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:41ST",
+      "code": "41ST",
+      "name": "SEYRANTEPE — TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=41ST",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:42",
+      "code": "42",
+      "name": "BAHÇEKÖY / FERAHEVLER — ZİNCİRLİKUYU METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:429A",
+      "code": "429A",
+      "name": "KIRAÇ — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=429A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:42HM",
+      "code": "42HM",
+      "name": "BAHÇEKÖY — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42HM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:42K",
+      "code": "42K",
+      "name": "SARIYER — KAZIM KARABEKİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42K",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:42KT",
+      "code": "42KT",
+      "name": "SARIYER — KOCATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42KT",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:42T",
+      "code": "42T",
+      "name": "BAHÇEKÖY — BALTALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:42Z",
+      "code": "42Z",
+      "name": "HACIOSMAN METRO — KAZIM KARABEKİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=42Z",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:43R",
+      "code": "43R",
+      "name": "RUMELİ HİSARÜSTÜ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=43R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:448",
+      "code": "448",
+      "name": "GÜZELCE — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=448",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:458",
+      "code": "458",
+      "name": "GÜRPINAR — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=458",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:46Ç",
+      "code": "46Ç",
+      "name": "KAĞITHANE — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=46%C3%87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:46KT",
+      "code": "46KT",
+      "name": "KUŞTEPE — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=46KT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:46T",
+      "code": "46T",
+      "name": "ÇAĞLAYAN — TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=46T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48",
+      "code": "48",
+      "name": "GÖKTÜRK — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48C",
+      "code": "48C",
+      "name": "KEMERBURGAZ — ÇİFTALAN KÖYÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48D",
+      "code": "48D",
+      "name": "GÖKTÜRK — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48G",
+      "code": "48G",
+      "name": "GÖKTÜRK- MESCİDİ SELAM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48H",
+      "code": "48H",
+      "name": "HAMİDİYE MAHALLESİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48K",
+      "code": "48K",
+      "name": "KEMERBURGAZ — AĞAÇLI KÖYÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48KA",
+      "code": "48KA",
+      "name": "KEMERBURGAZ — ARNAVUTKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48KA",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48L",
+      "code": "48L",
+      "name": "GÖKTÜRK — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48M",
+      "code": "48M",
+      "name": "AKPINAR KÖYÜ-ARNAVUTKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48N",
+      "code": "48N",
+      "name": "EMNİYETTEPE — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48P",
+      "code": "48P",
+      "name": "KEMERBURGAZ — AKPINAR KÖYÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48S",
+      "code": "48S",
+      "name": "SADABAT EVLERİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48T",
+      "code": "48T",
+      "name": "HAMİDİYE MAHALLESİ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:48U",
+      "code": "48U",
+      "name": "KENT ORMAN — KEMERBURGAZ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=48U",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:5",
+      "code": "5",
+      "name": "VALİEVLERİ — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=5",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:500L",
+      "code": "500L",
+      "name": "CEVİZLİBAĞ — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=500L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:500T",
+      "code": "500T",
+      "name": "TUZLA ŞİFA MAHALLESİ — 4. LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=500T",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:50A",
+      "code": "50A",
+      "name": "ALİBEYKÖY — EDİRNEKAPI METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50AT",
+      "code": "50AT",
+      "name": "CEBECİ — GAZİ — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50AT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50B",
+      "code": "50B",
+      "name": "ALİBEYKÖY — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50C",
+      "code": "50C",
+      "name": "ALİBEYKÖY — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50D",
+      "code": "50D",
+      "name": "AYAZAĞA — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50E",
+      "code": "50E",
+      "name": "ALİBEYKÖY — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50F",
+      "code": "50F",
+      "name": "ALİBEYKÖY — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50G",
+      "code": "50G",
+      "name": "GÖKTÜRK — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50G",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:50H",
+      "code": "50H",
+      "name": "ALİBEYKÖY — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50K",
+      "code": "50K",
+      "name": "ALİBEYKÖY — KAZLIÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50L",
+      "code": "50L",
+      "name": "ALİBEYKÖY — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50L",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50M",
+      "code": "50M",
+      "name": "ALİBEYKÖY-MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50N",
+      "code": "50N",
+      "name": "ALİBEYKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50P",
+      "code": "50P",
+      "name": "ÇIRÇIR METRO — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50R",
+      "code": "50R",
+      "name": "ALİBEYKÖY — OTOGAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50S",
+      "code": "50S",
+      "name": "ALİBEYKÖY — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50T",
+      "code": "50T",
+      "name": "ALİBEYKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50V",
+      "code": "50V",
+      "name": "ALİBEYKÖY — VEZNECİLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50V",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50Y",
+      "code": "50Y",
+      "name": "ALİBEYKÖY — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:50Z",
+      "code": "50Z",
+      "name": "ALİBEYKÖY — ZİNCİRLİKUYU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=50Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:522",
+      "code": "522",
+      "name": "ÖZYEĞİN ÜNİVERSİTESİ / ALEMDAĞ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=522",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:522ST",
+      "code": "522ST",
+      "name": "SULTANBEYLİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=522ST",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:54Ç",
+      "code": "54Ç",
+      "name": "ÇIKSALIN — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54%C3%87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54E",
+      "code": "54E",
+      "name": "OKMEYDANI — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54HŞ",
+      "code": "54HŞ",
+      "name": "HASKÖY — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54H%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54HT",
+      "code": "54HT",
+      "name": "HASKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54HT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54K",
+      "code": "54K",
+      "name": "HASKÖY — KULAKSIZ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54KT",
+      "code": "54KT",
+      "name": "KAPTANPAŞA — DOLAPDERE / TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54KT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54ÖR",
+      "code": "54ÖR",
+      "name": "ÖRNEKTEPE — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54%C3%96R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54P",
+      "code": "54P",
+      "name": "PİYALEPAŞA MAHALLESİ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54P",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54T",
+      "code": "54T",
+      "name": "SADABAT EVLERİ / TALATPAŞA — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:54TE",
+      "code": "54TE",
+      "name": "SADABAT EVLERİ / TALATPAŞA — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=54TE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:55",
+      "code": "55",
+      "name": "GAZİOSMANPAŞA — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=55",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:559C",
+      "code": "559C",
+      "name": "RUMELİ HİSARÜSTÜ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=559C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:55ET",
+      "code": "55ET",
+      "name": "GAZİOSMANPAŞA — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=55ET",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:55G",
+      "code": "55G",
+      "name": "GAZİOSMANPAŞA — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=55G",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:55T",
+      "code": "55T",
+      "name": "GAZİOSMANPAŞA — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=55T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:55Y",
+      "code": "55Y",
+      "name": "KAĞITHANE GARAJI — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=55Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:57UL",
+      "code": "57UL",
+      "name": "BEŞİKTAŞ — KURUÇEŞMEÜSTÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=57UL",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:58A",
+      "code": "58A",
+      "name": "POLİGON MAHALLESİ- KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=58A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:58N",
+      "code": "58N",
+      "name": "FATİH SULTAN MEHMET — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=58N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:58S",
+      "code": "58S",
+      "name": "LEVAZIM MAHALLESİ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=58S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:58UL",
+      "code": "58UL",
+      "name": "ULUS MAHALLESİ — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=58UL",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59A",
+      "code": "59A",
+      "name": "İSTİNYE DEREİÇİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59CH",
+      "code": "59CH",
+      "name": "ARNAVUTKÖY — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59CH",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59HS",
+      "code": "59HS",
+      "name": "HACIOSMAN METRO — SARITEPE KAMPÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59HS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59K",
+      "code": "59K",
+      "name": "KARAYOLLARI / ETİLER — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59N",
+      "code": "59N",
+      "name": "FATİH SULTAN MEHMET — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59R",
+      "code": "59R",
+      "name": "RUMELİ HİSARÜSTÜ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59R",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59RH",
+      "code": "59RH",
+      "name": "RUMELİ HİSARÜSTÜ — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59RH",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59RK",
+      "code": "59RK",
+      "name": "RUMELİ HİSARÜSTÜ — SARITEPE KAMPÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59RK",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:59RS",
+      "code": "59RS",
+      "name": "SARIYER — RUMELİ HİSARÜSTÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=59RS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:6",
+      "code": "6",
+      "name": "ESATPAŞA / KÜÇÜKÇAMLICA — HAREM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=6",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:62",
+      "code": "62",
+      "name": "KAĞITHANE / GÜLTEPE — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=62",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:622",
+      "code": "622",
+      "name": "YENİDOĞAN — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=622",
+      "status": 200,
+      "tariff": "2 BİLETLİ"
+    },
+    {
+      "routeId": "iett:62G",
+      "code": "62G",
+      "name": "EMNİYETTEPE /  HAMİDİYE — BEŞİKTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=62G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:62H",
+      "code": "62H",
+      "name": "EMNİYETTEPE — HACIOSMAN METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=62H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:63",
+      "code": "63",
+      "name": "KAĞITHANE / ÇELİKTEPE — KABATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=63",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:64Ç",
+      "code": "64Ç",
+      "name": "EMNİYETTEPE/ÇELİKTEPE-ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=64%C3%87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:65A",
+      "code": "65A",
+      "name": "SEYRANTEPE — KAĞITHANE GARAJI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=65A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:65G",
+      "code": "65G",
+      "name": "KAĞITHANE / GÜLTEPE — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=65G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:66",
+      "code": "66",
+      "name": "GÜLBAĞ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=66",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:66Z",
+      "code": "66Z",
+      "name": "ZİNCİRLİDERE — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=66Z",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:7",
+      "code": "7",
+      "name": "TOPAĞACI MAHALLESİ / ÜMRANİYE — RASATHANE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=7",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:70D",
+      "code": "70D",
+      "name": "KURTULUŞ / DOLAPDERE — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=70D",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:70FE",
+      "code": "70FE",
+      "name": "FERİKÖY — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=70FE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:70FY",
+      "code": "70FY",
+      "name": "FERİKÖY — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=70FY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:70KE",
+      "code": "70KE",
+      "name": "KURTULUŞ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=70KE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:70KY",
+      "code": "70KY",
+      "name": "KURTULUŞ — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=70KY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:71T",
+      "code": "71T",
+      "name": "ATAKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=71T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:72T",
+      "code": "72T",
+      "name": "YEŞİLKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=72T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:72YT",
+      "code": "72YT",
+      "name": "CERRAHPAŞA TIP FAK. MURAT DİLMENER ACİL DURUM HASTANESİ-YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=72YT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:73",
+      "code": "73",
+      "name": "YENİBOSNA METRO- TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=73",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:73B",
+      "code": "73B",
+      "name": "FLORYA — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=73B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:73F",
+      "code": "73F",
+      "name": "FLORYA — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=73F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:73H",
+      "code": "73H",
+      "name": "CERRAHPAŞA MURAT DİLMENER HASTANESİ — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=73H",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:73Y",
+      "code": "73Y",
+      "name": "KUYUMCUKENT — YEŞİLKÖY / AKVARYUM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=73Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:74",
+      "code": "74",
+      "name": "HİLTON SİTESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=74",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:74A",
+      "code": "74A",
+      "name": "GAYRETTEPE — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=74A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76",
+      "code": "76",
+      "name": "BEYLİKDÜZÜ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76A",
+      "code": "76A",
+      "name": "KİPTAŞ VADİTEPE — YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76B",
+      "code": "76B",
+      "name": "AVCILAR CİHANGİR MAHALLESİ — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76BA",
+      "code": "76BA",
+      "name": "BÜYÜKÇEKMECE — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76BA",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76D",
+      "code": "76D",
+      "name": "BAHÇEŞEHİR / ESENKENT — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76D",
+      "status": 200,
+      "tariff": "1 TAM, 1 İND."
+    },
+    {
+      "routeId": "iett:76G",
+      "code": "76G",
+      "name": "GÜRPINAR — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76GM",
+      "code": "76GM",
+      "name": "GÜRPINAR-BEYKENT METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76GM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76O",
+      "code": "76O",
+      "name": "AVCILAR CİHANGİR MAHALLESİ — OTOGAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76O",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76TM",
+      "code": "76TM",
+      "name": "TEPEKENT — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76TM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:76V",
+      "code": "76V",
+      "name": "KİPTAŞ VADİTEPE — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=76V",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:77",
+      "code": "77",
+      "name": "YENİKAPI-ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=77",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:77A",
+      "code": "77A",
+      "name": "VEZNECİLER-ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=77A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:77Ç",
+      "code": "77Ç",
+      "name": "ÇIKSALIN — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=77%C3%87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78",
+      "code": "78",
+      "name": "METROKENT — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78B",
+      "code": "78B",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78C",
+      "code": "78C",
+      "name": "YUNUS EMRE MAHALLESİ — FENERTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78E",
+      "code": "78E",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — KAYABAŞI KİPTAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78E",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:78F",
+      "code": "78F",
+      "name": "FENERTEPE — BAŞAKŞEHİR — METROKENT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78F",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:78G",
+      "code": "78G",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — KAYAŞEHİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78H",
+      "code": "78H",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78K",
+      "code": "78K",
+      "name": "FENERTEPE PERON/BAŞAKŞEHIR-K.S.S. HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78Ş",
+      "code": "78Ş",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — ŞAHİNTEPE İGTOT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:78ZB",
+      "code": "78ZB",
+      "name": "FENERTEPE PERON/BAŞAKŞEHİR — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=78ZB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79B",
+      "code": "79B",
+      "name": "KAYAŞEHİR — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79C",
+      "code": "79C",
+      "name": "KAYAŞEHİR — CEBECİ MAHALLESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79E",
+      "code": "79E",
+      "name": "KAYABAŞI KİPTAŞ / KAYAŞEHİR — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79F",
+      "code": "79F",
+      "name": "KAYAŞEHİR — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79FY",
+      "code": "79FY",
+      "name": "FENERTEPE-YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79FY",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79G",
+      "code": "79G",
+      "name": "KAYAŞEHİR — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79GE",
+      "code": "79GE",
+      "name": "GÜVERCİNTEPE/FENERTEPE-EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79GE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79K",
+      "code": "79K",
+      "name": "KAYAŞEHİR — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79KM",
+      "code": "79KM",
+      "name": "KAYAŞEHİR — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79KM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79KT",
+      "code": "79KT",
+      "name": "KAYABAŞI KİPTAŞ — TEKSTİLKENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79KT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79Ş",
+      "code": "79Ş",
+      "name": "ŞAHİNTEPE İGTOT — İKİTELLİ OSB",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:79T",
+      "code": "79T",
+      "name": "KAYABAŞI KİPTAŞ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79T",
+      "status": 200,
+      "tariff": "1 TAM, 1 İND."
+    },
+    {
+      "routeId": "iett:79Y",
+      "code": "79Y",
+      "name": "KAYABAŞI KİPTAŞ / KAYAŞEHİR — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=79Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:8",
+      "code": "8",
+      "name": "VALİEVLERİ — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=8",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:80T",
+      "code": "80T",
+      "name": "KAZLIÇEŞME — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=80T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:82",
+      "code": "82",
+      "name": "KUYUMCUKENT — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=82",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:85C",
+      "code": "85C",
+      "name": "DAVUTPAŞA YTÜ — KAZLIÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=85C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:86V",
+      "code": "86V",
+      "name": "EYÜPSULTAN — VEZNECİLER",
+      "url": "https://iett.istanbul/RouteDetail?hkod=86V",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:87",
+      "code": "87",
+      "name": "TOPKAPI / EDİRNEKAPI — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=87",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:88",
+      "code": "88",
+      "name": "SULTANGAZİ PERON — TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=88",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:88A",
+      "code": "88A",
+      "name": "SULTANGAZİ PERON-YENİKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=88A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89",
+      "code": "89",
+      "name": "K.S.S. HASTANESİ/ATAKENT-AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89A",
+      "code": "89A",
+      "name": "K.S.S. HASTANESİ — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89B",
+      "code": "89B",
+      "name": "KÜÇÜKÇEKMECE — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89BS",
+      "code": "89BS",
+      "name": "BEZİRGANBAHÇE TOKİ-SEFAKÖY METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89BS",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:89C",
+      "code": "89C",
+      "name": "İETT İKİTELLİ GARAJI-TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89F",
+      "code": "89F",
+      "name": "KÜÇÜKÇEKMECE-İSTOÇ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89F",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89K",
+      "code": "89K",
+      "name": "K.S.S. HASTANESİ — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89M",
+      "code": "89M",
+      "name": "MEHMET AKİF MAHALLESİ — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89S",
+      "code": "89S",
+      "name": "SÖĞÜTLÜÇEŞME — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89T",
+      "code": "89T",
+      "name": "K.S.S. HASTANESİ/ATAKENT-TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:89YB",
+      "code": "89YB",
+      "name": "K.S.S. HASTANESİ/ATAKENT — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=89YB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:8A",
+      "code": "8A",
+      "name": "BATI ATAŞEHİR / FİKİRTEPE — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=8A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:8E",
+      "code": "8E",
+      "name": "ESENEVLER — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=8E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:8K",
+      "code": "8K",
+      "name": "TEPEÜSTÜ — ATAŞEHİR / KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=8K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:8Y",
+      "code": "8Y",
+      "name": "SOYAK YENİŞEHİR — YENİSAHRA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=8Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:90",
+      "code": "90",
+      "name": "DRAMAN — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=90",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:90B",
+      "code": "90B",
+      "name": "DRAMAN — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=90B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:91E",
+      "code": "91E",
+      "name": "GÖZTEPE MAHALLESİ — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=91E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:91M",
+      "code": "91M",
+      "name": "FATİH MAHALLESİ YANYOL- MECİDİYEKÖY METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=91M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92",
+      "code": "92",
+      "name": "YENİ MAHALLE METRO — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92B",
+      "code": "92B",
+      "name": "YENİ MAHALLE METRO / ATEŞTUĞLA — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92B",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92C",
+      "code": "92C",
+      "name": "HAZNEDAR — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92C",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92K",
+      "code": "92K",
+      "name": "YENİ MAHALLE METRO / KİRAZLI — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92M",
+      "code": "92M",
+      "name": "BAĞCILAR DEVLET HASTANESİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92Ş",
+      "code": "92Ş",
+      "name": "YENİ MAHALLE METRO — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:92T",
+      "code": "92T",
+      "name": "BAĞCILAR DEVLET HASTANESİ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=92T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:93",
+      "code": "93",
+      "name": "ZEYTİNBURNU — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=93",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:93M",
+      "code": "93M",
+      "name": "ZEYTİNBURNU — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=93M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:93T",
+      "code": "93T",
+      "name": "ZEYTİNBURNU — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=93T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97",
+      "code": "97",
+      "name": "15 TEMMUZ MAHALLESİ — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97A",
+      "code": "97A",
+      "name": "BASINSİTESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97BT",
+      "code": "97BT",
+      "name": "KOCASİNAN İTFAİYE-TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97BT",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97E",
+      "code": "97E",
+      "name": "MAHMUTBEY — KAZLIÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97G",
+      "code": "97G",
+      "name": "YENİ MAHALLE METRO — AKSARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97GE",
+      "code": "97GE",
+      "name": "15 TEMMUZ MAHALLESİ — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97GE",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97KZ",
+      "code": "97KZ",
+      "name": "KOCASİNAN — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97KZ",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97M",
+      "code": "97M",
+      "name": "15 TEMMUZ MAHALLESİ — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:97T",
+      "code": "97T",
+      "name": "BASINSİTESİ — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=97T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98",
+      "code": "98",
+      "name": "FENERTEPE/BAŞAKŞEHİR — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98A",
+      "code": "98A",
+      "name": "GÖZTEPE MAHALLESİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98AB",
+      "code": "98AB",
+      "name": "ATAKENT/HALKALI — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98AB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98B",
+      "code": "98B",
+      "name": "KUYUMCUKENT — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98B",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:98D",
+      "code": "98D",
+      "name": "YENİ MAHALLE METRO — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98D",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:98E",
+      "code": "98E",
+      "name": "GÜNEŞLİ BASIN TESİSLERİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98G",
+      "code": "98G",
+      "name": "GİYİMKENT / TURGUTREİS — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98G",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98H",
+      "code": "98H",
+      "name": "METROKENT — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98KM",
+      "code": "98KM",
+      "name": "FENERTEPE — SEFAKÖY METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98KM",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98M",
+      "code": "98M",
+      "name": "İSTOÇ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98M",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98MB",
+      "code": "98MB",
+      "name": "MEHMET AKİF MAHALLESİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98MB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98S",
+      "code": "98S",
+      "name": "K.S.S. HASTANESİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98T",
+      "code": "98T",
+      "name": "K.S.S. HASTANESİ/ATAKENT-BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98TB",
+      "code": "98TB",
+      "name": "FATİH MAHALLESİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98TB",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:98Y",
+      "code": "98Y",
+      "name": "GİYİMKENT / YÜZYIL MAHALLESİ — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=98Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:99A",
+      "code": "99A",
+      "name": "GAZİOSMANPAŞA — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=99A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9A",
+      "code": "9A",
+      "name": "ATAKENT — ÜMRANİYE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9ÇN",
+      "code": "9ÇN",
+      "name": "ÇEKMEKÖY — NİŞANTEPE / ÖZYEĞİN ÜNİVERSİTESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9%C3%87N",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9H",
+      "code": "9H",
+      "name": "CUMHURİYETKÖY / HÜSEYİNLİ — ÇEKMEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9H",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9K",
+      "code": "9K",
+      "name": "ATATÜRK MAH./ TAŞDELEN — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9K",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:9KS",
+      "code": "9KS",
+      "name": "KASABA EVLERİ/ ÖMERLİ — NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9KS",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9S",
+      "code": "9S",
+      "name": "YEŞILTEPE/ÇEKMEKÖY METRO-ATATÜRK MAH.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:9T",
+      "code": "9T",
+      "name": "ŞAHİNBEY — ALTUNİZADE METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=9T",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AND1A",
+      "code": "AND1A",
+      "name": "ANADOLU1 / ANADOLU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AND1A",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AND1Ş",
+      "code": "AND1Ş",
+      "name": "ANADOLU1 DEPAR / ŞAHİNKAYA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AND1%C5%9E",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AND2K",
+      "code": "AND2K",
+      "name": "ANADOLU2 DEPAR/ KURTKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AND2K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AND2S",
+      "code": "AND2S",
+      "name": "ANADOLU2 DEPAR / SARIGAZİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AND2S",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AND2Y",
+      "code": "AND2Y",
+      "name": "ANADOLU2 DEPAR / YUNUS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AND2Y",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AVR1",
+      "code": "AVR1",
+      "name": "AVRUPA 1 DEPAR / İKİTELLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AVR1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AVR2",
+      "code": "AVR2",
+      "name": "AVRUPA 2 DEPAR / TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AVR2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AVR3",
+      "code": "AVR3",
+      "name": "AVRUPA3 DEPAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AVR3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:AVR3K",
+      "code": "AVR3K",
+      "name": "AVRUPA3 DEPAR / KAĞITHANE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=AVR3K",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:BA-1",
+      "code": "BA-1",
+      "name": "ÇARŞI-TEPEKÖY-KADIYORAN",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BA-1",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BA-2",
+      "code": "BA-2",
+      "name": "ÇARŞI-LUNAPARK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BA-2",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BA-4",
+      "code": "BA-4",
+      "name": "ÇINAR-KUMSAL-MADEN",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BA-4",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BA-5",
+      "code": "BA-5",
+      "name": "ÇARŞI-NİZAM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BA-5",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BA-7",
+      "code": "BA-7",
+      "name": "BÜYÜKADA TAKSİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BA-7",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BM4",
+      "code": "BM4",
+      "name": "KAVAKLI — HARAMİDERE METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BM4",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:BM5",
+      "code": "BM5",
+      "name": "SAHİL MAH./ KAVAKLI — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BM5",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:BM6",
+      "code": "BM6",
+      "name": "BEYLİKDÜZÜ — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BM6",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:BM7",
+      "code": "BM7",
+      "name": "HARAMİDERE — YAKUPLU — BEYLİKDÜZÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BM7",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:BM8",
+      "code": "BM8",
+      "name": "GÜRPINAR- A.KAHVECİ MAH. — CUMHURİYET MAH. METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BM8",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:BN1",
+      "code": "BN1",
+      "name": "HALKALI — EMİNÖNÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BN1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:BU-1",
+      "code": "BU-1",
+      "name": "ÇARŞI-KALPAZANKAYA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BU-1",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:BU-7",
+      "code": "BU-7",
+      "name": "BURGAZADA TAKSİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=BU-7",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:ÇM41",
+      "code": "ÇM41",
+      "name": "ÇEKMEKÖY-NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=%C3%87M41",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:ÇM42",
+      "code": "ÇM42",
+      "name": "ŞAHİNBEY — ÇEKMEKÖY METRO/ EMEK MAH.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=%C3%87M42",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:ÇM43",
+      "code": "ÇM43",
+      "name": "ATATÜRK MAHALLESİ-NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=%C3%87M43",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:ÇM44",
+      "code": "ÇM44",
+      "name": "ÖZYEĞİN ÜNİ./NİŞANTEPE-ÇEKMEKÖY METRO/PROF. DR. FERİHA ÖZ HAST.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=%C3%87M44",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:DS1",
+      "code": "DS1",
+      "name": "DUDULLU ORGANİZE SANAYİ BÖLGESİ — DUDULLU METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=DS1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:DS2",
+      "code": "DS2",
+      "name": "DUDULLU ORGANİZE SANAYİ BÖLGESİ — DUDULLU METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=DS2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:DT1",
+      "code": "DT1",
+      "name": "ORTAKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=DT1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:DT2",
+      "code": "DT2",
+      "name": "ORTAKÖY — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=DT2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-10",
+      "code": "E-10",
+      "name": "SABİHA GÖKÇEN HAVALİMANI / KURTKÖY — KADIKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-10",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-3",
+      "code": "E-3",
+      "name": "SABİHA GÖKÇEN HAVALİMANI — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-3",
+      "status": 200,
+      "tariff": "3 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-56",
+      "code": "E-56",
+      "name": "ISPARTAKULE — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-56",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-57",
+      "code": "E-57",
+      "name": "ESENKENT BAHÇEŞEHİR — BAKIRKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-57",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-58",
+      "code": "E-58",
+      "name": "ESENKENT BAHÇEŞEHİR — MECİDİYEKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-58",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:E-59",
+      "code": "E-59",
+      "name": "BOĞAZKÖY / BAHÇEŞEHİR — TAKSİM",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-59",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:EL2",
+      "code": "EL2",
+      "name": "EMİRGAN — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=EL2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:EM1",
+      "code": "EM1",
+      "name": "EMİNÖNÜ — KULAKSIZ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=EM1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:EM2",
+      "code": "EM2",
+      "name": "EMİNÖNÜ — KULAKSIZ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=EM2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ER1",
+      "code": "ER1",
+      "name": "KADIKÖY — ERENKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ER1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ER2",
+      "code": "ER2",
+      "name": "KADIKÖY — ERENKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ER2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ES1",
+      "code": "ES1",
+      "name": "ESENYURT BELEDİYESİ — BEYLİKDÜZÜ DEVLET HASTANESİ/BEYKENT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ES1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ES2",
+      "code": "ES2",
+      "name": "TÜYAP / KIRAÇ — AKÇABURGAZ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ES2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ES3",
+      "code": "ES3",
+      "name": "ESENYURT DEVLET HASTANESİ — HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ES3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:ES4",
+      "code": "ES4",
+      "name": "ESENYURT KİPTAŞ 4. ETAP-HARAMİDERE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=ES4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:F2",
+      "code": "F2",
+      "name": "BEYOĞLU-KARAKÖY TÜNEL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=F2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:FB1",
+      "code": "FB1",
+      "name": "KADIKÖY — FENERBAHÇE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=FB1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:FB2",
+      "code": "FB2",
+      "name": "KADIKÖY — FENERBAHÇE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=FB2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:GZ1",
+      "code": "GZ1",
+      "name": "KADIKÖY — GÖZTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=GZ1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:H-1",
+      "code": "H-1",
+      "name": "MAHMUTBEY METRO — İSTANBUL HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=H-1",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:H-2",
+      "code": "H-2",
+      "name": "MECİDİYEKÖY — İSTANBUL HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=H-2",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:H-3",
+      "code": "H-3",
+      "name": "HALKALI MARMARAY — İSTANBUL HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=H-3",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:H-6",
+      "code": "H-6",
+      "name": "YUNUS EMRE MAHALLESİ-İSTANBUL HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=H-6",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:H-8",
+      "code": "H-8",
+      "name": "HACIOSMAN METRO-İSTANBUL HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=H-8",
+      "status": 200,
+      "tariff": "2 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:HA-1",
+      "code": "HA-1",
+      "name": "ÇARŞI-AKÇAKOCA-İTFAİYE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HA-1",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:HA-2",
+      "code": "HA-2",
+      "name": "ÇARŞI-ÇAM LİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HA-2",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:HA-3",
+      "code": "HA-3",
+      "name": "ÇARŞI-DEĞİRMENBURNU-KÜÇÜKTUR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HA-3",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:HA-7",
+      "code": "HA-7",
+      "name": "HEYBELİADA TAKSİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HA-7",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:HM1",
+      "code": "HM1",
+      "name": "HACIOSMAN METRO — KOCATAŞ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HM1",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:HM2",
+      "code": "HM2",
+      "name": "KONAKLAR MAHALLESİ — 4.LEVENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HM2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HM3",
+      "code": "HM3",
+      "name": "HÜRRİYET MAHALLESİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HM3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HM4",
+      "code": "HM4",
+      "name": "LEVENT BASIN SİTESİ — ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HM4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HS2",
+      "code": "HS2",
+      "name": "AVCILAR METROBÜS — ŞEHİR HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HS2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HS3",
+      "code": "HS3",
+      "name": "SEFAKÖY METROBÜS-ŞEHİR HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HS3",
+      "status": 200,
+      "tariff": "1 TAM BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT1",
+      "code": "HT1",
+      "name": "K.S.S. HASTANESİ — ÜÇYÜZLÜ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT10",
+      "code": "HT10",
+      "name": "BATIŞEHİR — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT10",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT11",
+      "code": "HT11",
+      "name": "GİYİMKENT — KUYUMCUKENT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT11",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT12",
+      "code": "HT12",
+      "name": "GÜNEŞLİ BASIN TESİSLERİ — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT12",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT13",
+      "code": "HT13",
+      "name": "YENİ MAHALLE METRO — ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT13",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT18",
+      "code": "HT18",
+      "name": "HADIMKÖY/İ.Ü. CERRAHPAŞA KAMPÜSÜ — TÜYAP",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT18",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT19",
+      "code": "HT19",
+      "name": "İ.Ü.CERRAHPAŞA KAMPÜSÜ — TÜYAP METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT19",
+      "status": 200,
+      "tariff": null
+    },
+    {
+      "routeId": "iett:HT20",
+      "code": "HT20",
+      "name": "ŞAHİNTEPE İGTOT — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT20",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT29",
+      "code": "HT29",
+      "name": "KIRAÇ YOLU — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT29",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT48",
+      "code": "HT48",
+      "name": "AREL ÜNİVERSİTESİ -TEPEKENT — AVCILAR METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT48",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:HT5",
+      "code": "HT5",
+      "name": "KOCATEPE METRO-NUR SİTESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT5",
+      "status": 200,
+      "tariff": "İNDİRİMLİ"
+    },
+    {
+      "routeId": "iett:HT6",
+      "code": "HT6",
+      "name": "BATIŞEHİR-KOCATEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=HT6",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:K1",
+      "code": "K1",
+      "name": "KAĞITHANE-SEYRANTEPE HAMİDİYE ETFAL HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=K1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:K2",
+      "code": "K2",
+      "name": "KAĞITHANE-SEYRANTEPE HAMİDİYE ETFAL HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=K2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:K3",
+      "code": "K3",
+      "name": "KAĞITHANE GARAJI-VADİ İSTANBUL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=K3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:K4",
+      "code": "K4",
+      "name": "KAĞITHANE-ŞİŞLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=K4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KA-1",
+      "code": "KA-1",
+      "name": "ÇARŞI-NARÇİÇEĞİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KA-1",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:KA-2",
+      "code": "KA-2",
+      "name": "TEKİNAY-PLAJLAR-BÜYÜK TUR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KA-2",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:KA-7",
+      "code": "KA-7",
+      "name": "KINALIADA TAKSİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KA-7",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:KÇ2",
+      "code": "KÇ2",
+      "name": "K.S.S.HASTANESİ — YENİBOSNA METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=K%C3%872",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM10",
+      "code": "KM10",
+      "name": "AYDINLI TOKİ / İÇMELER — PENDİK METRO/YHT — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM10",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM11",
+      "code": "KM11",
+      "name": "AYDINLI TOKİ / A.YESEVİ — PENDİK KÖPRÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM11",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM12",
+      "code": "KM12",
+      "name": "TUZLA DENİZ HARP OKULU — KARTAL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM12",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM13",
+      "code": "KM13",
+      "name": "TUZLA — PENDİK METRO/ YHT / PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM13",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM14",
+      "code": "KM14",
+      "name": "AHMET YESEVİ — TAVŞANTEPE METRO/ YENİŞEHİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM14",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM15",
+      "code": "KM15",
+      "name": "YENİŞEHİR-PENDİK METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM15",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM17",
+      "code": "KM17",
+      "name": "TUZLA EMLAK KONUTLARI-TAVŞANTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM17",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM18",
+      "code": "KM18",
+      "name": "SABANCI ÜNİ./MEDENİYET ÜNİ. — KURTKÖY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM18",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM2",
+      "code": "KM2",
+      "name": "KAVAKPINAR-TAVŞANTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM2",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM21",
+      "code": "KM21",
+      "name": "HİLAL KONUTLARI — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM21",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM23",
+      "code": "KM23",
+      "name": "KAVAKPINAR / MARMARA HST. — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM23",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM24",
+      "code": "KM24",
+      "name": "KAVAKPINAR — PENDİK METRO/YHT/PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM24",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM25",
+      "code": "KM25",
+      "name": "YENİŞEHİR — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM25",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM26",
+      "code": "KM26",
+      "name": "ÇAMLIK MAHALLESİ — PENDİK METRO/ YHT / PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM26",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM27",
+      "code": "KM27",
+      "name": "YENİŞEHİR — PENDİK METRO/ YHT / PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM27",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM28",
+      "code": "KM28",
+      "name": "OKAN ÜNİVERSİTESİ — KURTKÖY  METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM28",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM29",
+      "code": "KM29",
+      "name": "YENİŞEHİR/MARMARA Ü. HAST. — KARTAL METRO/CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM29",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM3",
+      "code": "KM3",
+      "name": "UĞURMUMCU-YAKACIK METRO/ PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM30",
+      "code": "KM30",
+      "name": "KARTAL / ATALAR — ESENKENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM30",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM31",
+      "code": "KM31",
+      "name": "UĞURMUMCU — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM31",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM32",
+      "code": "KM32",
+      "name": "KURFALI — KARTAL METRO / KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM32",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM33",
+      "code": "KM33",
+      "name": "PENDİK SAHİL/ YHT — ESENKENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM33",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM34",
+      "code": "KM34",
+      "name": "KARTAL METRO-TOPSELVİ/GÜLSUYU METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM34",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM35",
+      "code": "KM35",
+      "name": "UĞURMUMCU-CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM35",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM36",
+      "code": "KM36",
+      "name": "KURFALI MAHALLESİ-CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM36",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM37",
+      "code": "KM37",
+      "name": "HİLAL KONUTLARI-PENDİK METRO/YHT/PENDİK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM37",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM41",
+      "code": "KM41",
+      "name": "MARMARA ÜNİVERSİTESİ-KÜÇÜKYALI METRO-BAŞIBÜYÜK SAĞLIK KAMPÜSÜ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM41",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM42",
+      "code": "KM42",
+      "name": "BAŞIBÜYÜK — SÜREYYAPAŞA HASTANESİ/ MALTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM42",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM43",
+      "code": "KM43",
+      "name": "ZÜMRÜTEVLER — MALTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM43",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM44",
+      "code": "KM44",
+      "name": "MALTEPE ÜNİVERSİTESİ — SİTELER — MALTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM44",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM45",
+      "code": "KM45",
+      "name": "MARMARA ÜNİVERSİTESİ / KÜÇÜKYALI METRO — MİMAR SİNAN ÖĞRENCİ YURDU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM45",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM46",
+      "code": "KM46",
+      "name": "BATI ATAŞEHİR — KOZYATAĞI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM46",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM47",
+      "code": "KM47",
+      "name": "GÜLENSU MAHALLESİ-HUZUREVİ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM47",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM48",
+      "code": "KM48",
+      "name": "ESENKENT-HUZUREVİ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM48",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:KM60",
+      "code": "KM60",
+      "name": "VEYSEL KARANİ — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM60",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM61",
+      "code": "KM61",
+      "name": "PAŞAKÖY / SAMANDIRA — KARTAL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM61",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM70",
+      "code": "KM70",
+      "name": "SULTANBEYLİ/PETROL YOLU CADDESI — KARTAL METRO / CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM70",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM71",
+      "code": "KM71",
+      "name": "YENİDOĞAN PERONLAR/ ADİL MAH. — CEVİZLİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM71",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:KM72",
+      "code": "KM72",
+      "name": "PENDİK/PENDİK METRO/ YHT — SULTANBEYLİ DEVLET HAST.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=KM72",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:M5",
+      "code": "M5",
+      "name": "SAMANDIRA METRO — ÜSKÜDAR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=M5",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MK11",
+      "code": "MK11",
+      "name": "OLİMPİYATKÖY METRO — KAYAŞEHİR — GÜVERCİNTEPE",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK11",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK12",
+      "code": "MK12",
+      "name": "OLİMPİYATKÖY METRO — GÜVERCİNTEPE — KAYAŞEHİR",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK12",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK13",
+      "code": "MK13",
+      "name": "ŞAHİNTEPE İGTOT — OLİMPİYATKÖY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK13",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK14",
+      "code": "MK14",
+      "name": "KİPTAŞ VADİTEPE — OLİMPİYATKÖY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK14",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK15",
+      "code": "MK15",
+      "name": "BOĞAZKÖY / BAHÇEŞEHİR — OLİMPİYATKÖY METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK15",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK16",
+      "code": "MK16",
+      "name": "OLİMPİYATKÖY METRO — K.ÇEKMECE METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK16",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK19",
+      "code": "MK19",
+      "name": "AYAZMA SİTELERİ-ARENAPARK",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK19",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK22",
+      "code": "MK22",
+      "name": "TAŞOLUK PERON — ŞEHİR HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK22",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK31",
+      "code": "MK31",
+      "name": "K.S.S HASTANESİ-BAŞAKŞEHİR/FENERTEPE PERON",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK31",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK42",
+      "code": "MK42",
+      "name": "15 TEMMUZ MAHALLESİ — KİRAZLI METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK42",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK49",
+      "code": "MK49",
+      "name": "SULTANGAZİ PERON — KAZIM KARABEKİR METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK49",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MK50",
+      "code": "MK50",
+      "name": "SULTANGAZİ PERON-KAZIM KARABEKİR METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK50",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MK53",
+      "code": "MK53",
+      "name": "SULTANGAZİ PERON-TEKSTİLKENT METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK53",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MK97",
+      "code": "MK97",
+      "name": "ÇAVUŞPAŞA-ZEYTİNBURNU",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MK97",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:MR11",
+      "code": "MR11",
+      "name": "KAZLIÇEŞME — TOPKAPI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR11",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR20",
+      "code": "MR20",
+      "name": "YENİBOSNA METRO — KAZLIÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR20",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR40",
+      "code": "MR40",
+      "name": "K.S.S. HASTANESİ — ATAKENT — HALKALI MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR40",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR42",
+      "code": "MR42",
+      "name": "HALKALI MARMARAY / İNÖNÜ MAH. — SEFAKÖY METROBÜS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR42",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR50",
+      "code": "MR50",
+      "name": "HALKALI MARMARAY — ŞEHİR HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR50",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR51",
+      "code": "MR51",
+      "name": "İ.Ü. CERRAHPAŞA KAMPÜSÜ/BAHÇEŞEHİR — HALKALI MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR51",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR52",
+      "code": "MR52",
+      "name": "SÖĞÜTLÜÇEŞME — HALKALI MARMARAY — ŞEHİR HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR52",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR54",
+      "code": "MR54",
+      "name": "IGTOT-HALKALI MARMARAY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR54",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR60",
+      "code": "MR60",
+      "name": "PENDİK/PENDİK YHT-SABİHA GÖKÇEN HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR60",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR61",
+      "code": "MR61",
+      "name": "GÜZELYALI-TUZLA DEVLET HASTANESİ",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR61",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:MR9",
+      "code": "MR9",
+      "name": "ATATÜRK MAH. / ÇAMLIK — AYRILIKÇEŞME",
+      "url": "https://iett.istanbul/RouteDetail?hkod=MR9",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:PD1",
+      "code": "PD1",
+      "name": "YENİKAPI — BEYAZIT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=PD1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SG-1",
+      "code": "SG-1",
+      "name": "KADIKÖY — SABİHA GÖKÇEN HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SG-1",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:SG-2",
+      "code": "SG-2",
+      "name": "TAKSİM — SABİHA GÖKÇEN HAVALİMANI",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SG-2",
+      "status": 200,
+      "tariff": "ÖZEL TARİFE"
+    },
+    {
+      "routeId": "iett:SM1",
+      "code": "SM1",
+      "name": "SULTANBEYLI — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM12",
+      "code": "SM12",
+      "name": "MALTEPE MYO — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM12",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM13",
+      "code": "SM13",
+      "name": "YENIDOĞAN/UFUK CADDESI — SANCAKTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM13",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM14",
+      "code": "SM14",
+      "name": "AYAZMA YAŞAM VADISI-SANCAKTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM14",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM2",
+      "code": "SM2",
+      "name": "AHMET YESEVI MAHALLESI — SANCAKTEPE METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM3",
+      "code": "SM3",
+      "name": "MIMAR SINAN MAHALLESI — PROF.DR.FERIHA ÖZ HAST.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM4",
+      "code": "SM4",
+      "name": "KURTKÖY METRO / HILAL KONUTLARI — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM5",
+      "code": "SM5",
+      "name": "SULTANBEYLI ORMAN CADDESI — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM5",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM6",
+      "code": "SM6",
+      "name": "SULTANBEYLİ DEVLET HASTANESİ — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM6",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM7",
+      "code": "SM7",
+      "name": "YENIDOĞAN — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM7",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:SM9",
+      "code": "SM9",
+      "name": "KARTAL METRO — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=SM9",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:T2",
+      "code": "T2",
+      "name": "TAKSİM — TÜNEL",
+      "url": "https://iett.istanbul/RouteDetail?hkod=T2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM1",
+      "code": "TM1",
+      "name": "EMNİYETTEPE — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM1",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:TM10",
+      "code": "TM10",
+      "name": "YEŞİLPINAR — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM10",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM11",
+      "code": "TM11",
+      "name": "YEŞİLPINAR — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM11",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM12",
+      "code": "TM12",
+      "name": "KARADOLAP — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM12",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM13",
+      "code": "TM13",
+      "name": "EYÜPSULTAN — GOP — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM13",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM14",
+      "code": "TM14",
+      "name": "YENİMAHALLE/SARIGÖL-ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM14",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM15",
+      "code": "TM15",
+      "name": "CEBECİ PERONLAR — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM15",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM16",
+      "code": "TM16",
+      "name": "YENİMAHALLE — GOP — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM16",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM17",
+      "code": "TM17",
+      "name": "SULTANGAZİ — GAZİ — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM17",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM18",
+      "code": "TM18",
+      "name": "MESCİD İ SELAM — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM18",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM19",
+      "code": "TM19",
+      "name": "ZÜBEYDE HANIM — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM19",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM2",
+      "code": "TM2",
+      "name": "HAMİDİYE — GÜZELTEPE — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM3",
+      "code": "TM3",
+      "name": "HAMİDİYE — KAĞITHANE — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM3",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM4",
+      "code": "TM4",
+      "name": "GÖKTÜRK- ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM4",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM5",
+      "code": "TM5",
+      "name": "ALİBEYKÖY — 5.LEVENT",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM5",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM6",
+      "code": "TM6",
+      "name": "MEVLANA — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM6",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM7",
+      "code": "TM7",
+      "name": "ÇIRÇIR METRO — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM7",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM8",
+      "code": "TM8",
+      "name": "AKŞEMSETTİN — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM8",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:TM9",
+      "code": "TM9",
+      "name": "YENİMAHALLE — K.KARABEKİR — ALİBEYKÖY",
+      "url": "https://iett.istanbul/RouteDetail?hkod=TM9",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:U1",
+      "code": "U1",
+      "name": "BEŞİKTAŞ-ULUS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=U1",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:U2",
+      "code": "U2",
+      "name": "BEŞİKTAŞ-ULUS",
+      "url": "https://iett.istanbul/RouteDetail?hkod=U2",
+      "status": 200,
+      "tariff": "TEK BİLETLİ"
+    },
+    {
+      "routeId": "iett:UM11",
+      "code": "UM11",
+      "name": "KİRAZLITEPE-KISIKLI METRO-ESATPAŞA",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM11",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM13",
+      "code": "UM13",
+      "name": "KÜÇÜKSU / YAVUZTÜRK MAHALLESİ — ÜMRANİYE EĞT.ARŞ.HST.",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM13",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM36",
+      "code": "UM36",
+      "name": "ESENEVLER — BULGURLU METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM36",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM40",
+      "code": "UM40",
+      "name": "ATATÜRK MAH./ TAŞDELEN — NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM40",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM60",
+      "code": "UM60",
+      "name": "SANCAKTEPE — NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM60",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM61",
+      "code": "UM61",
+      "name": "PAŞAKÖY/YENİDOĞAN-NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM61",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM62",
+      "code": "UM62",
+      "name": "YENİDOĞAN/TAŞDELEN-NECİP FAZIL METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM62",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM73",
+      "code": "UM73",
+      "name": "SABİHA GÖKÇEN H.L./ SULTANBEYLİ — SAMANDIRA MERKEZ METRO",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM73",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    },
+    {
+      "routeId": "iett:UM74",
+      "code": "UM74",
+      "name": "SULTANBEYLİ DEVLET HAST./ NECİP FAZIL METRO — DUDULLU OSB",
+      "url": "https://iett.istanbul/RouteDetail?hkod=UM74",
+      "status": 200,
+      "tariff": "METRO ENTEGRE"
+    }
+  ]
+}

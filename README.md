@@ -1,6 +1,6 @@
 # İstanbulum
 
-İstanbul otobüs, metrobüs ve metro hatlarını; yön bazlı güzergâhlarıyla durak/istasyonlarını tek haritada incelemeyi sağlayan web uygulaması.
+İstanbul otobüs, metrobüs, metro, tramvay, füniküler, Marmaray ve Şehir Hatları vapur hatlarını yön bazlı güzergâhlarıyla tek haritada incelemeyi sağlayan web uygulaması.
 
 ## MVP özellikleri
 
@@ -19,6 +19,10 @@
 - Açık/koyu tema ve mobil uyumlu arayüz
 - Seçili hattın yön bazlı canlı araç konumları ve açıklayıcı hata/boş durumları
 - M1A, M1B, M2–M9 ve M11 için statik metro güzergâhı ve istasyonları
+- T1, T3, T4, T5 tramvay; F1, F4 füniküler ve B1 Marmaray için statik güzergâh/istasyonlar
+- Şehir Hatları iç hat, Boğaz ve Adalar güzergâhları için statik iskele sıraları
+- Otobüs, raylı sistem ve vapur için sade ulaşım türü filtresi
+- Hat detayında kaynak bağlantısı, veri tarihi ve canlı/statik veri sınırı
 
 ## Teknoloji
 
@@ -75,7 +79,43 @@ Metro hatları çalışma zamanında dış kaynağa bağlanmaz. `data/metro/line
 npm run data:build-metro
 ```
 
-Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz. Aynı statik katalog yaklaşımı ileride vapur ve minibüs ağları için de kullanılacaktır.
+Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz.
+
+### Tramvay, füniküler ve Marmaray
+
+`data/rail/lines.json` kapsamı bilinçli olarak T1, T3, T4, T5, F1, F4 ve B1 ile sınırlar. Metro İstanbul/TCDD doğrulaması ve OpenStreetMap geometrileri build sırasında statik çıktıya çevrilir:
+
+```bash
+npm run data:build-rail
+```
+
+Çıktılar `public/rail` altında tutulur. Teleferik kapsam dışıdır ve bu ağlarda canlı araç konumu sorgulanmaz.
+
+### Şehir Hatları vapur verisi
+
+Şehir Hatları'nın iç hat, Boğaz ve Adalar sefer sayfalarındaki hat/iskele sıraları ile resmî iskele sayfalarındaki koordinatlar statik kataloğa dönüştürülür:
+
+```bash
+npm run data:build-ferry
+```
+
+Çıktılar `public/ferry` altında tutulur. İskeleler arasındaki çizgiler gerçek gemi izi değil şematik bağlantıdır; canlı vapur konumu henüz kullanılmaz.
+
+### İstanbulkart tarife verisi
+
+Tarife verisi uygulama çalışma anında dış kaynaktan çekilmez. [İBB TUHİM İstanbulkart ücret tarifesi](https://tuhim.ibb.gov.tr/media/27491/%C4%B0stanbulkart.pdf) kontrollü olarak `data/fares/istanbulkart-2026-07-20.json` dosyasına dönüştürülür; kaynak, karar, geçerlilik ve doğrulama tarihleri veriyle birlikte taşınır:
+
+```bash
+npm run data:build-fares
+```
+
+Çıktı `public/fares/current.json` altında yayımlanır. Genel tarife, Metrobüs/Marmaray/M11 mesafe bantları ve desteklenen vapur profilleri ayrı tutulur. İETT hatlarında resmî hat detayı hangi tarife sınıfını bildiriyorsa yalnız o sınıf gösterilir; kaynak sınıf döndürmeyen hatta genel ücret varsayılmaz.
+
+İETT hat tarifeleri için `npm run data:audit-iett-fares` komutu, tüm statik İETT hatlarının resmî hat detayındaki tarife sınıfını tek seferlik snapshot olarak `data/fares/snapshots/iett-route-tariffs.json` dosyasına alır. Bu bakım işlemi uygulama çalışırken tetiklenmez. Sınıf kuralları `data/fares/iett-route-tariff-rules.json` içinde sürümlenmiştir; yeni veya eşleştirilmemiş bir resmî sınıf, tarife çıktısı üretilirken hata verir.
+
+Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gösterir. Kullanıcı `Tarifeyi gör` seçeneğini açtığında kart türlerine göre tutarlar veya mesafe bantları, abonman/sınırlı bilet limiti, kaynak bağlantısı ve geçerlilik tarihi görünür. Karttaki bilgi simgeleri, resmî tarifedeki `İndirimli 2` ve `30+ İndirimli Öğrenci` gruplarını açıklar. Bu bilgi kesin yolculuk ücreti hesaplayıcısı değildir; aktarma, mesafe, iade ve saat kuralları uygulanabilir.
+
+`Uygulama hakkında → Tarifeler` penceresi genel İstanbulkart kart türlerini, Mavi Kart aylık abonmanlarını ve 1–12 geçişlik sınırlı biletleri tek yerde gösterir. Bu ekran da aynı statik çıktıdan beslenir; uygulama açılırken TUHİM’e istek göndermez. Mesafe, iskele, aktarma ve iade kuralları içeren hatlarda kesin ücret için ilgili hat ayrıntısı kullanılmalıdır.
 
 ## Paylaşılabilir bağlantılar
 
@@ -95,7 +135,11 @@ Renkler işletmeci tarafından sağlanan resmî hat renkleri değildir. Hat kodu
 
 Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hattın canlı araçları, hat kodundan bağımsız olarak İETT `GetHatOtoKonum_json` servisi üzerinden sunucu tarafında alınır; tarayıcı kaynak servise doğrudan bağlanmaz. Statik ağdaki 801 hat kodunun tamamı canlı sorgu doğrulamasından geçer. Bununla birlikte servis, o anda aktif aracı veya konum kaydı bulunmayan bir hat için boş liste döndürebilir. Uygulama yalnız seçili hattı sorgular, yanıtları kısa süre önbelleğe alır ve canlı kaynak kesilse bile statik güzergâh/durak deneyimini korur. `public/iett` üretim çıktıları dağıtıma dahil edilmeden yapılan yeni bir kurulumda hat verileri görüntülenmez.
 
-Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Taze yanıtlar varsayılan olarak 45 saniye, son geçerli yanıtlar en fazla 10 dakika saklanır. Üst kaynağın yayımlanmış kotası olmadığı için uygulama varsayılan olarak saatte en fazla 360 kaynak isteği yapar; limit, kaynak sağlığı ölçüldükten sonra hosting ortamından değiştirilebilir. Başarısız kaynak 15 saniye boyunca tekrar zorlanmaz ve 1 MB’ı aşan yanıtlar işlenmez. Canlı API, kullanıcı başına dakikada 12 istekle sınırlıdır; CDN yanıtı 30 saniye saklayarak farklı Worker örneklerinden gelen aynı hat isteklerini birleştirmelidir.
+Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Seçili İETT hattı görünür sekmede 30 saniyede bir kontrol edilir ve sunucu taze yanıtı varsayılan olarak 30 saniye saklar; sekmeye geri dönülmesi veya bağlantının yeniden kurulması da güvenli bir kontrol tetikler. Son geçerli yanıtlar en fazla 10 dakika saklanır. Üst kaynağın yayımlanmış kotası olmadığı için uygulama varsayılan olarak saatte en fazla 360 kaynak isteği yapar; limit, kaynak sağlığı ölçüldükten sonra hosting ortamından değiştirilebilir. Başarısız kaynak 15 saniye boyunca tekrar zorlanmaz ve 1 MB’ı aşan yanıtlar işlenmez. Canlı API, kullanıcı başına dakikada 12 istekle sınırlıdır; CDN yanıtı 30 saniye saklayarak farklı Worker örneklerinden gelen aynı hat isteklerini birleştirmelidir.
+
+Üst kaynak isteği varsayılan olarak 10 saniyede kesin biçimde sonlandırılır. Bu koruma, çalışma ortamının ağ isteği iptalini geciktirdiği durumda da paylaşılan hat isteğini serbest bırakır; kullanıcıya hata veya varsa son geçerli snapshot döner ve sonraki hat sorguları kilitlenmez.
+
+Hat ayrıntısında yer alan canlı veri bilgisi, konum zamanını ve yanıtın niteliğini açıkça ayırır: `yeni kaynak yanıtı`, 30 saniyelik süre içindeki `taze önbellek` veya kaynak hatasında gösterilen `önceki yanıt`. Bu ifadeler araçların kesin varış zamanı ya da sefer garantisi anlamına gelmez.
 
 ## Canlıya çıkış kontrol listesi
 
@@ -111,9 +155,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Yayın adayı: `0.6.0-rc.1`
-
-Canlı araçlar ve performans iyileştirmeleri `main` dalına birleştirildi.
+Güncel beta sürüm: `0.7.0-beta.2`. Genişletilmiş statik ulaşım ağı, kaynaklı tarife kataloğu ve canlı araç güncelliği iyileştirmeleri bu sürümde birlikte yayımlanır.
 
 ## Sürümleme yaklaşımı
 

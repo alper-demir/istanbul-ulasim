@@ -38,6 +38,8 @@ next-env.d.ts
 /work/
 *.tsbuildinfo
 !public/metro/
+!public/rail/
+!public/ferry/
 data/*.geojson
 data/*.csv
 data/*.txt

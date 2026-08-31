@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fareForRoute } from './fare-catalog.mjs';
 
 const root = process.cwd();
 const manifest = JSON.parse(await readFile(join(root, 'data', 'metro', 'lines.json'), 'utf8'));
@@ -102,7 +103,7 @@ for (const line of manifest.lines) {
   const route = {
     id: `metro:${line.code}`, code: line.code, name: line.name, color: line.color, mode: 'Metro',
     operator: line.operator, source: 'metro-istanbul', supportsLiveVehicles: false,
-    fareLabel: 'Tarife bilgisi yakında eklenecek', durationMinutes: primary.durationMinutes,
+    ...fareForRoute(`metro:${line.code}`), durationMinutes: primary.durationMinutes,
     coordinates: primary.coordinates, stops: primary.stops, vehicles: [], directions,
   };
   routeIndex.push({ ...route, coordinates: undefined, stops: undefined, vehicles: undefined, directions: undefined, vehicleCount: 0, stopCount: primary.stops.length });

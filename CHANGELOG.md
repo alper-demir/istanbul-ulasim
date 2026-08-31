@@ -2,6 +2,41 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.7.0-beta.2 — Tarifeler ve canlı veri güncelliği
+
+### Eklendi
+
+- İBB TUHİM’in 20 Temmuz 2026’dan itibaren geçerli İstanbulkart tarifesini kaynak/karar/son doğrulama metadata’sıyla saklayan sürümlü veri sözleşmesi.
+- Genel tarife, Metrobüs, Marmaray, M11 ve desteklenen Şehir Hatları profilleri; 500T ve seçili vapur hatları için doğrulanmış hat eşleştirmeleri.
+- `data:build-fares` komutu, statik tarife çıktısı ve tarife profil/eşleştirme sözleşme testleri.
+- Hat detayındaki kompakt tarife kartı; istekle açılan kart türü ücretleri, mesafe bantları, limitler, kaynak bağlantısı ve geçerlilik bilgisini gösterir.
+- `Uygulama hakkında → Tarifeler` penceresi; genel İstanbulkart fiyatlarını, 1–12 geçişlik sınırlı biletleri, resmî kaynak bağlantısını ve hat bazlı ücret uyarılarını sade bir görünümde sunar.
+- Mavi Kart aylık abonmanları; kart türüne göre fiyat ve resmî aylık geçiş limitiyle tarife kataloğuna eklendi.
+
+### Güvenilirlik
+
+- İETT hatlarında resmî hat detayından doğrulanmamış özel biletli tarife sınıfı varsayılan olarak atanmaz; genel tarife durumu ayrı işaretlenir.
+- E-3 hattı resmî İETT hat detayı ve TUHİM tarife satırıyla üç biletli, tüm kart türlerinde aynı ücretli profil olarak doğrulandı; kart türü açıklama ipuçları eklendi.
+- Tüm 801 statik İETT hattı resmî hat detayındaki tarife sınıfıyla denetlendi; doğrulanmış sınıflar statik snapshot/rule eşleştirmesiyle yayımlanıyor. Kaynak sınıf döndürmeyen hatlar artık genel ücret varsaymak yerine `Tarife doğrulanıyor` durumunu gösterir.
+- Seçili İETT hattının canlı araç yenilemesi ve sunucu taze önbelleği 30 saniyede eşitlendi; sekmeye dönüşte ve bağlantı yeniden kurulduğunda güvenli bir kontrol eklenirken üst kaynak kotası korunur.
+- Hat ayrıntısı artık canlı konumun yeni kaynak yanıtı, taze önbellek veya önceki/fallback yanıt olduğunu açıkça belirtir.
+- Canlı kaynağın ağ isteği iptalini uygulamadığı durumlarda paylaşılan hat sorgusunun süresiz beklemesini önleyen kesin 10 saniyelik timeout ve regresyon testi eklendi.
+- Yerel/Cloudflare çalışma yapılandırmasındaki canlı taze önbellek varsayılanı, uygulama ve dokümantasyonla tutarlı biçimde 30 saniyeye indirildi.
+
+## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
+
+### Eklendi
+
+- T1, T3, T4, T5 tramvay; F1, F4 füniküler ve B1 Marmaray hatları için kaynaklı statik güzergâh/istasyon paketleri.
+- Şehir Hatları iç hat, Boğaz ve Adalar kapsamındaki 31 güzergâh ile 44 iskeleyi üreten statik veri hattı.
+- Tümü/Otobüs/Raylı/Vapur filtresi; hat detayında kaynak bağlantısı, veri tarihi ve canlı/statik veri sınırı.
+- Raylı sistem ve vapur paketlerinin kapsamını, koordinatlarını ve kaynak metadata'sını doğrulayan sözleşme testleri.
+
+### Değiştirildi
+
+- Vapur güzergâhları gerçek gemi iziyle karıştırılmaması için şematik geometri olarak etiketlendi.
+- Uygulama açıklamaları yalnız İETT araçlarının canlı olduğunu; diğer ağların statik sunulduğunu açıkça belirtecek şekilde güncellendi.
+
 ## 0.6.0-rc.3 — Hosted harita düzeltmesi
 
 ### Düzeltildi

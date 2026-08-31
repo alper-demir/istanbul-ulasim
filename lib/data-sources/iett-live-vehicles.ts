@@ -11,7 +11,10 @@ function configuredLimit(name: string, fallback: number) {
   return Number.isFinite(value) && value >= 0 ? Math.round(value) : fallback;
 }
 
-const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 45_000);
+// Keep the server snapshot aligned with the focused-route client polling
+// interval. This makes a normal refresh eligible for a newer upstream value
+// without increasing the number of route queries made by the interface.
+const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 30_000);
 const STALE_CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_STALE_TTL_MS', 10 * 60 * 1_000);
 const UPSTREAM_TIMEOUT_MS = configuredMilliseconds('IETT_LIVE_TIMEOUT_MS', 10_000);
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
@@ -89,6 +92,23 @@ function directionId(routeVariantCode: string) {
 
 function validIstanbulCoordinate(longitude: number, latitude: number) {
   return longitude >= 27.5 && longitude <= 30.5 && latitude >= 40.5 && latitude <= 42;
+}
+
+export async function runWithTimeout<T>(operation: (signal: AbortSignal) => Promise<T>, timeoutMs: number): Promise<T> {
+  const controller = new AbortController();
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => {
+      controller.abort();
+      reject(new Error('İETT canlı araç isteği zaman aşımına uğradı'));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([operation(controller.signal), timeout]);
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
 }
 
 function normalizeVehicle(raw: RawIettVehicle, requestedRouteCode: string, now: Date): IettLiveVehicle | null {
@@ -174,13 +194,13 @@ async function fetchSnapshot(routeCode: string) {
   if (UPSTREAM_RATE_LIMIT > 0 && upstreamRequestTimes.length >= UPSTREAM_RATE_LIMIT) throw new Error('İETT canlı araç servisinin saatlik istek bütçesi doldu');
   if (UPSTREAM_RATE_LIMIT > 0) upstreamRequestTimes.push(now);
 
-  const response = await fetch(IETT_SOURCES.vehiclePositions.endpoint, {
+  const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
     method:'POST',
     headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
     body:soapEnvelope(routeCode),
     cache:'no-store',
-    signal:AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-  });
+    signal,
+  }), UPSTREAM_TIMEOUT_MS);
   if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
   const contentLength = Number(response.headers.get('content-length'));
   if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
