@@ -137,6 +137,8 @@ Güzergâh ve duraklar statik açık veri çıktılarıdır. Seçili resmî hatt
 
 Canlı veri katmanı aynı hat için eşzamanlı istekleri birleştirir; böylece aynı hattı inceleyen kullanıcılar tek upstream çağrısını paylaşır. Seçili İETT hattı görünür sekmede 30 saniyede bir kontrol edilir ve sunucu taze yanıtı varsayılan olarak 30 saniye saklar; sekmeye geri dönülmesi veya bağlantının yeniden kurulması da güvenli bir kontrol tetikler. Son geçerli yanıtlar en fazla 10 dakika saklanır. Üst kaynağın yayımlanmış kotası olmadığı için uygulama varsayılan olarak saatte en fazla 360 kaynak isteği yapar; limit, kaynak sağlığı ölçüldükten sonra hosting ortamından değiştirilebilir. Başarısız kaynak 15 saniye boyunca tekrar zorlanmaz ve 1 MB’ı aşan yanıtlar işlenmez. Canlı API, kullanıcı başına dakikada 12 istekle sınırlıdır; CDN yanıtı 30 saniye saklayarak farklı Worker örneklerinden gelen aynı hat isteklerini birleştirmelidir.
 
+Üst kaynak isteği varsayılan olarak 10 saniyede kesin biçimde sonlandırılır. Bu koruma, çalışma ortamının ağ isteği iptalini geciktirdiği durumda da paylaşılan hat isteğini serbest bırakır; kullanıcıya hata veya varsa son geçerli snapshot döner ve sonraki hat sorguları kilitlenmez.
+
 Hat ayrıntısında yer alan canlı veri bilgisi, konum zamanını ve yanıtın niteliğini açıkça ayırır: `yeni kaynak yanıtı`, 30 saniyelik süre içindeki `taze önbellek` veya kaynak hatasında gösterilen `önceki yanıt`. Bu ifadeler araçların kesin varış zamanı ya da sefer garantisi anlamına gelmez.
 
 ## Canlıya çıkış kontrol listesi

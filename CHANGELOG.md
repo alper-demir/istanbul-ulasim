@@ -20,6 +20,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Tüm 801 statik İETT hattı resmî hat detayındaki tarife sınıfıyla denetlendi; doğrulanmış sınıflar statik snapshot/rule eşleştirmesiyle yayımlanıyor. Kaynak sınıf döndürmeyen hatlar artık genel ücret varsaymak yerine `Tarife doğrulanıyor` durumunu gösterir.
 - Seçili İETT hattının canlı araç yenilemesi ve sunucu taze önbelleği 30 saniyede eşitlendi; sekmeye dönüşte ve bağlantı yeniden kurulduğunda güvenli bir kontrol eklenirken üst kaynak kotası korunur.
 - Hat ayrıntısı artık canlı konumun yeni kaynak yanıtı, taze önbellek veya önceki/fallback yanıt olduğunu açıkça belirtir.
+- Canlı kaynağın ağ isteği iptalini uygulamadığı durumlarda paylaşılan hat sorgusunun süresiz beklemesini önleyen kesin 10 saniyelik timeout ve regresyon testi eklendi.
 
 ## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
 
