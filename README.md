@@ -115,7 +115,7 @@ npm run data:build-fares
 
 Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gösterir. Kullanıcı `Tarifeyi gör` seçeneğini açtığında kart türlerine göre tutarlar veya mesafe bantları, abonman/sınırlı bilet limiti, kaynak bağlantısı ve geçerlilik tarihi görünür. Karttaki bilgi simgeleri, resmî tarifedeki `İndirimli 2` ve `30+ İndirimli Öğrenci` gruplarını açıklar. Bu bilgi kesin yolculuk ücreti hesaplayıcısı değildir; aktarma, mesafe, iade ve saat kuralları uygulanabilir.
 
-`Uygulama hakkında → Tarifeler` penceresi genel İstanbulkart kart türlerini ve 1–12 geçişlik sınırlı biletleri tek yerde gösterir. Bu ekran da aynı statik çıktıdan beslenir; uygulama açılırken TUHİM’e istek göndermez. Mesafe, iskele, aktarma ve iade kuralları içeren hatlarda kesin ücret için ilgili hat ayrıntısı kullanılmalıdır.
+`Uygulama hakkında → Tarifeler` penceresi genel İstanbulkart kart türlerini, Mavi Kart aylık abonmanlarını ve 1–12 geçişlik sınırlı biletleri tek yerde gösterir. Bu ekran da aynı statik çıktıdan beslenir; uygulama açılırken TUHİM’e istek göndermez. Mesafe, iskele, aktarma ve iade kuralları içeren hatlarda kesin ücret için ilgili hat ayrıntısı kullanılmalıdır.
 
 ## Paylaşılabilir bağlantılar
 

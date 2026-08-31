@@ -41,6 +41,7 @@ type FareCatalog = {
   effectiveFrom: string;
   verifiedAt: string;
   limitedUseTickets?: Array<{ label: string; priceKurus: number; passCount: number }>;
+  monthlyPasses?: Array<{ label: string; priceKurus: number; passCount: number }>;
   sources: Array<{ id: string; label: string; url: string; decision?: string; effectiveFrom?: string; purpose?: string }>;
   profiles: FareProfile[];
   routeProfiles: Record<string, RouteProfile>;

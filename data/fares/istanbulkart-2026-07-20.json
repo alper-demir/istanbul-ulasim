@@ -19,6 +19,13 @@
     { "label": "On bir geçişlik bilet", "priceKurus": 59000, "passCount": 11 },
     { "label": "On iki geçişlik bilet", "priceKurus": 63500, "passCount": 12 }
   ],
+  "monthlyPasses": [
+    { "label": "Tam", "priceKurus": 362800, "passCount": 180 },
+    { "label": "Öğrenci", "priceKurus": 65300, "passCount": 200 },
+    { "label": "İndirimli 2", "priceKurus": 225600, "passCount": 200 },
+    { "label": "30+ indirimli öğrenci", "priceKurus": 326500, "passCount": 200 },
+    { "label": "İBB personeli", "priceKurus": 178000, "passCount": 100 }
+  ],
   "sources": [
     {
       "id": "tuhim-2026-07-20",

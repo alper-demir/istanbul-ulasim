@@ -11,6 +11,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - `data:build-fares` komutu, statik tarife çıktısı ve tarife profil/eşleştirme sözleşme testleri.
 - Hat detayındaki kompakt tarife kartı; istekle açılan kart türü ücretleri, mesafe bantları, limitler, kaynak bağlantısı ve geçerlilik bilgisini gösterir.
 - `Uygulama hakkında → Tarifeler` penceresi; genel İstanbulkart fiyatlarını, 1–12 geçişlik sınırlı biletleri, resmî kaynak bağlantısını ve hat bazlı ücret uyarılarını sade bir görünümde sunar.
+- Mavi Kart aylık abonmanları; kart türüne göre fiyat ve resmî aylık geçiş limitiyle tarife kataloğuna eklendi.
 
 ### Güvenilirlik
 

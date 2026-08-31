@@ -20,6 +20,12 @@ for (const ticket of catalog.limitedUseTickets) {
     throw new Error(`Invalid limited-use ticket: ${ticket.label ?? 'unknown'}`);
   }
 }
+if (!Array.isArray(catalog.monthlyPasses) || !catalog.monthlyPasses.length) throw new Error('Fare catalog must include monthly pass prices');
+for (const pass of catalog.monthlyPasses) {
+  if (!Number.isInteger(pass.priceKurus) || pass.priceKurus < 0 || !Number.isInteger(pass.passCount) || pass.passCount < 1) {
+    throw new Error(`Invalid monthly pass: ${pass.label ?? 'unknown'}`);
+  }
+}
 for (const [routeId, mapping] of Object.entries(catalog.routeProfiles)) {
   if (!routeId.includes(':') || !profileIds.has(mapping.profileId) || !sourceIds.has(mapping.sourceId)) throw new Error(`Invalid route fare mapping: ${routeId}`);
 }
