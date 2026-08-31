@@ -35,6 +35,14 @@ async function expectRouteFiles(network: 'rail' | 'ferry', routes: RouteSummary[
     expect(payload.data.stops).toHaveLength(summary.stopCount);
     expect(payload.data.directions.length).toBeGreaterThanOrEqual(1);
     expect(payload.data.coordinates.length).toBeGreaterThanOrEqual(2);
+    if (network === 'ferry') {
+      for (const direction of payload.data.directions) {
+        expect(direction.coordinates.length).toBeGreaterThanOrEqual(direction.stops.length);
+        for (const stop of direction.stops as Array<{ coordinates: [number, number] }>) {
+          expect(direction.coordinates).toContainEqual(stop.coordinates);
+        }
+      }
+    }
     for (const [longitude, latitude] of payload.data.stops.map((stop) => stop.coordinates)) {
       expect(longitude).toBeGreaterThan(27.5);
       expect(longitude).toBeLessThan(30.5);

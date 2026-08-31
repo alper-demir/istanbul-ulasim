@@ -67,6 +67,52 @@ function distanceSquared(a, b) {
   return longitude ** 2 + latitude ** 2;
 }
 
+function projectedDistanceMeters(point, projected) {
+  return Math.sqrt(distanceSquared(point, projected)) * 111_000;
+}
+
+function nearestDistanceMeters(point, coordinates) {
+  let nearest = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < coordinates.length - 1; index += 1) {
+    const start = coordinates[index];
+    const end = coordinates[index + 1];
+    const longitude = (point[0] - start[0]) * Math.cos((point[1] + start[1]) * Math.PI / 360);
+    const latitude = point[1] - start[1];
+    const dx = (end[0] - start[0]) * Math.cos((end[1] + start[1]) * Math.PI / 360);
+    const dy = end[1] - start[1];
+    const ratio = Math.max(0, Math.min(1, (longitude * dx + latitude * dy) / (dx * dx + dy * dy || 1)));
+    const projected = [start[0] + ratio * (end[0] - start[0]), start[1] + ratio * (end[1] - start[1])];
+    nearest = Math.min(nearest, projectedDistanceMeters(point, projected));
+  }
+  return nearest;
+}
+
+function anchorShapeToStops(coordinates, stops) {
+  const anchored = [];
+  let cursor = 0;
+  for (const stop of stops) {
+    let best = null;
+    for (let index = cursor; index < coordinates.length - 1; index += 1) {
+      const start = coordinates[index];
+      const end = coordinates[index + 1];
+      const longitude = (stop.coordinates[0] - start[0]) * Math.cos((stop.coordinates[1] + start[1]) * Math.PI / 360);
+      const latitude = stop.coordinates[1] - start[1];
+      const dx = (end[0] - start[0]) * Math.cos((end[1] + start[1]) * Math.PI / 360);
+      const dy = end[1] - start[1];
+      const ratio = Math.max(0, Math.min(1, (longitude * dx + latitude * dy) / (dx * dx + dy * dy || 1)));
+      const projected = [start[0] + ratio * (end[0] - start[0]), start[1] + ratio * (end[1] - start[1])];
+      const distance = projectedDistanceMeters(stop.coordinates, projected);
+      if (!best || distance < best.distance) best = { index, projected, distance };
+    }
+    if (!best) return null;
+    anchored.push(...(anchored.length ? [] : [coordinates[cursor]]));
+    anchored.push(best.projected, stop.coordinates);
+    cursor = best.index + 1;
+  }
+  anchored.push(...coordinates.slice(cursor));
+  return anchored.filter((coordinate, index, list) => index === 0 || coordinate[0] !== list[index - 1][0] || coordinate[1] !== list[index - 1][1]);
+}
+
 async function loadGtfsShapes() {
   const routes = parseCsv(await fetchCsv('https://data.ibb.gov.tr/dataset/121a9892-7945-419a-9b89-49f6083926df/resource/36b554c7-cae0-4b7e-978f-fc6a43664e88/download/routes.csv'));
   const trips = parseCsv(await fetchCsv('https://data.ibb.gov.tr/dataset/121a9892-7945-419a-9b89-49f6083926df/resource/dcee1700-e59f-4a5f-8009-f602045a4507/download/trips.csv'));
@@ -98,11 +144,16 @@ function matchGtfsShape(routeName, direction, candidates) {
     const last = candidate.coordinates.at(-1);
     const direct = distanceSquared(start, first) + distanceSquared(end, last);
     const reverse = distanceSquared(start, last) + distanceSquared(end, first);
-    const endpointScore = Math.max(0, 1 - Math.sqrt(Math.min(direct, reverse)) / 0.12);
-    return { candidate, endpointScore, score: nameScore(routeName, candidate.route.route_long_name) * 0.65 + endpointScore * 0.35 };
+    const isReversed = reverse < direct;
+    const coordinates = isReversed ? [...candidate.coordinates].reverse() : candidate.coordinates;
+    const stopDistances = direction.stops.map((stop) => nearestDistanceMeters(stop.coordinates, coordinates));
+    const maxStopDistance = Math.max(...stopDistances);
+    const averageStopDistance = stopDistances.reduce((sum, distance) => sum + distance, 0) / stopDistances.length;
+    const coverageScore = Math.max(0, 1 - (averageStopDistance / 1_500)) * Math.max(0, 1 - (maxStopDistance / 4_000));
+    return { candidate: { ...candidate, coordinates }, endpointScore: Math.max(0, 1 - Math.sqrt(Math.min(direct, reverse)) / 0.12), maxStopDistance, averageStopDistance, score: nameScore(routeName, candidate.route.route_long_name) * 0.25 + coverageScore * 0.75 };
   }).sort((a, b) => b.score - a.score);
   const best = scored[0];
-  return best && best.score >= 0.30 && best.endpointScore >= 0.45 ? best : null;
+  return best ?? null;
 }
 
 function decodeHtml(value) {
@@ -207,7 +258,7 @@ for (const link of routeLinks) {
     };
     const matchedShape = matchGtfsShape(name, directionData, gtfsShapes);
     if (matchedShape) {
-      directionData.coordinates = matchedShape.candidate.coordinates;
+      directionData.coordinates = anchorShapeToStops(matchedShape.candidate.coordinates, stops) ?? stops.map((stop) => stop.coordinates);
       directionData.geometrySource = 'ibb-gtfs-shape';
       directionData.geometrySourceUpdatedAt = gtfsSource.publishedAt;
       directionData.geometrySourceUrl = gtfsSource.shapesUrl;
