@@ -8,6 +8,7 @@ describe('İstanbulkart fare catalog', () => {
     expect(istanbulFareCatalog.effectiveFrom).toBe('2026-07-20');
     expect(istanbulFareCatalog.sources.some((source) => source.id === 'tuhim-2026-07-20')).toBe(true);
     expect(istanbulFareCatalog.profiles.every((profile) => profile.sourceId)).toBe(true);
+    expect(istanbulFareCatalog.limitedUseTickets?.at(-1)).toMatchObject({ passCount: 12, priceKurus: 63500 });
   });
 
   it('keeps route-specific and distance-based rules distinct', () => {

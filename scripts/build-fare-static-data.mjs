@@ -14,6 +14,12 @@ const isDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 
 if (catalog.schemaVersion !== 1) throw new Error(`Unsupported fare schema: ${catalog.schemaVersion}`);
 if (!isDate(catalog.effectiveFrom) || !isDate(catalog.verifiedAt)) throw new Error('Fare catalog must include ISO effectiveFrom and verifiedAt dates');
+if (!Array.isArray(catalog.limitedUseTickets) || !catalog.limitedUseTickets.length) throw new Error('Fare catalog must include limited-use ticket prices');
+for (const ticket of catalog.limitedUseTickets) {
+  if (!Number.isInteger(ticket.priceKurus) || ticket.priceKurus < 0 || !Number.isInteger(ticket.passCount) || ticket.passCount < 1) {
+    throw new Error(`Invalid limited-use ticket: ${ticket.label ?? 'unknown'}`);
+  }
+}
 for (const [routeId, mapping] of Object.entries(catalog.routeProfiles)) {
   if (!routeId.includes(':') || !profileIds.has(mapping.profileId) || !sourceIds.has(mapping.sourceId)) throw new Error(`Invalid route fare mapping: ${routeId}`);
 }

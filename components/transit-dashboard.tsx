@@ -8,7 +8,7 @@ import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
   BusFront, Check, ChevronRight, Clock3, LocateFixed, MapPin, Moon,
-  Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, TramFront, X,
+  Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, Ticket, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routes as fixtureRoutes, type TransitDirection, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
@@ -58,11 +58,18 @@ type FareCatalog = {
   effectiveFrom:string;
   verifiedAt:string;
   sources:Array<{ id:string; label:string; url:string }>;
+  limitedUseTickets?:Array<{ label:string; priceKurus:number; passCount:number }>;
   profiles:FareCatalogProfile[];
   routeProfiles:Record<string,{ profileId:string; verification:'route-verified' | 'group-verified' | 'general-only'; sourceId:string; note?:string }>;
   fallbackProfiles:Record<string,{ profileId:string; verification:'route-verified' | 'group-verified' | 'general-only'; sourceId:string; note?:string }>;
 };
 type ResolvedFare = FareCatalogProfile & { verification:'route-verified' | 'group-verified' | 'general-only'; source:{ label:string; url:string }; effectiveFrom:string; verifiedAt:string; note?:string };
+
+const PRICE_CATEGORY_HELP: Partial<Record<FarePriceKey,string>> = {
+  discounted: 'Resmî tarifedeki “İndirimli 2” kart grubu. Hak sahipliği ve kullanım koşulları İstanbulkart kurallarına bağlıdır.',
+  student30Plus: '30 yaşından gün almış öğrenciler için resmî tarifedeki ayrı öğrenci fiyatı.',
+};
+const PRICE_CATEGORY_LABEL: Record<FarePriceKey,string> = { full:'Tam', student:'Öğrenci', discounted:'İndirimli', student30Plus:'30+ öğrenci' };
 
 function readRouteStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -356,6 +363,7 @@ export function TransitDashboard() {
   const [locationOrigin, setLocationOrigin] = useState<'browser' | 'manual' | null>(() => readStoredManualLocation() ? 'manual' : null);
   const [comparisonRouteKeys, setComparisonRouteKeys] = useState<ComparisonRoute[]>([]);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [fareCatalogOpen, setFareCatalogOpen] = useState(false);
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
@@ -937,11 +945,14 @@ export function TransitDashboard() {
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Raylı sistemler</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Tramvay ve füniküler bilgileri <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://www.metro.istanbul/Hatlarimiz" target="_blank" rel="noreferrer">Metro İstanbul</a>, Marmaray bilgisi TCDD Taşımacılık doğrulamasıyla; geometriler OpenStreetMap katkılarından statik olarak üretilir.</p></div>
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Vapur ağı</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]"><a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://sehirhatlari.istanbul/tr/seferler" target="_blank" rel="noreferrer">Şehir Hatları</a> hat ve iskele sıraları statik katalog olarak sunulur. Haritadaki deniz çizgileri gerçek gemi izi değil, iskeleler arası şematik bağlantıdır.</p></div>
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Canlı araç konumları</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Seçili otobüs veya metrobüs hattı için <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl" target="_blank" rel="noreferrer">İETT canlı araç konum servisi</a> üzerinden alınır. Kaynakta gecikme, eksik kayıt veya konum sapması olabilir.</p></div>
+            <div className="rounded-xl border border-[var(--primary)]/20 bg-[var(--primary-soft)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-extrabold">Tarife ve biletler</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Güncel genel ücretleri, sınırlı geçiş biletlerini ve kaynak bilgisini inceleyin.</p></div><Button variant="secondary" size="sm" onClick={()=>{setAboutOpen(false);setFareCatalogOpen(true);}}><Ticket className="h-3.5 w-3.5" />Tarifeler</Button></div></div>
             <div className="rounded-xl border border-[var(--primary)]/20 bg-[var(--primary-soft)] p-3 text-[var(--foreground)]"><p className="text-xs font-extrabold">Bilgilendirme notu</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Gösterilen bilgiler bilgilendirme amaçlıdır; güncellik ve doğruluk veri sağlayıcılarına bağlıdır. Kesin sefer, varış saati veya operasyonel bilgi olarak kullanılmamalıdır.</p></div>
           </div>
           <div className="mt-5 flex items-center justify-between gap-3 border-t border-[var(--border)] pt-4"><span className="text-[10px] font-medium text-[var(--muted)]">v{APP_VERSION}</span><Button variant="secondary" size="sm" onClick={()=>setAboutOpen(false)}>Tamam</Button></div>
         </section>
       </div>}
+
+      {fareCatalogOpen&&<FareCatalogDialog catalog={fareCatalogQuery.data?.data} onClose={()=>setFareCatalogOpen(false)} />}
 
       {manualLocationMode&&<div className="glass-panel absolute left-1/2 top-[92px] z-40 flex w-[min(360px,calc(100%-24px))] -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-3 py-2.5"><span className="text-xs font-bold"><MapPin className="mr-1.5 inline h-4 w-4 text-[var(--primary)]" />Haritadan konumunu seç</span><Button variant="ghost" size="sm" onClick={cancelManualLocation}>Vazgeç</Button></div>}
 
@@ -1068,21 +1079,36 @@ function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; labe
 }
 
 function FareDetails({ fare }: { fare:ResolvedFare }) {
-  const priceCategoryHelp: Partial<Record<FarePriceKey,string>> = {
-    discounted: 'Resmî tarifedeki “İndirimli 2” kart grubu. Hak sahipliği ve kullanım koşulları İstanbulkart kurallarına bağlıdır.',
-    student30Plus: '30 yaşından gün almış öğrenciler için resmî tarifedeki ayrı öğrenci fiyatı.',
-  };
   const prices = fare.pricesKurus
-    ? ([['Tam','full'],['Öğrenci','student'],['İndirimli','discounted'],['30+ öğrenci','student30Plus']] as const)
+    ? (Object.entries(PRICE_CATEGORY_LABEL) as Array<[FarePriceKey,string]>)
+      .map(([key,label]) => [label,key] as const)
       .filter(([, key]) => fare.pricesKurus?.[key] !== undefined)
     : [];
 
   return <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-[10px]">
     <div className="flex items-center justify-between gap-2"><p className="font-bold">{fare.label}</p><a href={fare.source.url} target="_blank" rel="noreferrer" className="font-semibold text-[var(--primary)] underline underline-offset-2">Kaynak</a></div>
-    {prices.length>0&&<div className="mt-2 grid grid-cols-2 gap-1.5">{prices.map(([label,key])=><div key={key} className="rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="flex items-center gap-1 text-[9px] text-[var(--muted)]">{label}{priceCategoryHelp[key]&&<span title={priceCategoryHelp[key]} aria-label={`${label} açıklaması`} className="cursor-help text-[var(--primary)]"><Info className="h-3 w-3" /></span>}</span><span className="block text-xs font-extrabold">{formatFare(fare.pricesKurus?.[key])}</span></div>)}</div>}
+    {prices.length>0&&<div className="mt-2 grid grid-cols-2 gap-1.5">{prices.map(([label,key])=><div key={key} className="rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="flex items-center gap-1 text-[9px] text-[var(--muted)]">{label}{PRICE_CATEGORY_HELP[key]&&<span title={PRICE_CATEGORY_HELP[key]} aria-label={`${label} açıklaması`} className="cursor-help text-[var(--primary)]"><Info className="h-3 w-3" /></span>}</span><span className="block text-xs font-extrabold">{formatFare(fare.pricesKurus?.[key])}</span></div>)}</div>}
     {fare.bands&&<div className="mt-2 max-h-36 space-y-1 overflow-y-auto pr-1">{fare.bands.map((band)=><div key={band.label} className="flex items-center justify-between gap-2 rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="font-semibold">{band.label}</span><span className="text-right font-bold">{formatFare(band.pricesKurus.full)}</span></div>)}</div>}
     <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 border-t border-[var(--border)] pt-2 text-[9px] text-[var(--muted)]"><span>{formatSourceDate(fare.effectiveFrom)} itibarıyla</span>{fare.subscriptionLimit&&<span>· Abonman: {fare.subscriptionLimit} limit</span>}{fare.limitedUseTicketCount&&<span>· Sınırlı bilet: {fare.limitedUseTicketCount} geçiş</span>}</div>
     {[fare.note,...(fare.notes ?? [])].filter(Boolean).map((note)=><p key={note} className="mt-1 text-[9px] leading-relaxed text-[var(--muted)]">{note}</p>)}
+  </div>;
+}
+
+function FareCatalogDialog({ catalog,onClose }: { catalog:FareCatalog | undefined; onClose:()=>void }) {
+  const generalFare = catalog?.profiles.find((profile) => profile.id === 'urban-standard');
+  const source = catalog?.sources.find((item) => item.id === 'tuhim-2026-07-20');
+  const prices = generalFare?.pricesKurus
+    ? (Object.entries(PRICE_CATEGORY_LABEL) as Array<[FarePriceKey,string]>).map(([key,label]) => [label,key] as const).filter(([, key]) => generalFare.pricesKurus?.[key] !== undefined)
+    : [];
+
+  return <div className="absolute inset-0 z-[80] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={onClose}>
+    <section role="dialog" aria-modal="true" aria-labelledby="fare-catalog-title" className="glass-panel max-h-[min(680px,calc(100dvh-32px))] w-full max-w-lg overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
+      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulkart</p><h2 id="fare-catalog-title" className="mt-1 text-lg font-extrabold">Tarifeler</h2><p className="mt-1 text-[11px] text-[var(--muted)]">{catalog ? `${formatSourceDate(catalog.effectiveFrom)} itibarıyla` : 'Tarife verisi yükleniyor'}</p></div><Button variant="ghost" size="icon" aria-label="Tarifeler penceresini kapat" onClick={onClose}><X className="h-4 w-4" /></Button></div>
+      {generalFare&&<><div className="mt-5"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-extrabold">Genel İstanbulkart</h3>{source&&<a href={source.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[var(--primary)] underline underline-offset-2">Resmî kaynak</a>}</div><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">İETT’de tek biletli, metro entegre ve genel ilk biniş sınıfına giren hatlar için başlangıç ücretleri.</p><div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{prices.map(([label,key])=><div key={key} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-2.5"><span className="flex items-center gap-1 text-[10px] font-medium text-[var(--muted)]">{label}{PRICE_CATEGORY_HELP[key]&&<span title={PRICE_CATEGORY_HELP[key]} aria-label={`${label} açıklaması`} className="cursor-help text-[var(--primary)]"><Info className="h-3 w-3" /></span>}</span><strong className="mt-1 block text-base">{formatFare(generalFare.pricesKurus?.[key])}</strong></div>)}</div></div>
+      <div className="mt-5 border-t border-[var(--border)] pt-4"><h3 className="text-sm font-extrabold">Sınırlı geçiş biletleri</h3><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Fiziksel, SMS, QR ve web QR dahil sınırlı kullanımlı elektronik bilet tarifesi.</p><div className="mt-3 grid grid-cols-2 gap-1.5">{catalog?.limitedUseTickets?.map((ticket)=><div key={ticket.passCount} className="flex items-center justify-between gap-2 rounded-lg bg-[var(--surface-muted)] px-2.5 py-2 text-[11px]"><span className="font-semibold">{ticket.label}</span><strong>{formatFare(ticket.priceKurus)}</strong></div>)}</div></div>
+      <div className="mt-5 border-t border-[var(--border)] pt-4"><h3 className="text-sm font-extrabold">Hatlara göre ücret</h3><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Metrobüs, Marmaray, M11, kademeli İETT ve bazı vapur hatlarında ücret mesafe, iskele veya tarife değişim noktasına bağlıdır. Bu nedenle kesin tutarı ilgili hattın “Tarifeyi gör” ayrıntısında kontrol edin.</p><div className="mt-3 flex flex-wrap gap-1.5">{['Metrobüs: mesafe bazlı','Marmaray ve M11: iade cihazı','Kademeli İETT','Vapur: iskeleye göre'].map((item)=><span key={item} className="rounded-full bg-[var(--primary-soft)] px-2.5 py-1 text-[10px] font-semibold text-[var(--primary)]">{item}</span>)}</div></div>
+      <div className="mt-5 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary-soft)] p-3 text-[11px] leading-relaxed text-[var(--muted)]">Tarife verisi uygulama içinde statik sunulur; uygulama açıldığında dış tarife kaynağına istek gönderilmez. Aktarma, mesafe, iade ve saat kuralları nedeniyle bu ekran kesin yolculuk ücreti hesaplayıcısı değildir.</div></>}
+    </section>
   </div>;
 }
 

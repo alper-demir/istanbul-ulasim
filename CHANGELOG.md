@@ -10,6 +10,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Genel tarife, Metrobüs, Marmaray, M11 ve desteklenen Şehir Hatları profilleri; 500T ve seçili vapur hatları için doğrulanmış hat eşleştirmeleri.
 - `data:build-fares` komutu, statik tarife çıktısı ve tarife profil/eşleştirme sözleşme testleri.
 - Hat detayındaki kompakt tarife kartı; istekle açılan kart türü ücretleri, mesafe bantları, limitler, kaynak bağlantısı ve geçerlilik bilgisini gösterir.
+- `Uygulama hakkında → Tarifeler` penceresi; genel İstanbulkart fiyatlarını, 1–12 geçişlik sınırlı biletleri, resmî kaynak bağlantısını ve hat bazlı ücret uyarılarını sade bir görünümde sunar.
 
 ### Güvenilirlik
 

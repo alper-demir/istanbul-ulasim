@@ -5,6 +5,20 @@
   "currency": "TRY",
   "effectiveFrom": "2026-07-20",
   "verifiedAt": "2026-09-01",
+  "limitedUseTickets": [
+    { "label": "Tek geçişlik bilet", "priceKurus": 6500, "passCount": 1 },
+    { "label": "İki geçişlik bilet", "priceKurus": 12000, "passCount": 2 },
+    { "label": "Üç geçişlik bilet", "priceKurus": 18500, "passCount": 3 },
+    { "label": "Dört geçişlik bilet", "priceKurus": 23000, "passCount": 4 },
+    { "label": "Beş geçişlik bilet", "priceKurus": 27500, "passCount": 5 },
+    { "label": "Altı geçişlik bilet", "priceKurus": 33000, "passCount": 6 },
+    { "label": "Yedi geçişlik bilet", "priceKurus": 38500, "passCount": 7 },
+    { "label": "Sekiz geçişlik bilet", "priceKurus": 43000, "passCount": 8 },
+    { "label": "Dokuz geçişlik bilet", "priceKurus": 48000, "passCount": 9 },
+    { "label": "On geçişlik bilet", "priceKurus": 53000, "passCount": 10 },
+    { "label": "On bir geçişlik bilet", "priceKurus": 59000, "passCount": 11 },
+    { "label": "On iki geçişlik bilet", "priceKurus": 63500, "passCount": 12 }
+  ],
   "sources": [
     {
       "id": "tuhim-2026-07-20",
