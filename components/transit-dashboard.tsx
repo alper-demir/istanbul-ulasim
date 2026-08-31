@@ -26,7 +26,7 @@ const USER_LOCATION_SOURCE = 'user-location';
 const ENDPOINT_SOURCE = 'route-endpoints';
 const COMPARISON_SOURCE = 'comparison-routes';
 const VEHICLE_ICON = 'live-vehicle-bus';
-const TRANSIT_DATA_VERSION = '2026-08-31.1';
+const TRANSIT_DATA_VERSION = '2026-08-31.2';
 const ROUTE_DATA_UPDATED_LABEL = '26 Ağu 2026';
 const STOP_RADIUS: ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
 // MapLibre is substantial. Load it only after the lightweight application shell,
