@@ -153,7 +153,10 @@ function matchGtfsShape(routeName, direction, candidates) {
     return { candidate: { ...candidate, coordinates }, endpointScore: Math.max(0, 1 - Math.sqrt(Math.min(direct, reverse)) / 0.12), maxStopDistance, averageStopDistance, score: nameScore(routeName, candidate.route.route_long_name) * 0.25 + coverageScore * 0.75 };
   }).sort((a, b) => b.score - a.score);
   const best = scored[0];
-  return best ?? null;
+  // A historical GTFS shape is useful only when it actually follows the
+  // current official pier sequence. Never force a weak match: anchoring a
+  // distant pier to an unrelated shape is what can draw across land.
+  return best && best.score >= 0.45 && best.maxStopDistance <= 1_200 && best.averageStopDistance <= 600 ? best : null;
 }
 
 function decodeHtml(value) {
