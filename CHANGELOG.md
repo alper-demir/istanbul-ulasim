@@ -21,6 +21,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Seçili İETT hattının canlı araç yenilemesi ve sunucu taze önbelleği 30 saniyede eşitlendi; sekmeye dönüşte ve bağlantı yeniden kurulduğunda güvenli bir kontrol eklenirken üst kaynak kotası korunur.
 - Hat ayrıntısı artık canlı konumun yeni kaynak yanıtı, taze önbellek veya önceki/fallback yanıt olduğunu açıkça belirtir.
 - Canlı kaynağın ağ isteği iptalini uygulamadığı durumlarda paylaşılan hat sorgusunun süresiz beklemesini önleyen kesin 10 saniyelik timeout ve regresyon testi eklendi.
+- Yerel/Cloudflare çalışma yapılandırmasındaki canlı taze önbellek varsayılanı, uygulama ve dokümantasyonla tutarlı biçimde 30 saniyeye indirildi.
 
 ## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
 
