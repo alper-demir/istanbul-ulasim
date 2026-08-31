@@ -155,9 +155,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel kararlı sürüm: `0.6.0-rc.3`. Geliştirme sürümü `0.7.0-beta.1`, `feature/expanded-static-networks` dalındadır.
-
-Canlı araçlar ve performans iyileştirmeleri `main` dalına birleştirildi.
+Güncel beta sürüm: `0.7.0-beta.2`. Genişletilmiş statik ulaşım ağı, kaynaklı tarife kataloğu ve canlı araç güncelliği iyileştirmeleri bu sürümde birlikte yayımlanır.
 
 ## Sürümleme yaklaşımı
 

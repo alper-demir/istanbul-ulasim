@@ -2,7 +2,7 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
-## Unreleased — Tarife veri altyapısı
+## 0.7.0-beta.2 — Tarifeler ve canlı veri güncelliği
 
 ### Eklendi
 
