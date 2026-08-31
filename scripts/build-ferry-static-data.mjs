@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fareForRoute } from './fare-catalog.mjs';
 
 const root = process.cwd();
 const output = join(root, 'public', 'ferry');
@@ -234,7 +235,7 @@ for (const link of routeLinks) {
     geometrySourceUpdatedAt: directions.some((direction) => direction.geometrySource === 'ibb-gtfs-shape') ? gtfsSource.publishedAt : fetchedAt.slice(0, 10),
     geometrySourceUrl: directions.some((direction) => direction.geometrySource === 'ibb-gtfs-shape') ? gtfsSource.shapesUrl : sourceUrl,
     supportsLiveVehicles: false,
-    fareLabel: 'Hat bazlı tarife bilgisi yakında eklenecek',
+    ...fareForRoute(`ferry:${routeNumber}`),
     durationMinutes: 0,
     coordinates: primary.coordinates,
     stops: primary.stops,

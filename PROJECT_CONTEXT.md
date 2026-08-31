@@ -4,7 +4,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Çalışma dalı: `feature/expanded-static-networks` (taban: güncel `main`)
+- Entegrasyon dalı: `feature/expanded-static-networks`; aktif alt dal: `feature/fare-data`
 - Güncel kararlı sürüm: `0.6.0-rc.3`; geliştirme sürümü `0.7.0-beta.1` bu dalda hazırlanıyor.
 - Canlı araç özellikleri ve performans iyileştirmeleri `main` dalındadır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor; bu özellik dalı kullanıcı onayı olmadan birleştirilmeyecek veya dağıtılmayacak.
@@ -42,6 +42,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 | Tramvay/füniküler | Metro İstanbul + OpenStreetMap | Seçili T1/T3/T4/T5 ve F1/F4 hatları `public/rail` altında statik sunulur. |
 | Marmaray | TCDD Taşımacılık/Marmaray + OpenStreetMap | B1 Halkalı–Gebze hattı statiktir; canlı tren konumu sorgulanmaz. |
 | Vapur | Şehir Hatları sefer ve iskele sayfaları | 31 güzergâh ve 44 iskele `public/ferry` altında statiktir; deniz geometrisi şematiktir. |
+| Tarife/bilet limiti | İBB TUHİM İstanbulkart ücret tarifesi + İETT/Şehir Hatları çapraz doğrulaması | `data/fares` altında sürümlü ve statik tutulur; çalışma anında tarife kaynağı sorgulanmaz. Hat bazında doğrulanmamış özel bilet sınıfı kesin bilgi gibi gösterilmez. |
 | Altlık haritası | OpenStreetMap | Sadece görsel harita katmanıdır; hat/durak doğruluğu için kaynak değildir. |
 
 Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt ve konum sapması veri sağlayıcılarına bağlıdır; kesin sefer veya varış bilgisi olarak kullanılmamalıdır.
@@ -74,6 +75,7 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 - Statik İETT üretim betiği: `scripts/build-iett-static-data.mjs`
 - Statik raylı sistem üretimi: `scripts/build-osm-static-network.mjs`
 - Statik vapur üretimi: `scripts/build-ferry-static-data.mjs`
+- Tarife statik üretimi: `scripts/build-fare-static-data.mjs`
 - Canlı İETT adaptörü: `lib/data-sources/iett-live-vehicles.ts`
 - Canlı API rotası: `app/api/v1/live-vehicles/route.ts`
 - Ana arayüz: `components/transit-dashboard.tsx`
@@ -100,7 +102,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 ## Sonraki mantıklı aşamalar
 
 1. **Statik ağ özelliğini kapatma:** Görsel kontroller, üretim build'i ve kullanıcı onayından sonra bu dalı birleştirme.
-2. **Gerçek tarife/bilet verisi:** Hat detayında kaç bilet basıldığını gösterme; tam, öğrenci, abonman gibi ücretleri sade ayrı bir tarife alanında sunma.
+2. **Gerçek tarife/bilet verisi:** Veri sözleşmesi, kaynak manifesti, genel/mesafe bazlı profiller ve ilk hat eşleştirmeleri `feature/fare-data` dalında eklendi. Sonraki adım, hat bazı doğrulama kapsamını genişletmek ve ayrı bir arayüz dalında bilgiyi sade biçimde sunmak.
 3. **Canlı konum araştırması:** Yalnız ücretsiz ve güvenilir kaynak bulunursa vapur/raylı sistem canlı konumunu ayrı bir spike ile değerlendirme.
 4. **İETT canlılık iyileştirmesi:** Kaynak kotasını ve gecikmesini gözeterek araçların daha akıcı/anlık görünmesini araştırma.
 5. **Veri yenileme süreci:** Statik kaynakları kontrollü indirip doğrulayan ve yeni veri tarihini yayımlayan iş akışı.

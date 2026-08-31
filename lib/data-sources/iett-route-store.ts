@@ -1,4 +1,5 @@
 import type { TransitRoute } from '@/lib/transit-fixtures';
+import { fareLabelForRoute, resolveFare } from '@/lib/fare-data';
 
 type RawFeature = {
   properties: Record<string, string>;
@@ -50,13 +51,21 @@ function representative(features: RawFeature[]) {
 }
 
 function toSummary(code: string, feature: RawFeature): TransitRouteSummary {
+  const fare = resolveFare(`iett:${code}`);
   return {
     id: `iett:${code}`,
     code,
     name: feature.properties.HAT_ADI.trim().replace(/\s+-\s+/g, ' — '),
     color: color(code),
     mode: mode(code),
-    fareLabel: 'Resmî tarife bilgisi yakında eklenecek',
+    fareLabel: fareLabelForRoute(`iett:${code}`),
+    ...(fare ? {
+      fareProfileId: fare.id,
+      fareVerification: fare.verification,
+      fareSourceUrl: fare.sourceUrl,
+      fareEffectiveFrom: fare.effectiveFrom,
+      fareVerifiedAt: fare.verifiedAt,
+    } : {}),
     durationMinutes: Math.round(Number(feature.properties.SURE?.replace(',', '.')) / 60) || 0,
     vehicleCount: 0,
     stopCount: 0,

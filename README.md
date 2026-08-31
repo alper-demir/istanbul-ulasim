@@ -101,6 +101,16 @@ npm run data:build-ferry
 
 Çıktılar `public/ferry` altında tutulur. İskeleler arasındaki çizgiler gerçek gemi izi değil şematik bağlantıdır; canlı vapur konumu henüz kullanılmaz.
 
+### İstanbulkart tarife verisi
+
+Tarife verisi uygulama çalışma anında dış kaynaktan çekilmez. [İBB TUHİM İstanbulkart ücret tarifesi](https://tuhim.ibb.gov.tr/media/27491/%C4%B0stanbulkart.pdf) kontrollü olarak `data/fares/istanbulkart-2026-07-20.json` dosyasına dönüştürülür; kaynak, karar, geçerlilik ve doğrulama tarihleri veriyle birlikte taşınır:
+
+```bash
+npm run data:build-fares
+```
+
+Çıktı `public/fares/current.json` altında yayımlanır. Genel tarife, Metrobüs/Marmaray/M11 mesafe bantları ve desteklenen vapur profilleri ayrı tutulur. İETT hatlarında resmî hat detayından doğrulanmayan özel bilet sınıfı varsayılmaz; yalnız genel tarife statüsü gösterilebilir.
+
 ## Paylaşılabilir bağlantılar
 
 Hat, yön ve isteğe bağlı durak seçimi sorgu parametreleriyle saklanır:

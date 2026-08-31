@@ -1,5 +1,6 @@
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fareForRoute } from './fare-catalog.mjs';
 
 const root = process.cwd();
 const source = join(root, 'data', 'iett-hat-guzergahlari.geojson');
@@ -142,7 +143,7 @@ for (const [code, features] of groups) {
   const feature = features[0];
   const route = {
     id: `iett:${code}`, code, name: feature.properties.HAT_ADI.trim().replace(/\s+-\s+/g, ' — '),
-    color: color(code), mode: mode(code), fareLabel: 'Resmî tarife bilgisi yakında eklenecek',
+    color: color(code), mode: mode(code), ...fareForRoute(`iett:${code}`),
     durationMinutes: primaryDirection.durationMinutes,
     vehicleCount: 0, stopCount: primaryDirection.stops.length,
   };

@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fareForRoute } from './fare-catalog.mjs';
 
 const root = process.cwd();
 const network = process.argv[2];
@@ -132,7 +133,7 @@ for (const line of manifest.lines) {
     sourceUrl: line.officialUrl,
     sourceUpdatedAt,
     supportsLiveVehicles: false,
-    fareLabel: 'Tarife bilgisi yakında eklenecek',
+    ...fareForRoute(`${network}:${line.code}`),
     durationMinutes: primary.durationMinutes,
     coordinates: primary.coordinates,
     stops: primary.stops,

@@ -42,6 +42,11 @@ export type TransitRoute = {
    */
   mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Tramvay' | 'Füniküler' | 'Marmaray' | 'Vapur' | 'Minibüs';
   fareLabel: string;
+  fareProfileId?: string;
+  fareVerification?: 'route-verified' | 'group-verified' | 'general-only';
+  fareSourceUrl?: string;
+  fareEffectiveFrom?: string;
+  fareVerifiedAt?: string;
   durationMinutes: number;
   coordinates: [number, number][];
   stops: TransitStop[];
