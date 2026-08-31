@@ -37,7 +37,7 @@ export type TransitRoute = {
    * by the small offline fixture. New static networks should use the same
    * contract rather than creating mode-specific route shapes.
    */
-  mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Vapur' | 'Minibüs';
+  mode: 'Otobüs' | 'Metrobüs' | 'Metro' | 'Tramvay' | 'Füniküler' | 'Marmaray' | 'Vapur' | 'Minibüs';
   fareLabel: string;
   durationMinutes: number;
   coordinates: [number, number][];
@@ -45,7 +45,9 @@ export type TransitRoute = {
   vehicles: TransitVehicle[];
   directions?: TransitDirection[];
   operator?: string;
-  source?: 'fixture' | 'ibb-open-data' | 'metro-istanbul' | 'osm';
+  source?: 'fixture' | 'ibb-open-data' | 'metro-istanbul' | 'marmaray' | 'sehir-hatlari' | 'osm';
+  sourceLabel?: string;
+  sourceUrl?: string;
   sourceUpdatedAt?: string;
   supportsLiveVehicles?: boolean;
 };

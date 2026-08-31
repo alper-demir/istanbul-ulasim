@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "network": "rail",
+  "label": "İstanbul tramvay, füniküler ve Marmaray ağı",
+  "sources": [
+    {
+      "name": "Metro İstanbul",
+      "url": "https://www.metro.istanbul/Hatlarimiz",
+      "purpose": "Tramvay ve füniküler hat adı, işletmeci ve istasyon sırası doğrulaması"
+    },
+    {
+      "name": "TCDD Taşımacılık / Marmaray",
+      "url": "https://www.marmaray.gov.tr/",
+      "purpose": "Marmaray işletme ve istasyon doğrulaması"
+    },
+    {
+      "name": "OpenStreetMap",
+      "url": "https://www.openstreetmap.org/copyright",
+      "purpose": "İstasyon koordinatları ve statik güzergâh geometrisi"
+    }
+  ],
+  "stationNameOverrides": {
+    "506071520": "Cumhuriyet Mahallesi",
+    "506067917": "Sultançiftliği",
+    "506067918": "Sultançiftliği"
+  },
+  "lines": [
+    { "code": "T1", "name": "Kabataş — Bağcılar", "color": "#005baa", "mode": "Tramvay", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T1", "minimumStopCount": 30, "directions": [{ "id": "outbound", "name": "Kabataş → Bağcılar", "relationIds": [2962729] }, { "id": "return", "name": "Bağcılar → Kabataş", "relationIds": [151819], "reverseStopsOf": "outbound" }] },
+    { "code": "T3", "name": "Kadıköy — Moda", "color": "#7b2d8e", "mode": "Tramvay", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T3", "minimumStopCount": 11, "directions": [{ "id": "outbound", "name": "Kadıköy → Moda → Kadıköy", "relationIds": [2409338] }] },
+    { "code": "T4", "name": "Topkapı — Mescid-i Selam", "color": "#f58220", "mode": "Tramvay", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T4", "minimumStopCount": 22, "directions": [{ "id": "outbound", "name": "Topkapı → Mescid-i Selam", "relationIds": [11344897] }, { "id": "return", "name": "Mescid-i Selam → Topkapı", "relationIds": [11344896] }] },
+    { "code": "T5", "name": "Eminönü — Alibeyköy Cep Otogarı", "color": "#d71920", "mode": "Tramvay", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T5", "minimumStopCount": 14, "directions": [{ "id": "outbound", "name": "Eminönü → Alibeyköy Cep Otogarı", "relationIds": [12174616] }, { "id": "return", "name": "Alibeyköy Cep Otogarı → Eminönü", "relationIds": [12174615] }] },
+    { "code": "F1", "name": "Taksim — Kabataş", "color": "#8b5a2b", "mode": "Füniküler", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=F1", "minimumStopCount": 2, "directions": [{ "id": "outbound", "name": "Taksim → Kabataş", "relationIds": [300961] }, { "id": "return", "name": "Kabataş → Taksim", "relationIds": [13313678] }] },
+    { "code": "F4", "name": "Boğaziçi Üniversitesi / Hisarüstü — Aşiyan", "color": "#00a6a6", "mode": "Füniküler", "operator": "Metro İstanbul", "source": "metro-istanbul", "sourceLabel": "Metro İstanbul + OpenStreetMap", "officialUrl": "https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=F4", "minimumStopCount": 2, "directions": [{ "id": "outbound", "name": "Boğaziçi Üniversitesi / Hisarüstü → Aşiyan", "relationIds": [14738977] }, { "id": "return", "name": "Aşiyan → Boğaziçi Üniversitesi / Hisarüstü", "relationIds": [14738978] }] },
+    { "code": "B1", "name": "Halkalı — Gebze", "color": "#8f1738", "mode": "Marmaray", "operator": "TCDD Taşımacılık", "source": "marmaray", "sourceLabel": "TCDD Taşımacılık / Marmaray + OpenStreetMap", "officialUrl": "https://www.marmaray.gov.tr/", "minimumStopCount": 43, "directions": [{ "id": "outbound", "name": "Halkalı → Gebze", "relationIds": [9987139] }, { "id": "return", "name": "Gebze → Halkalı", "relationIds": [9468040] }] }
+  ]
+}
