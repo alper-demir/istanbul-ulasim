@@ -12,6 +12,7 @@ describe('İstanbulkart fare catalog', () => {
 
   it('keeps route-specific and distance-based rules distinct', () => {
     expect(resolveFare('iett:500T')).toMatchObject({ id: 'iett-two-ticket', verification: 'route-verified', subscriptionLimit: 2 });
+    expect(resolveFare('iett:E-3')).toMatchObject({ id: 'iett-e3-three-ticket', verification: 'route-verified', subscriptionLimit: 3, pricesKurus: { full: 13860, student: 13860 } });
     expect(resolveFare('metro:M11')).toMatchObject({ id: 'm11-distance', kind: 'distance-bands' });
     expect(resolveFare('rail:B1')).toMatchObject({ id: 'marmaray-distance', kind: 'distance-bands' });
     expect(resolveFare('ferry:2024')).toMatchObject({ id: 'ferry-bostanci-karakoy', verification: 'route-verified' });

@@ -20,6 +20,12 @@
       "purpose": "Hat bazındaki biletli tarife sınıfının doğrulanması"
     },
     {
+      "id": "iett-route-detail-e3",
+      "label": "İETT E-3 hat detayı",
+      "url": "https://iett.istanbul/RouteDetail?hkod=E-3",
+      "purpose": "E-3 hattının üç tam biletli tarife sınıfının doğrulanması"
+    },
+    {
       "id": "sehir-hatlari-fares",
       "label": "Şehir Hatları vapur ücret tarifesi",
       "url": "https://sehirhatlari.istanbul/tr/ucret-tarifeleri/vapur-hatlari-79",
@@ -48,6 +54,17 @@
       "subscriptionLimit": 2,
       "limitedUseTicketCount": 2,
       "notes": ["Tutarlar genel ilk biniş ücretinin iki katı olarak gösterilir.", "Hat sınıfı İETT hat detayında doğrulanır."]
+    },
+    {
+      "id": "iett-e3-three-ticket",
+      "kind": "fixed",
+      "label": "E-3 üç biletli İETT tarifesi",
+      "shortLabel": "3 biletli tarife",
+      "sourceId": "iett-route-detail-e3",
+      "pricesKurus": { "full": 13860, "student": 13860, "discounted": 13860, "student30Plus": 13860 },
+      "subscriptionLimit": 3,
+      "limitedUseTicketCount": 3,
+      "notes": ["E-3 için resmî tarifede tüm kart türleri aynı tutarda listelenir.", "Hat sınıfı İETT hat detayında doğrulanır."]
     },
     {
       "id": "metrobus-distance",
@@ -173,6 +190,7 @@
   ],
   "routeProfiles": {
     "iett:500T": { "profileId": "iett-two-ticket", "verification": "route-verified", "sourceId": "iett-route-detail" },
+    "iett:E-3": { "profileId": "iett-e3-three-ticket", "verification": "route-verified", "sourceId": "iett-route-detail-e3" },
     "metro:M11": { "profileId": "m11-distance", "verification": "group-verified", "sourceId": "tuhim-2026-07-20" },
     "rail:B1": { "profileId": "marmaray-distance", "verification": "group-verified", "sourceId": "tuhim-2026-07-20" },
     "ferry:769": { "profileId": "ferry-adalar", "verification": "group-verified", "sourceId": "tuhim-2026-07-20" },

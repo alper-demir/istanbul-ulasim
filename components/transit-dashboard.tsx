@@ -1068,6 +1068,10 @@ function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; labe
 }
 
 function FareDetails({ fare }: { fare:ResolvedFare }) {
+  const priceCategoryHelp: Partial<Record<FarePriceKey,string>> = {
+    discounted: 'Resmî tarifedeki “İndirimli 2” kart grubu. Hak sahipliği ve kullanım koşulları İstanbulkart kurallarına bağlıdır.',
+    student30Plus: '30 yaşından gün almış öğrenciler için resmî tarifedeki ayrı öğrenci fiyatı.',
+  };
   const prices = fare.pricesKurus
     ? ([['Tam','full'],['Öğrenci','student'],['İndirimli','discounted'],['30+ öğrenci','student30Plus']] as const)
       .filter(([, key]) => fare.pricesKurus?.[key] !== undefined)
@@ -1075,7 +1079,7 @@ function FareDetails({ fare }: { fare:ResolvedFare }) {
 
   return <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-[10px]">
     <div className="flex items-center justify-between gap-2"><p className="font-bold">{fare.label}</p><a href={fare.source.url} target="_blank" rel="noreferrer" className="font-semibold text-[var(--primary)] underline underline-offset-2">Kaynak</a></div>
-    {prices.length>0&&<div className="mt-2 grid grid-cols-2 gap-1.5">{prices.map(([label,key])=><div key={key} className="rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="block text-[9px] text-[var(--muted)]">{label}</span><span className="block text-xs font-extrabold">{formatFare(fare.pricesKurus?.[key])}</span></div>)}</div>}
+    {prices.length>0&&<div className="mt-2 grid grid-cols-2 gap-1.5">{prices.map(([label,key])=><div key={key} className="rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="flex items-center gap-1 text-[9px] text-[var(--muted)]">{label}{priceCategoryHelp[key]&&<span title={priceCategoryHelp[key]} aria-label={`${label} açıklaması`} className="cursor-help text-[var(--primary)]"><Info className="h-3 w-3" /></span>}</span><span className="block text-xs font-extrabold">{formatFare(fare.pricesKurus?.[key])}</span></div>)}</div>}
     {fare.bands&&<div className="mt-2 max-h-36 space-y-1 overflow-y-auto pr-1">{fare.bands.map((band)=><div key={band.label} className="flex items-center justify-between gap-2 rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="font-semibold">{band.label}</span><span className="text-right font-bold">{formatFare(band.pricesKurus.full)}</span></div>)}</div>}
     <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 border-t border-[var(--border)] pt-2 text-[9px] text-[var(--muted)]"><span>{formatSourceDate(fare.effectiveFrom)} itibarıyla</span>{fare.subscriptionLimit&&<span>· Abonman: {fare.subscriptionLimit} limit</span>}{fare.limitedUseTicketCount&&<span>· Sınırlı bilet: {fare.limitedUseTicketCount} geçiş</span>}</div>
     {[fare.note,...(fare.notes ?? [])].filter(Boolean).map((note)=><p key={note} className="mt-1 text-[9px] leading-relaxed text-[var(--muted)]">{note}</p>)}

@@ -14,6 +14,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 ### Güvenilirlik
 
 - İETT hatlarında resmî hat detayından doğrulanmamış özel biletli tarife sınıfı varsayılan olarak atanmaz; genel tarife durumu ayrı işaretlenir.
+- E-3 hattı resmî İETT hat detayı ve TUHİM tarife satırıyla üç biletli, tüm kart türlerinde aynı ücretli profil olarak doğrulandı; kart türü açıklama ipuçları eklendi.
 
 ## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
 
