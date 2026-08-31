@@ -72,9 +72,9 @@ describe('static transit networks', () => {
     expect(stops.data).toHaveLength(44);
     expect(stops.meta.unlocatedPierCount).toBe(0);
     expect(index.meta.geometry).toBe('ibb-gtfs-shape-with-schematic-fallback');
-    expect(index.meta.geometrySource).toContain('İBB Açık Veri GTFS');
-    expect(index.meta.geometrySourceUpdatedAt).toBe('2024-03-13');
-    expect(index.data.some((route) => route.geometrySource?.includes('GTFS'))).toBe(true);
+    expect(index.meta.geometrySource).toContain('Deniz Ulaşım Hatları Vektör Verisi');
+    expect(index.meta.geometrySourceUpdatedAt).toBe('2025-06-05');
+    expect(index.data.some((route) => route.geometrySource?.includes('Vektör'))).toBe(true);
     await expectRouteFiles('ferry', index.data);
   });
 });

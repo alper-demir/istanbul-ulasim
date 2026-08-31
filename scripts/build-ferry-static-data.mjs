@@ -9,10 +9,22 @@ const fetchedAt = new Date().toISOString();
 const requestHeaders = { 'user-agent': 'istanbulum-static-data-builder/0.7.0' };
 const unlocatedPiers = new Set();
 const gtfsSource = {
-  label: 'İBB Açık Veri GTFS (tarihsel shape geometrisi)',
-  url: 'https://data.ibb.gov.tr/dataset/public-transport-gtfs-data',
-  shapesUrl: 'https://data.ibb.gov.tr/dataset/121a9892-7945-419a-9b89-49f6083926df/resource/83317085-aa56-41b0-9447-ea579567f2cb/download/shapes.csv',
-  publishedAt: '2024-03-13',
+  label: 'İBB Açık Veri Deniz Ulaşım Hatları Vektör Verisi',
+  url: 'https://data.ibb.gov.tr/dataset/deniz-ulasim-hatlari-vektor-verisi',
+  shapesUrl: 'https://data.ibb.gov.tr/dataset/7b7ab555-4363-4522-b4e4-353c266906d9/resource/fea04c55-7d53-4432-a7fc-b94899c109d8/download/deniz_hat_verisi.geojson',
+  publishedAt: '2025-06-05',
+};
+const vectorRouteKeys = {
+  769: 'Beşiktaş-Adalar', 168: 'Anadolu Kavağı-Rumeli Kavağı-Sarıyer', 172: 'Anadolu Kavağı-Üsküdar',
+  2014: 'Aşiyan-Anadolu Hisarı-Küçüksu', 595: 'Bebek-Emirgan', 2019: 'Beşiktaş-Eyüpsultan',
+  767: 'Beykoz-Sarıyer', 167: 'Boğazdan Geliş-Boğaza Gidiş', 770: 'Bostancı-Adalar Ring',
+  2024: 'Bostancı-Moda-Karaköy-Kabataş', 895: 'Bostancı-Büyükada-Sedef Adası', 170: 'Çengelköy-İstinye',
+  2021: 'Çengelköy-Kabataş', 3598: 'İstinye-Çubuklu (Arabalı Vapur)', 177: 'Kabataş-Adalar',
+  165: 'Kadıköy-Beşiktaş', 2017: 'Kadıköy-Eyüpsultan', 766: 'Kadıköy-Kabataş',
+  768: 'Kadıköy-Karaköy-Beşiktaş', 163: 'Kadıköy-Karaköy-Eminönü', 171: 'Kadıköy-Sarıyer',
+  169: 'Küçüksu-Beşiktaş-Kabataş', 175: 'Küçüksu-İstinye', 2020: 'Maltepe-Adalar',
+  2078: 'Ortaköy-Beşiktaş-Eminönü', 173: 'Ortaköy-Üsküdar-Kadıköy', 174: 'Rumeli Kavağı-Eminönü',
+  2015: 'Üsküdar-Aşiyan', 37: 'Üsküdar-Eyüpsultan (Haliç Hattı)', 164: 'Üsküdar-Karaköy-Eminönü',
 };
 
 async function fetchHtml(url) {
@@ -114,26 +126,13 @@ function anchorShapeToStops(coordinates, stops) {
 }
 
 async function loadGtfsShapes() {
-  const routes = parseCsv(await fetchCsv('https://data.ibb.gov.tr/dataset/121a9892-7945-419a-9b89-49f6083926df/resource/36b554c7-cae0-4b7e-978f-fc6a43664e88/download/routes.csv'));
-  const trips = parseCsv(await fetchCsv('https://data.ibb.gov.tr/dataset/121a9892-7945-419a-9b89-49f6083926df/resource/dcee1700-e59f-4a5f-8009-f602045a4507/download/trips.csv'));
-  const shapes = parseCsv(await fetchCsv(gtfsSource.shapesUrl));
-  const routeById = new Map(routes.filter((route) => route.agency_id === '6' && route.route_type === '4').map((route) => [route.route_id, route]));
-  const routeIdsByShape = new Map();
-  trips.forEach((trip) => { if (routeById.has(trip.route_id) && trip.shape_id) routeIdsByShape.set(trip.shape_id, trip.route_id); });
-  const pointsByShape = new Map();
-  shapes.forEach((point) => {
-    if (!routeIdsByShape.has(point.shape_id)) return;
-    const coordinates = [Number(point.shape_pt_lon), Number(point.shape_pt_lat)];
-    if (!coordinates.every(Number.isFinite)) return;
-    const points = pointsByShape.get(point.shape_id) ?? [];
-    points.push({ sequence: Number(point.shape_pt_sequence), coordinates });
-    pointsByShape.set(point.shape_id, points);
-  });
-  return [...pointsByShape.entries()].map(([shapeId, points]) => {
-    points.sort((a, b) => a.sequence - b.sequence);
-    const route = routeById.get(routeIdsByShape.get(shapeId));
-    return { shapeId, route, coordinates: points.map((point) => point.coordinates) };
-  }).filter((shape) => shape.coordinates.length >= 3);
+  const response = await fetch(gtfsSource.shapesUrl, { headers: requestHeaders, signal: AbortSignal.timeout(60_000) });
+  if (!response.ok) throw new Error(`${gtfsSource.shapesUrl} returned ${response.status}`);
+  const payload = await response.json();
+  return payload.features
+    .filter((feature) => feature.properties?.TUR_HAT === 'Şehir Hatları' && feature.geometry?.type === 'LineString')
+    .map((feature) => ({ shapeId: feature.properties.ISIM_HAT, route: { route_long_name: feature.properties.HAT_ROTA }, coordinates: feature.geometry.coordinates }))
+    .filter((shape) => shape.coordinates.length >= 3);
 }
 
 function matchGtfsShape(routeName, direction, candidates) {
@@ -153,10 +152,9 @@ function matchGtfsShape(routeName, direction, candidates) {
     return { candidate: { ...candidate, coordinates }, endpointScore: Math.max(0, 1 - Math.sqrt(Math.min(direct, reverse)) / 0.12), maxStopDistance, averageStopDistance, score: nameScore(routeName, candidate.route.route_long_name) * 0.25 + coverageScore * 0.75 };
   }).sort((a, b) => b.score - a.score);
   const best = scored[0];
-  // A historical GTFS shape is useful only when it actually follows the
-  // current official pier sequence. Never force a weak match: anchoring a
-  // distant pier to an unrelated shape is what can draw across land.
-  return best && best.score >= 0.45 && best.maxStopDistance <= 1_200 && best.averageStopDistance <= 600 ? best : null;
+  // Candidates are pre-filtered by the current İBB vector route key. This is
+  // authoritative geometry, unlike the retired generic GTFS shapes.
+  return best ?? null;
 }
 
 function decodeHtml(value) {
@@ -259,7 +257,8 @@ for (const link of routeLinks) {
       coordinates: stops.map((stop) => stop.coordinates),
       stops,
     };
-    const matchedShape = matchGtfsShape(name, directionData, gtfsShapes);
+    const mappedRouteKey = vectorRouteKeys[routeNumber];
+    const matchedShape = mappedRouteKey ? matchGtfsShape(name, directionData, gtfsShapes.filter((shape) => shape.shapeId === mappedRouteKey)) : null;
     if (matchedShape) {
       directionData.coordinates = anchorShapeToStops(matchedShape.candidate.coordinates, stops) ?? stops.map((stop) => stop.coordinates);
       directionData.geometrySource = 'ibb-gtfs-shape';
