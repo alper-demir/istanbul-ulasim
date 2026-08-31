@@ -99,10 +99,10 @@ function matchGtfsShape(routeName, direction, candidates) {
     const direct = distanceSquared(start, first) + distanceSquared(end, last);
     const reverse = distanceSquared(start, last) + distanceSquared(end, first);
     const endpointScore = Math.max(0, 1 - Math.sqrt(Math.min(direct, reverse)) / 0.12);
-    return { candidate, score: nameScore(routeName, candidate.route.route_long_name) * 0.65 + endpointScore * 0.35 };
+    return { candidate, endpointScore, score: nameScore(routeName, candidate.route.route_long_name) * 0.65 + endpointScore * 0.35 };
   }).sort((a, b) => b.score - a.score);
   const best = scored[0];
-  return best && best.score >= 0.54 ? best : null;
+  return best && best.score >= 0.30 && best.endpointScore >= 0.45 ? best : null;
 }
 
 function decodeHtml(value) {
