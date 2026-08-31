@@ -33,33 +33,6 @@ async function fetchHtml(url) {
   return response.text();
 }
 
-async function fetchCsv(url) {
-  const response = await fetch(url, { headers: requestHeaders, signal: AbortSignal.timeout(60_000) });
-  if (!response.ok) throw new Error(`${url} returned ${response.status}`);
-  return new TextDecoder('windows-1254').decode(await response.arrayBuffer());
-}
-
-function parseCsv(text) {
-  const rows = [];
-  let row = [], value = '', quoted = false;
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text[index];
-    if (character === '"') {
-      if (quoted && text[index + 1] === '"') { value += '"'; index += 1; }
-      else quoted = !quoted;
-    } else if (character === ',' && !quoted) { row.push(value); value = ''; }
-    else if ((character === '\n' || character === '\r') && !quoted) {
-      if (character === '\r' && text[index + 1] === '\n') index += 1;
-      row.push(value); value = '';
-      if (row.some(Boolean)) rows.push(row);
-      row = [];
-    } else value += character;
-  }
-  if (value || row.length) { row.push(value); rows.push(row); }
-  const headers = rows.shift().map((header) => header.replace(/^\uFEFF/, ''));
-  return rows.map((cells) => Object.fromEntries(headers.map((header, index) => [header, cells[index] ?? ''])));
-}
-
 function normalizeText(value) {
   return value.toLocaleUpperCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/İ/g, 'I').replace(/[^A-Z0-9]+/g, ' ').trim();
@@ -97,32 +70,6 @@ function nearestDistanceMeters(point, coordinates) {
     nearest = Math.min(nearest, projectedDistanceMeters(point, projected));
   }
   return nearest;
-}
-
-function anchorShapeToStops(coordinates, stops) {
-  const anchored = [];
-  let cursor = 0;
-  for (const stop of stops) {
-    let best = null;
-    for (let index = cursor; index < coordinates.length - 1; index += 1) {
-      const start = coordinates[index];
-      const end = coordinates[index + 1];
-      const longitude = (stop.coordinates[0] - start[0]) * Math.cos((stop.coordinates[1] + start[1]) * Math.PI / 360);
-      const latitude = stop.coordinates[1] - start[1];
-      const dx = (end[0] - start[0]) * Math.cos((end[1] + start[1]) * Math.PI / 360);
-      const dy = end[1] - start[1];
-      const ratio = Math.max(0, Math.min(1, (longitude * dx + latitude * dy) / (dx * dx + dy * dy || 1)));
-      const projected = [start[0] + ratio * (end[0] - start[0]), start[1] + ratio * (end[1] - start[1])];
-      const distance = projectedDistanceMeters(stop.coordinates, projected);
-      if (!best || distance < best.distance) best = { index, projected, distance };
-    }
-    if (!best) return null;
-    anchored.push(...(anchored.length ? [] : [coordinates[cursor]]));
-    anchored.push(best.projected, stop.coordinates);
-    cursor = best.index + 1;
-  }
-  anchored.push(...coordinates.slice(cursor));
-  return anchored.filter((coordinate, index, list) => index === 0 || coordinate[0] !== list[index - 1][0] || coordinate[1] !== list[index - 1][1]);
 }
 
 async function loadGtfsShapes() {
@@ -260,12 +207,16 @@ for (const link of routeLinks) {
     const mappedRouteKey = vectorRouteKeys[routeNumber];
     const matchedShape = mappedRouteKey ? matchGtfsShape(name, directionData, gtfsShapes.filter((shape) => shape.shapeId === mappedRouteKey)) : null;
     if (matchedShape) {
-      directionData.coordinates = anchorShapeToStops(matchedShape.candidate.coordinates, stops) ?? stops.map((stop) => stop.coordinates);
+      directionData.coordinates = matchedShape.candidate.coordinates;
       directionData.geometrySource = 'ibb-gtfs-shape';
       directionData.geometrySourceUpdatedAt = gtfsSource.publishedAt;
       directionData.geometrySourceUrl = gtfsSource.shapesUrl;
     } else directionData.geometrySource = 'schematic-stop-connection';
     directions.push(directionData);
+  }
+  if (!directions.some((direction) => direction.geometrySource === 'ibb-gtfs-shape')) {
+    console.warn(`Skipping ferry route without published vector geometry: ${sourceUrl}`);
+    continue;
   }
   const primary = directions.find((direction) => direction.id === 'outbound') ?? directions[0];
   const route = {

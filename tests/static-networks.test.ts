@@ -66,10 +66,10 @@ describe('static transit networks', () => {
   it('publishes a complete Şehir Hatları pier catalog with validated geometry metadata', async () => {
     const index = await readJson<RouteIndex>('public/ferry/route-index.json');
     const stops = await readJson<{ data: unknown[]; meta: { unlocatedPierCount: number } }>('public/ferry/stop-index.json');
-    expect(index.data).toHaveLength(31);
+    expect(index.data).toHaveLength(30);
     expect(index.data.every((route) => route.mode === 'Vapur' && route.stopCount >= 2)).toBe(true);
     expect(new Set(index.data.map((route) => route.id)).size).toBe(index.data.length);
-    expect(stops.data).toHaveLength(44);
+    expect(stops.data).toHaveLength(42);
     expect(stops.meta.unlocatedPierCount).toBe(0);
     expect(index.meta.geometry).toBe('ibb-gtfs-shape-with-schematic-fallback');
     expect(index.meta.geometrySource).toContain('Deniz Ulaşım Hatları Vektör Verisi');
