@@ -215,7 +215,7 @@ function resolveCatalogFare(catalog: FareCatalog | undefined, routeId: string): 
   const profile = mapping && catalog.profiles.find((item) => item.id === mapping.profileId);
   const source = mapping && catalog.sources.find((item) => item.id === mapping.sourceId);
   return mapping && profile && source
-    ? { ...profile, verification:mapping.verification, source, effectiveFrom:catalog.effectiveFrom, verifiedAt:catalog.verifiedAt, note:mapping.note }
+    ? { ...profile, verification:mapping.verification, source:{ ...source, url:source.url.replace('{hatKodu}', routeId.split(':', 2)[1] ?? '') }, effectiveFrom:catalog.effectiveFrom, verifiedAt:catalog.verifiedAt, note:mapping.note }
     : null;
 }
 

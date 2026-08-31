@@ -17,7 +17,12 @@ describe('İstanbulkart fare catalog', () => {
     expect(resolveFare('rail:B1')).toMatchObject({ id: 'marmaray-distance', kind: 'distance-bands' });
     expect(resolveFare('ferry:2024')).toMatchObject({ id: 'ferry-bostanci-karakoy', verification: 'route-verified' });
     expect(resolveFare('ferry:169')).toMatchObject({ id: 'ferry-distance', verification: 'general-only' });
-    expect(fareLabelForRoute('iett:11C')).toBe('Genel ilk biniş tarifesi');
+    expect(resolveFare('iett:11C')).toMatchObject({ id: 'iett-discounted', verification: 'route-verified' });
+    expect(resolveFare('iett:129T')).toMatchObject({ id: 'iett-two-ticket', verification: 'route-verified' });
+    expect(resolveFare('iett:34BZ')).toMatchObject({ id: 'metrobus-distance', verification: 'route-verified' });
+    expect(resolveFare('iett:139')).toMatchObject({ id: 'iett-variable', verification: 'route-verified' });
+    expect(resolveFare('iett:10B')).toMatchObject({ id: 'iett-unverified', verification: 'general-only' });
+    expect(fareLabelForRoute('iett:11C')).toBe('İndirimli tarife');
   });
 
   it('publishes the generated catalog without losing its source metadata', async () => {
@@ -25,5 +30,7 @@ describe('İstanbulkart fare catalog', () => {
     expect(payload.meta.status).toBe('static');
     expect(payload.data.id).toBe(istanbulFareCatalog.id);
     expect(payload.data.routeProfiles['iett:500T']?.profileId).toBe('iett-two-ticket');
+    expect(payload.data.routeProfiles['iett:11C']?.profileId).toBe('iett-discounted');
+    expect(payload.data.routeProfiles['iett:10B']).toBeUndefined();
   });
 });

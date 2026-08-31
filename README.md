@@ -109,7 +109,9 @@ Tarife verisi uygulama çalışma anında dış kaynaktan çekilmez. [İBB TUHİ
 npm run data:build-fares
 ```
 
-Çıktı `public/fares/current.json` altında yayımlanır. Genel tarife, Metrobüs/Marmaray/M11 mesafe bantları ve desteklenen vapur profilleri ayrı tutulur. İETT hatlarında resmî hat detayından doğrulanmayan özel bilet sınıfı varsayılmaz; yalnız genel tarife statüsü gösterilebilir.
+Çıktı `public/fares/current.json` altında yayımlanır. Genel tarife, Metrobüs/Marmaray/M11 mesafe bantları ve desteklenen vapur profilleri ayrı tutulur. İETT hatlarında resmî hat detayı hangi tarife sınıfını bildiriyorsa yalnız o sınıf gösterilir; kaynak sınıf döndürmeyen hatta genel ücret varsayılmaz.
+
+İETT hat tarifeleri için `npm run data:audit-iett-fares` komutu, tüm statik İETT hatlarının resmî hat detayındaki tarife sınıfını tek seferlik snapshot olarak `data/fares/snapshots/iett-route-tariffs.json` dosyasına alır. Bu bakım işlemi uygulama çalışırken tetiklenmez. Sınıf kuralları `data/fares/iett-route-tariff-rules.json` içinde sürümlenmiştir; yeni veya eşleştirilmemiş bir resmî sınıf, tarife çıktısı üretilirken hata verir.
 
 Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gösterir. Kullanıcı `Tarifeyi gör` seçeneğini açtığında kart türlerine göre tutarlar veya mesafe bantları, abonman/sınırlı bilet limiti, kaynak bağlantısı ve geçerlilik tarihi görünür. Karttaki bilgi simgeleri, resmî tarifedeki `İndirimli 2` ve `30+ İndirimli Öğrenci` gruplarını açıklar. Bu bilgi kesin yolculuk ücreti hesaplayıcısı değildir; aktarma, mesafe, iade ve saat kuralları uygulanabilir.
 

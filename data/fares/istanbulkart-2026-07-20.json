@@ -4,7 +4,7 @@
   "title": "İstanbulkart elektronik bilet ücret tarifesi",
   "currency": "TRY",
   "effectiveFrom": "2026-07-20",
-  "verifiedAt": "2026-08-31",
+  "verifiedAt": "2026-09-01",
   "sources": [
     {
       "id": "tuhim-2026-07-20",
@@ -24,6 +24,12 @@
       "label": "İETT E-3 hat detayı",
       "url": "https://iett.istanbul/RouteDetail?hkod=E-3",
       "purpose": "E-3 hattının üç tam biletli tarife sınıfının doğrulanması"
+    },
+    {
+      "id": "iett-route-tariff-snapshot",
+      "label": "İETT hat tarife snapshot’ı",
+      "url": "https://iett.istanbul/RouteDetail?hkod={hatKodu}",
+      "purpose": "İETT’nin yayımladığı hat bazlı tarife sınıflarının kontrollü statik snapshot’ı"
     },
     {
       "id": "sehir-hatlari-fares",
@@ -65,6 +71,122 @@
       "subscriptionLimit": 3,
       "limitedUseTicketCount": 3,
       "notes": ["E-3 için resmî tarifede tüm kart türleri aynı tutarda listelenir.", "Hat sınıfı İETT hat detayında doğrulanır."]
+    },
+    {
+      "id": "iett-discounted",
+      "kind": "fixed",
+      "label": "İndirimli İETT tarifesi",
+      "shortLabel": "İndirimli tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 3308, "student": 2255, "discounted": 3308, "student30Plus": 2977 },
+      "subscriptionLimit": 1,
+      "limitedUseTicketCount": 1,
+      "notes": ["İETT hat detayında “İndirimli” olarak işaretlenen hatlar için TUHİM tablosundaki karşılık kullanılır."]
+    },
+    {
+      "id": "iett-variable",
+      "kind": "distance-based",
+      "label": "Kademeli İETT tarifesi",
+      "shortLabel": "Kademeli tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "notes": ["Kesin ücret, yolculuğun geçtiği tarife değişim noktasına veya mesafeye göre değişir.", "Bu uygulama bu hat için tek bir kesin tutar göstermiyor."]
+    },
+    {
+      "id": "iett-two-full-ticket",
+      "kind": "fixed",
+      "label": "2 tam biletli İETT tarifesi",
+      "shortLabel": "2 tam biletli tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 9240, "student": 9240, "discounted": 9240, "student30Plus": 9240 },
+      "subscriptionLimit": 3,
+      "limitedUseTicketCount": 2,
+      "notes": ["Resmî tabloda kart türlerinden bağımsız tek tutar olarak listelenen 2 tam biletli hatlar içindir."]
+    },
+    {
+      "id": "iett-one-full-ticket",
+      "kind": "distance-based",
+      "label": "1 tam biletli İETT tarifesi",
+      "shortLabel": "1 tam biletli tarife",
+      "sourceId": "iett-route-tariff-snapshot",
+      "notes": ["İETT hat detayında “1 tam biletli” olarak doğrulandı. Kesin kart türü tutarı, TUHİM’de ayrıca satır bazında doğrulanmadan gösterilmez."]
+    },
+    {
+      "id": "iett-one-full-exact",
+      "kind": "fixed",
+      "label": "1 tam biletli İETT tarifesi",
+      "shortLabel": "1 tam biletli tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 4620, "student": 4620, "discounted": 4620, "student30Plus": 4620 },
+      "subscriptionLimit": 2,
+      "limitedUseTicketCount": 1,
+      "notes": ["Bu hatlar TUHİM tablosunda tüm kart türleri için aynı tutarla listelenir."]
+    },
+    {
+      "id": "iett-metro-integrated",
+      "kind": "fixed",
+      "label": "Metro entegre İETT tarifesi",
+      "shortLabel": "Metro entegre tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 4620, "student": 2255, "discounted": 3308, "student30Plus": 4158 },
+      "subscriptionLimit": 1,
+      "limitedUseTicketCount": 1,
+      "notes": ["İETT hat detayında “Metro entegre” olarak işaretlenen hatlar için genel ilk biniş tarifesi uygulanır."]
+    },
+    {
+      "id": "iett-one-full-one-discounted",
+      "kind": "fixed",
+      "label": "1 tam + 1 indirimli İETT tarifesi",
+      "shortLabel": "Karma biletli tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 7928, "student": 7928, "discounted": 7928, "student30Plus": 7928 },
+      "subscriptionLimit": 3,
+      "limitedUseTicketCount": 2,
+      "notes": ["Resmî tabloda “1 tam” ve “1 indirimli 2” bedelinin toplamı olarak tanımlanan hatlar içindir."]
+    },
+    {
+      "id": "iett-special-tariff",
+      "kind": "distance-based",
+      "label": "Özel İETT tarifesi",
+      "shortLabel": "Özel tarife",
+      "sourceId": "iett-route-tariff-snapshot",
+      "notes": ["İETT hat detayında özel tarife olarak doğrulandı. Kesin tutar, ilgili özel tarife kuralına bağlıdır."]
+    },
+    {
+      "id": "iett-airport-bus",
+      "kind": "fixed",
+      "label": "Havalimanı otobüsü tarifesi",
+      "shortLabel": "Havalimanı otobüsü tarifesi",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 9240 },
+      "subscriptionLimit": 2,
+      "limitedUseTicketCount": 2,
+      "notes": ["TUHİM’de hat birim yolculuk ücreti olarak listelenir; tabloda kart türü kırılımı verilmez."]
+    },
+    {
+      "id": "iett-sg-1",
+      "kind": "fixed",
+      "label": "SG-1 özel tarife",
+      "shortLabel": "Özel tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 30030, "student": 30030, "discounted": 30030, "student30Plus": 30030 },
+      "limitedUseTicketCount": 7
+    },
+    {
+      "id": "iett-sg-2",
+      "kind": "fixed",
+      "label": "SG-2 özel tarife",
+      "shortLabel": "Özel tarife",
+      "sourceId": "tuhim-2026-07-20",
+      "pricesKurus": { "full": 48510, "student": 48510, "discounted": 48510, "student30Plus": 48510 },
+      "limitedUseTicketCount": 11
+    },
+    {
+      "id": "iett-unverified",
+      "kind": "distance-based",
+      "label": "İETT tarifesi doğrulanıyor",
+      "shortLabel": "Tarife doğrulanıyor",
+      "sourceId": "iett-route-tariff-snapshot",
+      "notes": ["İETT hat detayından tarife sınıfı alınamadı; genel tarife varsayılmaz."]
     },
     {
       "id": "metrobus-distance",
@@ -205,7 +327,7 @@
     "ferry:3598": { "profileId": "ferry-istinye-cubuklu", "verification": "route-verified", "sourceId": "tuhim-2026-07-20" }
   },
   "fallbackProfiles": {
-    "iett": { "profileId": "urban-standard", "verification": "general-only", "sourceId": "tuhim-2026-07-20", "note": "Hat bazındaki biletli tarife sınıfı henüz resmî İETT hat detayından doğrulanmadı." },
+    "iett": { "profileId": "iett-unverified", "verification": "general-only", "sourceId": "iett-route-tariff-snapshot", "note": "İETT hat detayından tarife sınıfı alınamadı; genel tarife varsayılmaz." },
     "metro": { "profileId": "urban-standard", "verification": "group-verified", "sourceId": "tuhim-2026-07-20" },
     "rail": { "profileId": "urban-standard", "verification": "group-verified", "sourceId": "tuhim-2026-07-20" },
     "ferry": { "profileId": "ferry-distance", "verification": "general-only", "sourceId": "sehir-hatlari-fares", "note": "Kesin ücret, iskele çifti ve varsa iade/gece kuralına göre değişir." }

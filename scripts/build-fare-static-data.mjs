@@ -1,10 +1,12 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { expandIettRouteMappings } from './iett-fare-mappings.mjs';
 
 const root = process.cwd();
 const sourcePath = join(root, 'data', 'fares', 'istanbulkart-2026-07-20.json');
 const outputPath = join(root, 'public', 'fares', 'current.json');
-const catalog = JSON.parse(await readFile(sourcePath, 'utf8'));
+const sourceCatalog = JSON.parse(await readFile(sourcePath, 'utf8'));
+const catalog = { ...sourceCatalog, routeProfiles: expandIettRouteMappings(sourceCatalog.routeProfiles) };
 
 const profileIds = new Set(catalog.profiles.map((profile) => profile.id));
 const sourceIds = new Set(catalog.sources.map((source) => source.id));

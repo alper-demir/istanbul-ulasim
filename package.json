@@ -19,7 +19,8 @@
     "data:build-metro": "node scripts/build-metro-static-data.mjs",
     "data:build-rail": "node scripts/build-osm-static-network.mjs rail",
     "data:build-ferry": "node scripts/build-ferry-static-data.mjs",
-    "data:build-fares": "node scripts/build-fare-static-data.mjs"
+    "data:build-fares": "node scripts/build-fare-static-data.mjs",
+    "data:audit-iett-fares": "node scripts/audit-iett-fare-snapshot.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.3.3",

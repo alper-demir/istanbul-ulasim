@@ -1,4 +1,6 @@
 import fareCatalog from '@/data/fares/istanbulkart-2026-07-20.json';
+import iettTariffRules from '@/data/fares/iett-route-tariff-rules.json';
+import iettTariffSnapshot from '@/data/fares/snapshots/iett-route-tariffs.json';
 
 export type FareVerification = 'route-verified' | 'group-verified' | 'general-only';
 export type FareKind = 'fixed' | 'distance-bands' | 'distance-based';
@@ -48,6 +50,20 @@ export const istanbulFareCatalog = fareCatalog as FareCatalog;
 
 const profileById = new Map(istanbulFareCatalog.profiles.map((profile) => [profile.id, profile]));
 const sourceById = new Map(istanbulFareCatalog.sources.map((source) => [source.id, source]));
+const iettSnapshotByRoute = new Map(iettTariffSnapshot.routes.map((route) => [route.routeId, route]));
+
+function iettRouteMapping(routeId: string): RouteProfile | null {
+  const route = iettSnapshotByRoute.get(routeId);
+  if (!route?.tariff) return null;
+  const profileId = iettTariffRules.routeOverrides[routeId as keyof typeof iettTariffRules.routeOverrides]
+    ?? iettTariffRules.tariffProfiles[route.tariff as keyof typeof iettTariffRules.tariffProfiles];
+  return profileId ? {
+    profileId,
+    verification: 'route-verified',
+    sourceId: 'iett-route-tariff-snapshot',
+    note: `İETT hat detayında “${route.tariff}” olarak doğrulandı.`,
+  } : null;
+}
 
 export type ResolvedFare = FareProfile & {
   verification: FareVerification;
@@ -60,7 +76,9 @@ export type ResolvedFare = FareProfile & {
 
 export function resolveFare(routeId: string): ResolvedFare | null {
   const network = routeId.split(':', 1)[0];
-  const mapping = istanbulFareCatalog.routeProfiles[routeId] ?? istanbulFareCatalog.fallbackProfiles[network];
+  const mapping = istanbulFareCatalog.routeProfiles[routeId]
+    ?? (network === 'iett' ? iettRouteMapping(routeId) : null)
+    ?? istanbulFareCatalog.fallbackProfiles[network];
   if (!mapping) return null;
   const profile = profileById.get(mapping.profileId);
   const source = sourceById.get(mapping.sourceId);
@@ -68,7 +86,7 @@ export function resolveFare(routeId: string): ResolvedFare | null {
   return {
     ...profile,
     verification: mapping.verification,
-    sourceUrl: source.url,
+    sourceUrl: source.url.replace('{hatKodu}', routeId.split(':', 2)[1] ?? ''),
     sourceLabel: source.label,
     effectiveFrom: istanbulFareCatalog.effectiveFrom,
     verifiedAt: istanbulFareCatalog.verifiedAt,

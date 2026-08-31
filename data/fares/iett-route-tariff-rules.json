@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "tariffProfiles": {
+    "TEK BİLETLİ": "urban-standard",
+    "İNDİRİMLİ": "iett-discounted",
+    "2 BİLETLİ": "iett-two-ticket",
+    "KADEMELİ TARİFE": "iett-variable",
+    "2 TAM BİLETLİ": "iett-two-full-ticket",
+    "1 TAM BİLETLİ": "iett-one-full-ticket",
+    "METROBÜS": "metrobus-distance",
+    "METRO ENTEGRE": "iett-metro-integrated",
+    "1 TAM, 1 İND.": "iett-one-full-one-discounted",
+    "ÖZEL TARİFE": "iett-special-tariff",
+    "3 TAM BİLETLİ": "iett-e3-three-ticket"
+  },
+  "routeOverrides": {
+    "iett:16D": "iett-one-full-exact",
+    "iett:18D": "iett-one-full-exact",
+    "iett:522": "iett-variable",
+    "iett:139D": "iett-variable",
+    "iett:139S": "iett-variable",
+    "iett:H-1": "iett-airport-bus",
+    "iett:H-2": "iett-airport-bus",
+    "iett:H-3": "iett-airport-bus",
+    "iett:H-6": "iett-airport-bus",
+    "iett:H-8": "iett-airport-bus",
+    "iett:SG-1": "iett-sg-1",
+    "iett:SG-2": "iett-sg-2"
+  }
+}
