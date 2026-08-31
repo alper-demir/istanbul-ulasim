@@ -4,13 +4,13 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Çalışma dalı: `hardening/predeploy` (taban: güncel `main`, metro hatları birleşimi `0acb093`)
-- Yayın adayı: `0.6.0-rc.2`
-- Canlı araç özellikleri ve performans iyileştirmeleri `feature/live-vehicles` dalında geliştirilip bu sürümde `main`e birleştirildi.
-- Dağıtım: Henüz yapılmadı. Cloudflare Workers/CDN hedefi için yayın öncesi sağlamlaştırma tamamlanıyor.
+- Çalışma dalı: `feature/expanded-static-networks` (taban: güncel `main`)
+- Güncel kararlı sürüm: `0.6.0-rc.3`; geliştirme sürümü `0.7.0-beta.1` bu dalda hazırlanıyor.
+- Canlı araç özellikleri ve performans iyileştirmeleri `main` dalındadır.
+- Dağıtım: Uygulama canlı ortamda çalışıyor; bu özellik dalı kullanıcı onayı olmadan birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
-Uygulama, İstanbul otobüs/metrobüs ve metro hatlarını, yön bazlı durak/istasyonlarıyla haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
+Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve vapur hatlarını yön bazlı durak/istasyon/iskeleleriyle haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
 
 ## Kullanıcıya sunulan özellikler
 
@@ -23,6 +23,9 @@ Uygulama, İstanbul otobüs/metrobüs ve metro hatlarını, yön bazlı durak/is
 - En fazla üç hattı aynı haritada karşılaştırma ve bunları tek eylemle temizleme
 - Açık/koyu tema, masaüstü ve mobil yerleşim
 - M1A, M1B, M2–M9 ve M11 için statik güzergâh/istasyon gösterimi; metroda canlı araç sorgusu yok
+- T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
+- 31 Şehir Hatları güzergâhı ve 44 iskele; deniz çizgileri şematik, canlı gemi konumu yok
+- Tümü/Otobüs/Raylı/Vapur filtresi ve hat detayında kaynak bağlantısı/veri tarihi
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - Durak detayında, seçili hat/yönde durağa yaklaşan en fazla üç canlı aracı yaklaşık güzergâh mesafesiyle gösterme
 - Canlı araçlar ve durakları görsel olarak farklı işaretleme; seçili aracın güçlü harita vurgusu
@@ -36,6 +39,9 @@ Uygulama, İstanbul otobüs/metrobüs ve metro hatlarını, yön bazlı durak/is
 | Hat, güzergâh, durak | İBB Açık Veri / İETT kaynak çıktıları | Ham kaynak yerelde işlenir; uygulama çalışma anında `public/iett` altındaki küçük JSON dosyalarını okur. Veri tarihi arayüzde gösterilir. |
 | Canlı araç konumu | İETT `GetHatOtoKonum_json` servisi | Tarayıcı doğrudan bağlanmaz; sadece seçili hat sunucu rotası üzerinden sorgulanır. Araç olmayabilir, kayıt gecikebilir veya konum sapabilir. |
 | Metro hat/istasyon | Metro İstanbul hat sayfaları + OpenStreetMap snapshot | Geliştirme sırasında doğrulanıp `public/metro` altında sürümlü statik çıktıya dönüştürülür; çalışma anında canlı kaynak çağrısı yapılmaz. |
+| Tramvay/füniküler | Metro İstanbul + OpenStreetMap | Seçili T1/T3/T4/T5 ve F1/F4 hatları `public/rail` altında statik sunulur. |
+| Marmaray | TCDD Taşımacılık/Marmaray + OpenStreetMap | B1 Halkalı–Gebze hattı statiktir; canlı tren konumu sorgulanmaz. |
+| Vapur | Şehir Hatları sefer ve iskele sayfaları | 31 güzergâh ve 44 iskele `public/ferry` altında statiktir; deniz geometrisi şematiktir. |
 | Altlık haritası | OpenStreetMap | Sadece görsel harita katmanıdır; hat/durak doğruluğu için kaynak değildir. |
 
 Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt ve konum sapması veri sağlayıcılarına bağlıdır; kesin sefer veya varış bilgisi olarak kullanılmamalıdır.
@@ -66,6 +72,8 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 - React 19, Next.js API’leri, Vinext/Vite, TypeScript, Tailwind CSS
 - Harita: MapLibre GL + OpenStreetMap raster altlığı
 - Statik İETT üretim betiği: `scripts/build-iett-static-data.mjs`
+- Statik raylı sistem üretimi: `scripts/build-osm-static-network.mjs`
+- Statik vapur üretimi: `scripts/build-ferry-static-data.mjs`
 - Canlı İETT adaptörü: `lib/data-sources/iett-live-vehicles.ts`
 - Canlı API rotası: `app/api/v1/live-vehicles/route.ts`
 - Ana arayüz: `components/transit-dashboard.tsx`
@@ -91,11 +99,11 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-1. **Preview dağıtımı:** Cloudflare üzerinde cache başlıkları, rate limit ve sağlık uçlarını gerçek edge ortamında doğrulama; ardından public demo sürümü.
-2. **İETT servis anlaşması:** Yayımlanmış kota yoksa İETT’den yüksek hacimli erişim koşulu veya resmî API anahtarı hakkında bilgi alma.
-3. **Dağıtım hattı:** `main`e birleşince otomatik Cloudflare deploy, önizleme dağıtımları ve temel sağlık kontrolü.
-4. **Veri yenileme süreci:** Statik İBB/GTFS kaynaklarını düzenli indirip doğrulayan ve yeni veri tarihini yayımlayan kontrollü iş akışı.
-5. **Gözlemlenebilirlik:** Canlı kaynak gecikmesi, kuyruk uzunluğu, önbellek isabet oranı, hata oranı ve kaynak son güncelleme yaşını ölçme.
-6. **Ürün iyileştirmeleri:** Erişilebilirlik denetimi, klavye gezinimi, küçük ekranlarda kapsamlı kullanım testi ve kullanıcı geri bildirimi sonrası önceliklendirme.
+1. **Statik ağ özelliğini kapatma:** Görsel kontroller, üretim build'i ve kullanıcı onayından sonra bu dalı birleştirme.
+2. **Gerçek tarife/bilet verisi:** Hat detayında kaç bilet basıldığını gösterme; tam, öğrenci, abonman gibi ücretleri sade ayrı bir tarife alanında sunma.
+3. **Canlı konum araştırması:** Yalnız ücretsiz ve güvenilir kaynak bulunursa vapur/raylı sistem canlı konumunu ayrı bir spike ile değerlendirme.
+4. **İETT canlılık iyileştirmesi:** Kaynak kotasını ve gecikmesini gözeterek araçların daha akıcı/anlık görünmesini araştırma.
+5. **Veri yenileme süreci:** Statik kaynakları kontrollü indirip doğrulayan ve yeni veri tarihini yayımlayan iş akışı.
+6. **Ek ulaşım ağları:** Güvenilir ücretsiz kaynak bulunursa yeni ağları ayrıca değerlendirme; teleferik ve trafik mevcut kapsamın dışındadır.
 
 Sıradaki özellik başlamadan önce bu listedeki madde, kullanıcı önceliği ve veri kaynağının izin/kota durumu birlikte değerlendirilmelidir.

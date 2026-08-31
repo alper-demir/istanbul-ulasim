@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
+
+### Eklendi
+
+- T1, T3, T4, T5 tramvay; F1, F4 füniküler ve B1 Marmaray hatları için kaynaklı statik güzergâh/istasyon paketleri.
+- Şehir Hatları iç hat, Boğaz ve Adalar kapsamındaki 31 güzergâh ile 44 iskeleyi üreten statik veri hattı.
+- Tümü/Otobüs/Raylı/Vapur filtresi; hat detayında kaynak bağlantısı, veri tarihi ve canlı/statik veri sınırı.
+- Raylı sistem ve vapur paketlerinin kapsamını, koordinatlarını ve kaynak metadata'sını doğrulayan sözleşme testleri.
+
+### Değiştirildi
+
+- Vapur güzergâhları gerçek gemi iziyle karıştırılmaması için şematik geometri olarak etiketlendi.
+- Uygulama açıklamaları yalnız İETT araçlarının canlı olduğunu; diğer ağların statik sunulduğunu açıkça belirtecek şekilde güncellendi.
+
 ## 0.6.0-rc.3 — Hosted harita düzeltmesi
 
 ### Düzeltildi

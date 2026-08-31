@@ -1,6 +1,6 @@
 # İstanbulum
 
-İstanbul otobüs, metrobüs ve metro hatlarını; yön bazlı güzergâhlarıyla durak/istasyonlarını tek haritada incelemeyi sağlayan web uygulaması.
+İstanbul otobüs, metrobüs, metro, tramvay, füniküler, Marmaray ve Şehir Hatları vapur hatlarını yön bazlı güzergâhlarıyla tek haritada incelemeyi sağlayan web uygulaması.
 
 ## MVP özellikleri
 
@@ -19,6 +19,10 @@
 - Açık/koyu tema ve mobil uyumlu arayüz
 - Seçili hattın yön bazlı canlı araç konumları ve açıklayıcı hata/boş durumları
 - M1A, M1B, M2–M9 ve M11 için statik metro güzergâhı ve istasyonları
+- T1, T3, T4, T5 tramvay; F1, F4 füniküler ve B1 Marmaray için statik güzergâh/istasyonlar
+- Şehir Hatları iç hat, Boğaz ve Adalar güzergâhları için statik iskele sıraları
+- Otobüs, raylı sistem ve vapur için sade ulaşım türü filtresi
+- Hat detayında kaynak bağlantısı, veri tarihi ve canlı/statik veri sınırı
 
 ## Teknoloji
 
@@ -75,7 +79,27 @@ Metro hatları çalışma zamanında dış kaynağa bağlanmaz. `data/metro/line
 npm run data:build-metro
 ```
 
-Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz. Aynı statik katalog yaklaşımı ileride vapur ve minibüs ağları için de kullanılacaktır.
+Çıktılar `public/metro` altında tutulur. Kaynak, lisans ve veri üretim zamanı her JSON’un metadata alanında yer alır. Metro için canlı araç verisi sorgulanmaz.
+
+### Tramvay, füniküler ve Marmaray
+
+`data/rail/lines.json` kapsamı bilinçli olarak T1, T3, T4, T5, F1, F4 ve B1 ile sınırlar. Metro İstanbul/TCDD doğrulaması ve OpenStreetMap geometrileri build sırasında statik çıktıya çevrilir:
+
+```bash
+npm run data:build-rail
+```
+
+Çıktılar `public/rail` altında tutulur. Teleferik kapsam dışıdır ve bu ağlarda canlı araç konumu sorgulanmaz.
+
+### Şehir Hatları vapur verisi
+
+Şehir Hatları'nın iç hat, Boğaz ve Adalar sefer sayfalarındaki hat/iskele sıraları ile resmî iskele sayfalarındaki koordinatlar statik kataloğa dönüştürülür:
+
+```bash
+npm run data:build-ferry
+```
+
+Çıktılar `public/ferry` altında tutulur. İskeleler arasındaki çizgiler gerçek gemi izi değil şematik bağlantıdır; canlı vapur konumu henüz kullanılmaz.
 
 ## Paylaşılabilir bağlantılar
 
@@ -111,7 +135,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Yayın adayı: `0.6.0-rc.1`
+Güncel kararlı sürüm: `0.6.0-rc.3`. Geliştirme sürümü `0.7.0-beta.1`, `feature/expanded-static-networks` dalındadır.
 
 Canlı araçlar ve performans iyileştirmeleri `main` dalına birleştirildi.
 
