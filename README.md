@@ -111,6 +111,8 @@ npm run data:build-fares
 
 Çıktı `public/fares/current.json` altında yayımlanır. Genel tarife, Metrobüs/Marmaray/M11 mesafe bantları ve desteklenen vapur profilleri ayrı tutulur. İETT hatlarında resmî hat detayından doğrulanmayan özel bilet sınıfı varsayılmaz; yalnız genel tarife statüsü gösterilebilir.
 
+Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gösterir. Kullanıcı `Tarifeyi gör` seçeneğini açtığında kart türlerine göre tutarlar veya mesafe bantları, abonman/sınırlı bilet limiti, kaynak bağlantısı ve geçerlilik tarihi görünür. Bu bilgi kesin yolculuk ücreti hesaplayıcısı değildir; aktarma, mesafe, iade ve saat kuralları uygulanabilir.
+
 ## Paylaşılabilir bağlantılar
 
 Hat, yön ve isteğe bağlı durak seçimi sorgu parametreleriyle saklanır:

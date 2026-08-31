@@ -102,7 +102,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 ## Sonraki mantıklı aşamalar
 
 1. **Statik ağ özelliğini kapatma:** Görsel kontroller, üretim build'i ve kullanıcı onayından sonra bu dalı birleştirme.
-2. **Gerçek tarife/bilet verisi:** Veri sözleşmesi, kaynak manifesti, genel/mesafe bazlı profiller ve ilk hat eşleştirmeleri `feature/fare-data` dalında eklendi. Sonraki adım, hat bazı doğrulama kapsamını genişletmek ve ayrı bir arayüz dalında bilgiyi sade biçimde sunmak.
+2. **Gerçek tarife/bilet verisi:** Veri sözleşmesi, kaynak manifesti, genel/mesafe bazlı profiller ve ilk hat eşleştirmeleri `feature/fare-data` dalında eklendi. `feature/fare-ui` dalı; hat kartında isteğe bağlı, kaynaklı tarife ayrıntısını sunuyor. Sonraki adım, daha fazla İETT hattının özel bilet sınıfını kontrollü snapshot ile doğrulamak.
 3. **Canlı konum araştırması:** Yalnız ücretsiz ve güvenilir kaynak bulunursa vapur/raylı sistem canlı konumunu ayrı bir spike ile değerlendirme.
 4. **İETT canlılık iyileştirmesi:** Kaynak kotasını ve gecikmesini gözeterek araçların daha akıcı/anlık görünmesini araştırma.
 5. **Veri yenileme süreci:** Statik kaynakları kontrollü indirip doğrulayan ve yeni veri tarihini yayımlayan iş akışı.

@@ -9,6 +9,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - İBB TUHİM’in 20 Temmuz 2026’dan itibaren geçerli İstanbulkart tarifesini kaynak/karar/son doğrulama metadata’sıyla saklayan sürümlü veri sözleşmesi.
 - Genel tarife, Metrobüs, Marmaray, M11 ve desteklenen Şehir Hatları profilleri; 500T ve seçili vapur hatları için doğrulanmış hat eşleştirmeleri.
 - `data:build-fares` komutu, statik tarife çıktısı ve tarife profil/eşleştirme sözleşme testleri.
+- Hat detayındaki kompakt tarife kartı; istekle açılan kart türü ücretleri, mesafe bantları, limitler, kaynak bağlantısı ve geçerlilik bilgisini gösterir.
 
 ### Güvenilirlik
 

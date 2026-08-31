@@ -41,6 +41,28 @@ type LiveVehicleResponse = {
   data:IettLiveVehicle[];
   meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; fetchedAt:string; newestPositionAt:string | null };
 };
+type FarePriceKey = 'full' | 'student' | 'discounted' | 'student30Plus';
+type FareCatalogProfile = {
+  id:string;
+  kind:'fixed' | 'distance-bands' | 'distance-based';
+  label:string;
+  shortLabel:string;
+  sourceId:string;
+  pricesKurus?:Partial<Record<FarePriceKey,number>>;
+  subscriptionLimit?:number;
+  limitedUseTicketCount?:number;
+  notes?:string[];
+  bands?:Array<{ label:string; pricesKurus:Partial<Record<FarePriceKey,number>>; subscriptionLimit?:number; limitedUseTicketCount?:number }>;
+};
+type FareCatalog = {
+  effectiveFrom:string;
+  verifiedAt:string;
+  sources:Array<{ id:string; label:string; url:string }>;
+  profiles:FareCatalogProfile[];
+  routeProfiles:Record<string,{ profileId:string; verification:'route-verified' | 'group-verified' | 'general-only'; sourceId:string; note?:string }>;
+  fallbackProfiles:Record<string,{ profileId:string; verification:'route-verified' | 'group-verified' | 'general-only'; sourceId:string; note?:string }>;
+};
+type ResolvedFare = FareCatalogProfile & { verification:'route-verified' | 'group-verified' | 'general-only'; source:{ label:string; url:string }; effectiveFrom:string; verifiedAt:string; note?:string };
 
 function readRouteStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -179,6 +201,30 @@ function formatSourceDate(value?: string | null) {
   }).format(timestamp);
 }
 
+function formatFare(value?: number) {
+  if (value === undefined) return '—';
+  return new Intl.NumberFormat('tr-TR', {
+    style:'currency', currency:'TRY', minimumFractionDigits:2, maximumFractionDigits:2,
+  }).format(value / 100);
+}
+
+function resolveCatalogFare(catalog: FareCatalog | undefined, routeId: string): ResolvedFare | null {
+  if (!catalog) return null;
+  const network = routeId.split(':', 1)[0];
+  const mapping = catalog.routeProfiles[routeId] ?? catalog.fallbackProfiles[network];
+  const profile = mapping && catalog.profiles.find((item) => item.id === mapping.profileId);
+  const source = mapping && catalog.sources.find((item) => item.id === mapping.sourceId);
+  return mapping && profile && source
+    ? { ...profile, verification:mapping.verification, source, effectiveFrom:catalog.effectiveFrom, verifiedAt:catalog.verifiedAt, note:mapping.note }
+    : null;
+}
+
+function fareVerificationLabel(verification: ResolvedFare['verification']) {
+  if (verification === 'route-verified') return 'Hat bazında doğrulandı';
+  if (verification === 'group-verified') return 'Tarife grubu doğrulandı';
+  return 'Genel tarife';
+}
+
 function userLocationFeature(location?: [number, number]): FeatureCollection {
   return { type:'FeatureCollection', features:location ? [{ type:'Feature', properties:{}, geometry:{ type:'Point', coordinates:location } }] : [] };
 }
@@ -312,6 +358,7 @@ export function TransitDashboard() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
 
   const routesQuery = useQuery({
@@ -362,6 +409,15 @@ export function TransitDashboard() {
     placeholderData: (previousData) => previousData,
     staleTime: 24 * 60 * 60 * 1000,
   });
+  const fareCatalogQuery = useQuery({
+    queryKey:['fare-catalog', TRANSIT_DATA_VERSION],
+    queryFn: async (): Promise<{ data:FareCatalog }> => {
+      const response = await fetch(`/fares/current.json?v=${TRANSIT_DATA_VERSION}`);
+      if (!response.ok) throw new Error('Tarife verisi alınamadı');
+      return response.json();
+    },
+    staleTime:24 * 60 * 60 * 1000,
+  });
   const liveVehiclesQuery = useQuery({
     queryKey:['live-vehicles', selectedRouteId],
     queryFn:async (): Promise<LiveVehicleResponse> => {
@@ -392,6 +448,10 @@ export function TransitDashboard() {
   });
 
   const routeData = routeQuery.data?.data ?? fixtureRoutes[0];
+  const resolvedFare = useMemo(
+    () => resolveCatalogFare(fareCatalogQuery.data?.data, routeData.id),
+    [fareCatalogQuery.data?.data, routeData.id],
+  );
   const selectedDirection = routeData.directions?.find((direction) => direction.id === selectedDirectionId) ?? routeData.directions?.[0];
   const selectedRoute = useMemo(() => {
     const directionalRoute = selectedDirection ? {
@@ -918,7 +978,14 @@ export function TransitDashboard() {
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
           <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<><div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div><button type="button" onClick={clearComparisonRoutes} className="mt-2 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--foreground)]">Karşılaştırmayı temizle</button></>}</div>
           <div className="grid grid-cols-3 gap-2">{hasLiveVehicles?<Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" />:<Metric icon={<TramFront />} value="Statik" label="hat verisi" />}<Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label={stopKind(selectedRoute.mode)} /><Metric icon={<Clock3 />} value={selectedRoute.durationMinutes?`${selectedRoute.durationMinutes} dk`:'—'} label="tek yön" /></div>
-          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{selectedRoute.fareLabel}</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{isOfficialRoute ? 'Kaynaklı veri' : 'Demo veri'}</span></div>{isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB GTFS shape verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}</div>
+          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{resolvedFare?.shortLabel ?? selectedRoute.fareLabel}</p></div>
+              <span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{resolvedFare ? fareVerificationLabel(resolvedFare.verification) : isOfficialRoute ? 'Kaynaklı veri' : 'Demo veri'}</span>
+            </div>
+            {resolvedFare&&<><Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setFareDetailsOpen((open)=>!open)} aria-expanded={fareDetailsOpen}><span>{fareDetailsOpen?'Tarife ayrıntılarını gizle':'Tarifeyi gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',fareDetailsOpen&&'rotate-90')} /></Button>{fareDetailsOpen&&<FareDetails fare={resolvedFare} />}</>}
+            {isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB Açık Veri vektör verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}
+          </div>
           {hasLiveVehicles&&<><div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
           <div className="mt-2 space-y-2">
             {!selectedRoute.vehicles.length&&<div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-center"><BusFront className={cn('mx-auto h-5 w-5 text-[var(--muted)]',liveVehiclesLoading&&'animate-pulse text-[var(--primary)]')} /><p className="mt-2 text-xs font-bold">{liveVehiclesLoading?'Canlı araçlar aranıyor':liveVehiclesUnavailable?'Canlı veri geçici olarak alınamadı':'Bu yönde aktif araç bulunamadı'}</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">{liveVehiclesUnavailable?'Güzergâh ve duraklar kullanılmaya devam ediyor.':'Yön değiştirerek diğer araçları görebilirsiniz.'}</p></div>}
@@ -998,6 +1065,21 @@ export function TransitDashboard() {
 
 function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; label:string }) {
   return <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3"><div className="mb-2 h-4 w-4 text-[var(--primary)] [&>svg]:h-4 [&>svg]:w-4">{icon}</div><p className="text-sm font-extrabold">{value}</p><p className="mt-0.5 text-[10px] font-medium text-[var(--muted)]">{label}</p></div>;
+}
+
+function FareDetails({ fare }: { fare:ResolvedFare }) {
+  const prices = fare.pricesKurus
+    ? ([['Tam','full'],['Öğrenci','student'],['İndirimli','discounted'],['30+ öğrenci','student30Plus']] as const)
+      .filter(([, key]) => fare.pricesKurus?.[key] !== undefined)
+    : [];
+
+  return <div className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-[10px]">
+    <div className="flex items-center justify-between gap-2"><p className="font-bold">{fare.label}</p><a href={fare.source.url} target="_blank" rel="noreferrer" className="font-semibold text-[var(--primary)] underline underline-offset-2">Kaynak</a></div>
+    {prices.length>0&&<div className="mt-2 grid grid-cols-2 gap-1.5">{prices.map(([label,key])=><div key={key} className="rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="block text-[9px] text-[var(--muted)]">{label}</span><span className="block text-xs font-extrabold">{formatFare(fare.pricesKurus?.[key])}</span></div>)}</div>}
+    {fare.bands&&<div className="mt-2 max-h-36 space-y-1 overflow-y-auto pr-1">{fare.bands.map((band)=><div key={band.label} className="flex items-center justify-between gap-2 rounded-md bg-[var(--surface-muted)] px-2 py-1.5"><span className="font-semibold">{band.label}</span><span className="text-right font-bold">{formatFare(band.pricesKurus.full)}</span></div>)}</div>}
+    <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 border-t border-[var(--border)] pt-2 text-[9px] text-[var(--muted)]"><span>{formatSourceDate(fare.effectiveFrom)} itibarıyla</span>{fare.subscriptionLimit&&<span>· Abonman: {fare.subscriptionLimit} limit</span>}{fare.limitedUseTicketCount&&<span>· Sınırlı bilet: {fare.limitedUseTicketCount} geçiş</span>}</div>
+    {[fare.note,...(fare.notes ?? [])].filter(Boolean).map((note)=><p key={note} className="mt-1 text-[9px] leading-relaxed text-[var(--muted)]">{note}</p>)}
+  </div>;
 }
 
 function RouteResult({ route,selected,favorite,onSelect }: { route:TransitRouteSummary; selected:boolean; favorite:boolean; onSelect:(route:TransitRouteSummary)=>void }) {
