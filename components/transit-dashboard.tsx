@@ -39,7 +39,7 @@ type ComparisonRoute = { routeId:string; directionId:string };
 type ApproachingVehicle = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean };
 type LiveVehicleResponse = {
   data:IettLiveVehicle[];
-  meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; fetchedAt:string; newestPositionAt:string | null };
+  meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; cacheStatus:'hit' | 'miss' | 'stale'; cacheTtlMs:number; fetchedAt:string; newestPositionAt:string | null };
 };
 type FarePriceKey = 'full' | 'student' | 'discounted' | 'student30Plus';
 type FareCatalogProfile = {
@@ -436,9 +436,11 @@ export function TransitDashboard() {
       return response.json();
     },
     enabled:selectedRouteId.startsWith('iett:'),
-    staleTime:20_000,
+    staleTime:15_000,
     refetchInterval:30_000,
     refetchIntervalInBackground:false,
+    refetchOnWindowFocus:true,
+    refetchOnReconnect:true,
     retry:1,
   });
   const comparisonQueries = useQueries({
@@ -493,6 +495,8 @@ export function TransitDashboard() {
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
   const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading;
   const liveVehiclesUnavailable = hasLiveVehicles && liveVehiclesQuery.isError;
+  const liveCacheStatus = liveVehiclesQuery.data?.meta.cacheStatus;
+  const liveRefreshSeconds = Math.max(1, Math.round((liveVehiclesQuery.data?.meta.cacheTtlMs ?? 30_000) / 1_000));
   const liveVehicleStatusLabel = liveVehiclesLoading
     ? 'Canlı konumlar yükleniyor'
     : liveVehiclesUnavailable
@@ -502,9 +506,10 @@ export function TransitDashboard() {
         : liveVehicleStatus === 'pending'
           ? 'Canlı konum sırada'
         : selectedRoute.vehicles.length
-          ? '30 sn’de kontrol edilir'
+          ? `${liveRefreshSeconds} sn’de yenilenir`
           : 'Bu yönde aktif araç yok';
   const liveSourceTimestamp = formatSourceTimestamp(liveVehiclesQuery.data?.meta.newestPositionAt);
+  const liveSnapshotTimestamp = formatSourceTimestamp(liveVehiclesQuery.data?.meta.fetchedAt);
   const liveSourceUpdatedLabel = liveVehiclesLoading
     ? 'Canlı konum kontrol ediliyor'
     : liveVehiclesUnavailable
@@ -512,7 +517,7 @@ export function TransitDashboard() {
       : liveVehicleStatus === 'pending'
         ? 'Yoğunluk nedeniyle canlı konum isteği sıraya alındı'
       : liveSourceTimestamp
-        ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' ? ' · önceki yanıt' : ''}`
+        ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' ? ' · önceki yanıt' : liveCacheStatus === 'hit' ? ' · taze önbellek' : ' · yeni kaynak yanıtı'}${liveSnapshotTimestamp ? ` · yanıt alındı: ${liveSnapshotTimestamp}` : ''}`
         : 'İETT şu an bu hat için canlı konum bildirmiyor';
   const filteredRoutes = useMemo(() => {
     const byMode = routes.filter((route) => routeMatchesFilter(route, routeModeFilter));

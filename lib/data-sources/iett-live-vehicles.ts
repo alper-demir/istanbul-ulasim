@@ -11,7 +11,10 @@ function configuredLimit(name: string, fallback: number) {
   return Number.isFinite(value) && value >= 0 ? Math.round(value) : fallback;
 }
 
-const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 45_000);
+// Keep the server snapshot aligned with the focused-route client polling
+// interval. This makes a normal refresh eligible for a newer upstream value
+// without increasing the number of route queries made by the interface.
+const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 30_000);
 const STALE_CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_STALE_TTL_MS', 10 * 60 * 1_000);
 const UPSTREAM_TIMEOUT_MS = configuredMilliseconds('IETT_LIVE_TIMEOUT_MS', 10_000);
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;

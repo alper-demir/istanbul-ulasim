@@ -12,6 +12,7 @@ describe('IETT live response parsing', () => {
 
     expect(snapshot.vehicles).toHaveLength(1);
     expect(snapshot.vehicles[0]).toMatchObject({ doorCode: 'B-42', routeCode: '500T', coordinates: [29.019, 41.043], updatedSecondsAgo: 30 });
+    expect(snapshot.fetchedAt).toBe('2026-08-30T09:00:30.000Z');
     expect(snapshot.discardedVehicleCount).toBe(1);
   });
 

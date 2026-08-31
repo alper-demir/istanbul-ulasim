@@ -18,6 +18,8 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - İETT hatlarında resmî hat detayından doğrulanmamış özel biletli tarife sınıfı varsayılan olarak atanmaz; genel tarife durumu ayrı işaretlenir.
 - E-3 hattı resmî İETT hat detayı ve TUHİM tarife satırıyla üç biletli, tüm kart türlerinde aynı ücretli profil olarak doğrulandı; kart türü açıklama ipuçları eklendi.
 - Tüm 801 statik İETT hattı resmî hat detayındaki tarife sınıfıyla denetlendi; doğrulanmış sınıflar statik snapshot/rule eşleştirmesiyle yayımlanıyor. Kaynak sınıf döndürmeyen hatlar artık genel ücret varsaymak yerine `Tarife doğrulanıyor` durumunu gösterir.
+- Seçili İETT hattının canlı araç yenilemesi ve sunucu taze önbelleği 30 saniyede eşitlendi; sekmeye dönüşte ve bağlantı yeniden kurulduğunda güvenli bir kontrol eklenirken üst kaynak kotası korunur.
+- Hat ayrıntısı artık canlı konumun yeni kaynak yanıtı, taze önbellek veya önceki/fallback yanıt olduğunu açıkça belirtir.
 
 ## 0.7.0-beta.1 — Genişletilmiş statik ulaşım ağı
 
