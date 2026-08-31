@@ -9,6 +9,7 @@ type RouteSummary = {
   sourceUpdatedAt: string;
   supportsLiveVehicles: boolean;
   stopCount: number;
+  geometrySource?: string;
 };
 
 type RouteIndex = {
@@ -54,7 +55,7 @@ describe('static transit networks', () => {
     await expectRouteFiles('rail', index.data);
   });
 
-  it('publishes a complete Şehir Hatları pier catalog with schematic geometry', async () => {
+  it('publishes a complete Şehir Hatları pier catalog with validated geometry metadata', async () => {
     const index = await readJson<RouteIndex>('public/ferry/route-index.json');
     const stops = await readJson<{ data: unknown[]; meta: { unlocatedPierCount: number } }>('public/ferry/stop-index.json');
     expect(index.data).toHaveLength(31);
@@ -62,7 +63,10 @@ describe('static transit networks', () => {
     expect(new Set(index.data.map((route) => route.id)).size).toBe(index.data.length);
     expect(stops.data).toHaveLength(44);
     expect(stops.meta.unlocatedPierCount).toBe(0);
-    expect(index.meta.geometry).toBe('schematic');
+    expect(index.meta.geometry).toBe('ibb-gtfs-shape-with-schematic-fallback');
+    expect(index.meta.geometrySource).toContain('İBB Açık Veri GTFS');
+    expect(index.meta.geometrySourceUpdatedAt).toBe('2024-03-13');
+    expect(index.data.some((route) => route.geometrySource?.includes('GTFS'))).toBe(true);
     await expectRouteFiles('ferry', index.data);
   });
 });

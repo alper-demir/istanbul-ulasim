@@ -25,6 +25,9 @@ export type TransitDirection = {
   durationMinutes: number;
   coordinates: [number, number][];
   stops: TransitStop[];
+  geometrySource?: string;
+  geometrySourceUpdatedAt?: string;
+  geometrySourceUrl?: string;
 };
 
 export type TransitRoute = {
@@ -50,6 +53,9 @@ export type TransitRoute = {
   sourceUrl?: string;
   sourceUpdatedAt?: string;
   supportsLiveVehicles?: boolean;
+  geometrySource?: string;
+  geometrySourceUpdatedAt?: string;
+  geometrySourceUrl?: string;
 };
 
 export const routes: TransitRoute[] = [
