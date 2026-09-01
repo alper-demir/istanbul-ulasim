@@ -11,6 +11,7 @@
   --primary: #087f8c;
   --primary-strong: #066772;
   --primary-soft: #d8f3f3;
+  --warning-foreground: #8a5a00;
   --shadow: 0 22px 55px rgba(17, 45, 48, 0.14);
 }
 
@@ -25,6 +26,7 @@
   --primary: #2bc4c8;
   --primary-strong: #5cdfe0;
   --primary-soft: #123c40;
+  --warning-foreground: #f6c453;
   --shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
 }
 
