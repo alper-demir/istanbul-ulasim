@@ -497,6 +497,7 @@ function fitRoute(map: MapLibreMap, route: TransitRoute) {
 export function TransitDashboard() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const selectedRouteRef = useRef(fixtureRoutes[0]);
   const manualLocationModeRef = useRef(false);
   const [selectedRouteId, setSelectedRouteId] = useState('iett:500T');
@@ -526,6 +527,7 @@ export function TransitDashboard() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
   const [scheduleDetailsOpen, setScheduleDetailsOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const { resolvedTheme, setTheme } = useTheme();
   const aboutDialogRef = useDialogFocus<HTMLElement>(() => setAboutOpen(false), aboutOpen);
 
@@ -545,6 +547,24 @@ export function TransitDashboard() {
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [aboutOpen, fareCatalogOpen, fareDetailsOpen, manualLocationMode, scheduleDetailsOpen]);
+
+  useEffect(() => {
+    const focusSearch = (event: KeyboardEvent) => {
+      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return;
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener('keydown', focusSearch);
+    return () => window.removeEventListener('keydown', focusSearch);
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 3_000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   const routesQuery = useQuery({
     queryKey: ['routes', TRANSIT_DATA_VERSION],
@@ -1018,14 +1038,23 @@ export function TransitDashboard() {
     const next = favorites.includes(selectedRoute.id) ? favorites.filter((id) => id !== selectedRoute.id) : [...favorites,selectedRoute.id];
     setFavorites(next);
     window.localStorage.setItem(USER_STATE_KEYS.favoriteRoutes,JSON.stringify(next));
+    setToast(next.includes(selectedRoute.id) ? 'Hat favorilere eklendi' : 'Hat favorilerden çıkarıldı');
   };
 
   const toggleComparisonRoute = () => {
     const next = { routeId:selectedRoute.id, directionId:selectedDirection?.id ?? selectedDirectionId };
     setComparisonRouteKeys((current) => {
       const exists = current.some((item) => item.routeId === next.routeId && item.directionId === next.directionId);
-      if (exists) return current.filter((item) => !(item.routeId === next.routeId && item.directionId === next.directionId));
-      return current.length < 3 ? [...current, next] : current;
+      if (exists) {
+        setToast('Hat karşılaştırmadan çıkarıldı');
+        return current.filter((item) => !(item.routeId === next.routeId && item.directionId === next.directionId));
+      }
+      if (current.length >= 3) {
+        setToast('Karşılaştırmaya en fazla 3 hat eklenebilir');
+        return current;
+      }
+      setToast('Hat karşılaştırmaya eklendi');
+      return [...current, next];
     });
   };
 
@@ -1054,6 +1083,7 @@ export function TransitDashboard() {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setLinkCopied(true);
+      setToast('Hat bağlantısı panoya kopyalandı');
       window.setTimeout(() => setLinkCopied(false), 1800);
     } catch { /* Clipboard access can be unavailable outside secure contexts. */ }
   };
@@ -1136,7 +1166,8 @@ export function TransitDashboard() {
         </div>
         <div className="relative mx-auto flex max-w-xl flex-1 items-center">
           <Search className="pointer-events-none absolute left-3 h-4 w-4 text-[var(--muted)]" />
-          <input value={search} onChange={(e)=>{setSearch(e.target.value);setNearbyOpen(false);setRouteListOpen(true);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat veya durak ara" aria-label="Hat veya durak ara" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-10 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
+          <input ref={searchInputRef} value={search} onChange={(e)=>{setSearch(e.target.value);setNearbyOpen(false);setRouteListOpen(true);}} onKeyDown={(event)=>{if(event.key==='Escape'){setSearch('');setRouteListOpen(false);} if(event.key==='Enter'&&regularRoutes[0]) selectRoute(regularRoutes[0]);}} onFocus={()=>setRouteListOpen(true)} placeholder="Hat veya durak ara" aria-label="Hat veya durak ara" aria-keyshortcuts="/ Escape Enter" className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] pl-10 pr-16 text-sm font-medium outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-soft)]" />
+          {!search&&<kbd className="pointer-events-none absolute right-3 hidden rounded border border-[var(--border)] bg-[var(--surface-muted)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--muted)] sm:block">/</kbd>}
           {search && <button onClick={()=>setSearch('')} aria-label="Aramayı temizle" className="absolute right-3 text-[var(--muted)]"><X className="h-4 w-4" /></button>}
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
@@ -1149,6 +1180,8 @@ export function TransitDashboard() {
           </Button>
         </div>
       </header>
+
+      {toast&&<div role="status" aria-live="polite" className="glass-panel absolute left-1/2 top-[92px] z-[80] -translate-x-1/2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-xl">{toast}</div>}
 
       {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
         <section ref={aboutDialogRef} role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
