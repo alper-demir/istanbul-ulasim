@@ -84,6 +84,17 @@ describe('schedule data contract', () => {
       expect(payload.data.source.provider).toBe('sehir-hatlari');
       expect(payload.data.directions.map((direction) => direction.directionId).sort()).toEqual(['outbound', 'return']);
       expect(payload.data.directions.every((direction) => direction.patterns.some((pattern) => pattern.journeys.length > 0))).toBe(true);
+      const routePayload = JSON.parse(await readFile(new URL(`../public/ferry/routes/${routeId.replace('ferry:', '')}.json`, import.meta.url), 'utf8')) as { data:{ directions:Array<{ id:string; stops:Array<{ id:string }> }> } };
+      for (const scheduleDirection of payload.data.directions) {
+        const routeDirection = routePayload.data.directions.find((direction) => direction.id === scheduleDirection.directionId);
+        const stopIds = new Set(routeDirection?.stops.map((stop) => stop.id));
+        expect(routeDirection, `${routeId}/${scheduleDirection.directionId} yönü statik rotada bulunmalı`).toBeDefined();
+        for (const pattern of scheduleDirection.patterns) {
+          for (const journey of pattern.journeys) {
+            expect(journey.calls.every((call) => stopIds.has(call.stopId)), `${routeId}/${journey.id} yalnız rota iskelelerini kullanmalı`).toBe(true);
+          }
+        }
+      }
     }
   });
 });
