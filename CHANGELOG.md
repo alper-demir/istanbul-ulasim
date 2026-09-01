@@ -14,6 +14,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Vektör geometrisiyle yayımlanan 30 vapur hattının tamamı için 84 yön/gün deseni, 1.257 sefer ve 3.629 iskele saatinden oluşan kaynaklı snapshot.
 - Ara iskeleden başlayan kısmi vapur seferlerinde gerçek ilk hareket iskelesini gösteren, kalkışları kronolojik sıralayan panel davranışı.
 - İETT resmî hareket saatleri tablosunu yön, gün türü ve ÖHO işaretiyle ortak statik sefer sözleşmesine çeviren bakım betiği; varsayılan toplu istek yerine açık hat kapsamı veya `--all` onayı zorunluluğu.
+- Türkçe karakterleri ve ayraçları normalleştiren; tam hat kodu, kod öneki ve token bazlı hat/durak aramasını önceliklendiren yerel keşif sıralaması.
 
 ### Performans
 

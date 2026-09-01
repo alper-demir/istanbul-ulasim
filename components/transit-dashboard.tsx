@@ -17,6 +17,7 @@ import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import type { IettLiveVehicle } from '@/lib/data-sources/iett-live-vehicles';
 import { parseScheduleManifestPayload, parseSchedulePayload, type ScheduleManifestPayload, type SchedulePayload } from '@/lib/schedule-data';
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
+import { normalizeTransitSearch, rankRouteMatches, rankStopMatches } from '@/lib/transit-discovery';
 import { APP_VERSION } from '@/lib/app-version';
 import { type RecentTransitItem, type SavedManualLocation, USER_STATE_KEYS } from '@/lib/transit-user-state';
 import { cn } from '@/lib/utils';
@@ -114,10 +115,6 @@ function stopKindPlural(mode: TransitRoute['mode']) {
 async function readStaticJson<T>(path: string): Promise<T | null> {
   const response = await fetch(path);
   return response.ok ? response.json() as Promise<T> : null;
-}
-
-function normalizeSearch(value: string) {
-  return value.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/\p{Diacritic}/gu, '').replaceAll('ı', 'i');
 }
 
 // Keep the operational layers independent of the basemap provider.  If tile
@@ -391,7 +388,7 @@ export function TransitDashboard() {
   });
 
   const routes = routesQuery.data?.data ?? fixtureRoutes.map(({ stops, vehicles, ...route }) => ({ ...route, vehicleCount: vehicles.length, stopCount: stops.length }));
-  const normalizedSearch = normalizeSearch(search.trim());
+  const normalizedSearch = normalizeTransitSearch(search.trim());
   const stopIndexQuery = useQuery({
     queryKey: ['stops', TRANSIT_DATA_VERSION],
     queryFn: async (): Promise<{ data: TransitStopSummary[]; meta?:{ source?:string; stopCount?:number } }> => {
@@ -551,11 +548,11 @@ export function TransitDashboard() {
   const filteredRoutes = useMemo(() => {
     const byMode = routes.filter((route) => routeMatchesFilter(route, routeModeFilter));
     if (!normalizedSearch) return byMode;
-    return byMode.filter((route) => normalizeSearch(`${route.code} ${route.name}`).includes(normalizedSearch));
+    return rankRouteMatches(byMode, normalizedSearch);
   }, [normalizedSearch, routeModeFilter, routes]);
   const filteredStops = useMemo(() => {
     if (normalizedSearch.length < 2) return [];
-    return (stopIndexQuery.data?.data ?? []).filter((stop) => normalizeSearch(`${stop.name} ${stop.district}`).includes(normalizedSearch));
+    return rankStopMatches(stopIndexQuery.data?.data ?? [], normalizedSearch);
   }, [normalizedSearch, stopIndexQuery.data?.data]);
   const nearbyStops = useMemo(() => {
     if (!userLocation) return [];
