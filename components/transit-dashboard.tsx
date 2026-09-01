@@ -22,6 +22,7 @@ import { safeInterpolatedCoordinate } from '@/lib/live-vehicle-motion';
 import { APP_VERSION } from '@/lib/app-version';
 import { type RecentTransitItem, type SavedManualLocation, USER_STATE_KEYS } from '@/lib/transit-user-state';
 import { cn } from '@/lib/utils';
+import { useDialogFocus } from '@/lib/dialog-focus';
 
 const ROUTE_SOURCE = 'selected-route';
 const STOP_SOURCE = 'selected-stops';
@@ -485,8 +486,8 @@ export function TransitDashboard() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
   const [scheduleDetailsOpen, setScheduleDetailsOpen] = useState(false);
-  const aboutCloseRef = useRef<HTMLButtonElement>(null);
   const { resolvedTheme, setTheme } = useTheme();
+  const aboutDialogRef = useDialogFocus<HTMLElement>(() => setAboutOpen(false), aboutOpen);
 
   useEffect(() => {
     if (!aboutOpen && !fareCatalogOpen && !fareDetailsOpen && !scheduleDetailsOpen && !manualLocationMode) return;
@@ -504,10 +505,6 @@ export function TransitDashboard() {
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [aboutOpen, fareCatalogOpen, fareDetailsOpen, manualLocationMode, scheduleDetailsOpen]);
-
-  useEffect(() => {
-    if (aboutOpen) aboutCloseRef.current?.focus();
-  }, [aboutOpen]);
 
   const routesQuery = useQuery({
     queryKey: ['routes', TRANSIT_DATA_VERSION],
@@ -1114,8 +1111,8 @@ export function TransitDashboard() {
       </header>
 
       {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
-        <section role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
-          <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulum</p><h2 id="about-title" className="mt-1 text-lg font-extrabold">Uygulama hakkında</h2></div><button ref={aboutCloseRef} type="button" aria-label="Bilgilendirme penceresini kapat" onClick={()=>setAboutOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
+        <section ref={aboutDialogRef} role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
+          <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulum</p><h2 id="about-title" className="mt-1 text-lg font-extrabold">Uygulama hakkında</h2></div><button type="button" aria-label="Bilgilendirme penceresini kapat" onClick={()=>setAboutOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
           <p className="mt-4 text-sm leading-relaxed text-[var(--muted)]">İstanbulum; otobüs, metrobüs, metro, tramvay, füniküler, Marmaray ve vapur hatlarını durak, istasyon ve iskeleleriyle haritada incelemeyi kolaylaştıran bir keşif aracıdır. Yalnız İETT araçları uygun olduğunda canlı gösterilir; yolculuk planlama veya varış zamanı tahmini yapılmaz.</p>
           <div className="mt-5 space-y-3">
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><p className="text-xs font-extrabold">Otobüs ve metrobüs verisi</p><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Güzergâh ve duraklar <a className="font-semibold text-[var(--primary)] underline underline-offset-2" href="https://data.ibb.gov.tr/" target="_blank" rel="noreferrer">İBB Açık Veri</a> kaynaklarından işlenir. Uygulamadaki veri tarihi: {ROUTE_DATA_UPDATED_LABEL}.</p></div>
@@ -1279,20 +1276,16 @@ function FareDetails({ fare }: { fare:ResolvedFare }) {
 }
 
 function FareCatalogDialog({ catalog,onClose }: { catalog:FareCatalog | undefined; onClose:()=>void }) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useDialogFocus<HTMLElement>(onClose);
   const generalFare = catalog?.profiles.find((profile) => profile.id === 'urban-standard');
   const source = catalog?.sources.find((item) => item.id === 'tuhim-2026-07-20');
   const prices = generalFare?.pricesKurus
     ? (Object.entries(PRICE_CATEGORY_LABEL) as Array<[FarePriceKey,string]>).map(([key,label]) => [label,key] as const).filter(([, key]) => generalFare.pricesKurus?.[key] !== undefined)
     : [];
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-  }, []);
-
   return <div className="absolute inset-0 z-[80] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={onClose}>
-    <section role="dialog" aria-modal="true" aria-labelledby="fare-catalog-title" className="glass-panel max-h-[min(680px,calc(100dvh-32px))] w-full max-w-lg overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
-      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulkart</p><h2 id="fare-catalog-title" className="mt-1 text-lg font-extrabold">Tarifeler</h2><p className="mt-1 text-[11px] text-[var(--muted)]">{catalog ? `${formatSourceDate(catalog.effectiveFrom)} itibarıyla` : 'Tarife verisi yükleniyor'}</p></div><button ref={closeButtonRef} type="button" aria-label="Tarifeler penceresini kapat" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
+    <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="fare-catalog-title" className="glass-panel max-h-[min(680px,calc(100dvh-32px))] w-full max-w-lg overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
+      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">İstanbulkart</p><h2 id="fare-catalog-title" className="mt-1 text-lg font-extrabold">Tarifeler</h2><p className="mt-1 text-[11px] text-[var(--muted)]">{catalog ? `${formatSourceDate(catalog.effectiveFrom)} itibarıyla` : 'Tarife verisi yükleniyor'}</p></div><button type="button" aria-label="Tarifeler penceresini kapat" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
       {generalFare&&<><div className="mt-5"><div className="flex items-center justify-between gap-3"><h3 className="text-sm font-extrabold">Genel İstanbulkart</h3>{source&&<a href={source.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[var(--primary)] underline underline-offset-2">Resmî kaynak</a>}</div><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">İETT’de tek biletli, metro entegre ve genel ilk biniş sınıfına giren hatlar için başlangıç ücretleri.</p><div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{prices.map(([label,key])=><div key={key} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-2.5"><span className="flex items-center gap-1 text-[10px] font-medium text-[var(--muted)]">{label}{PRICE_CATEGORY_HELP[key]&&<span title={PRICE_CATEGORY_HELP[key]} aria-label={`${label} açıklaması`} className="cursor-help text-[var(--primary)]"><Info className="h-3 w-3" /></span>}</span><strong className="mt-1 block text-base">{formatFare(generalFare.pricesKurus?.[key])}</strong></div>)}</div></div>
       <div className="mt-5 border-t border-[var(--border)] pt-4"><h3 className="text-sm font-extrabold">Aylık abonman</h3><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Mavi Kart aylık abonman seçenekleri; geçiş sayısı her kart türü için resmî tarifedeki limitidir.</p><div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">{catalog?.monthlyPasses?.map((pass)=><div key={pass.label} className="flex items-center justify-between gap-2 rounded-lg bg-[var(--surface-muted)] px-2.5 py-2 text-[11px]"><span><span className="block font-semibold">{pass.label}</span><span className="text-[10px] text-[var(--muted)]">{pass.passCount} geçiş / ay</span></span><strong>{formatFare(pass.priceKurus)}</strong></div>)}</div><p className="mt-2 text-[10px] leading-relaxed text-[var(--muted)]">Hak sahipliği, kart başvurusu ve hatlardaki kullanım limitleri İstanbulkart kurallarına göre değişebilir.</p></div>
       <div className="mt-5 border-t border-[var(--border)] pt-4"><h3 className="text-sm font-extrabold">Sınırlı geçiş biletleri</h3><p className="mt-1 text-[11px] leading-relaxed text-[var(--muted)]">Fiziksel, SMS, QR ve web QR dahil sınırlı kullanımlı elektronik bilet tarifesi.</p><div className="mt-3 grid grid-cols-2 gap-1.5">{catalog?.limitedUseTickets?.map((ticket)=><div key={ticket.passCount} className="flex items-center justify-between gap-2 rounded-lg bg-[var(--surface-muted)] px-2.5 py-2 text-[11px]"><span className="font-semibold">{ticket.label}</span><strong>{formatFare(ticket.priceKurus)}</strong></div>)}</div></div>
