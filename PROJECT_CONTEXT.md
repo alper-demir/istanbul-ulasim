@@ -5,7 +5,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 ## Mevcut durum
 
 - Güncel yayımlanmış sürüm: `0.7.0-beta.2`; vapur/raylı ağlar, tarife kataloğu ve canlı araç sağlamlaştırmaları `main` dalında birleşiktir.
-- Aktif çalışma dalı: `docs/next-phases-roadmap`; yalnız sonraki faz analizini içerir.
+- Aktif entegrasyon dalı: `feature/next-transit-experience`; ilk geliştirme dalı `feature/schedule-foundation`.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -101,5 +101,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 ## Sonraki mantıklı aşamalar
 
 Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; ortak sefer altyapısı ve Şehir Hatları, İETT planlı kalkışları, keşif/arama deneyimi, raylı sistem tarifeleri, yük artırmayan canlı araç yumuşatma ve son kalite fazıdır.
+
+Ortak sefer sözleşmesi, lazy-loaded manifest/dosya erişimi ve temel arayüz durumları `feature/schedule-foundation` dalında hazırlanmıştır. Bu dal doğrulandıktan sonra sıradaki geliştirme `feature/ferry-schedules` olmalıdır.
 
 Trafik ve teleferik kapsam dışıdır. Raylı/vapur canlı konumu yalnız ücretsiz, resmî ve sürdürülebilir bir kaynak doğrulanırsa ayrı spike ile değerlendirilir.

@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## Yayımlanmamış — Planlı sefer altyapısı
+
+### Eklendi
+
+- İşletmeciden bağımsız planlı sefer veri sözleşmesi; kaynak, alınma/geçerlilik tarihi, gün türü, yön, sefer ve durak saatlerini doğrular.
+- Gece yarısını aşan `24:xx` saatlerini koruyan, geriye giden saatleri ve bilinmeyen gün türlerini reddeden sözleşme testleri.
+- Sefer manifesti ve yalnız kullanıcı isteğiyle yüklenen hat bazlı sefer dosyası yapısı.
+- Hat ayrıntısında planlı seferler için yükleniyor, kullanılamıyor, hata, eski/gelecek ve geçerliliği bilinmiyor durumlarını destekleyen sade panel.
+
+### Performans
+
+- Sefer paneli açılmadan manifest isteği, seçili hatta ait dosya bulunmadan da sefer dosyası isteği gönderilmez.
+- Kurum kaynakları çalışma anında çağrılmaz; sonraki işletmeci entegrasyonları doğrulanmış statik snapshot üretecek şekilde sınırlandırıldı.
+
 ## 0.7.0-beta.2 — Tarifeler ve canlı veri güncelliği
 
 ### Eklendi

@@ -11,9 +11,11 @@ import {
   Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, Ticket, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SchedulePanel } from '@/components/schedule-panel';
 import { routes as fixtureRoutes, type TransitDirection, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import type { IettLiveVehicle } from '@/lib/data-sources/iett-live-vehicles';
+import { parseScheduleManifestPayload, parseSchedulePayload, type ScheduleManifestPayload, type SchedulePayload } from '@/lib/schedule-data';
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
 import { APP_VERSION } from '@/lib/app-version';
 import { type RecentTransitItem, type SavedManualLocation, USER_STATE_KEYS } from '@/lib/transit-user-state';
@@ -368,6 +370,7 @@ export function TransitDashboard() {
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
+  const [scheduleDetailsOpen, setScheduleDetailsOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
 
   const routesQuery = useQuery({
@@ -426,6 +429,32 @@ export function TransitDashboard() {
       return response.json();
     },
     staleTime:24 * 60 * 60 * 1000,
+  });
+  const scheduleManifestQuery = useQuery({
+    queryKey:['schedule-manifest', TRANSIT_DATA_VERSION],
+    queryFn: async (): Promise<ScheduleManifestPayload> => {
+      const response = await fetch(`/schedules/manifest.json?v=${TRANSIT_DATA_VERSION}`);
+      if (!response.ok) throw new Error('Sefer manifesti alınamadı');
+      return parseScheduleManifestPayload(await response.json());
+    },
+    enabled:scheduleDetailsOpen,
+    staleTime:24 * 60 * 60 * 1000,
+    retry:1,
+  });
+  const schedulePath = scheduleManifestQuery.data?.data.routes[selectedRouteId]?.path;
+  const scheduleQuery = useQuery({
+    queryKey:['schedule', TRANSIT_DATA_VERSION, selectedRouteId, schedulePath],
+    queryFn: async (): Promise<SchedulePayload> => {
+      if (!schedulePath) throw new Error('Hat için sefer dosyası bulunamadı');
+      const response = await fetch(`${schedulePath}?v=${TRANSIT_DATA_VERSION}`);
+      if (!response.ok) throw new Error('Sefer verisi alınamadı');
+      const payload = parseSchedulePayload(await response.json());
+      if (payload.data.routeId !== selectedRouteId) throw new Error('Sefer verisi yanlış hatla eşleşti');
+      return payload;
+    },
+    enabled:scheduleDetailsOpen && Boolean(schedulePath),
+    staleTime:24 * 60 * 60 * 1000,
+    retry:1,
   });
   const liveVehiclesQuery = useQuery({
     queryKey:['live-vehicles', selectedRouteId],
@@ -1002,6 +1031,11 @@ export function TransitDashboard() {
             </div>
             {resolvedFare&&<><Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setFareDetailsOpen((open)=>!open)} aria-expanded={fareDetailsOpen}><span>{fareDetailsOpen?'Tarife ayrıntılarını gizle':'Tarifeyi gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',fareDetailsOpen&&'rotate-90')} /></Button>{fareDetailsOpen&&<FareDetails fare={resolvedFare} />}</>}
             {isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB Açık Veri vektör verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}
+          </div>
+          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+            <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Planlı seferler</p><p className="mt-1 text-sm font-bold">Hareket saatleri</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Statik veri</span></div>
+            <Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setScheduleDetailsOpen((open)=>!open)} aria-expanded={scheduleDetailsOpen}><span>{scheduleDetailsOpen?'Seferleri gizle':'Seferleri gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',scheduleDetailsOpen&&'rotate-90')} /></Button>
+            {scheduleDetailsOpen&&<SchedulePanel dataset={scheduleQuery.data?.data} selectedDirectionId={selectedDirection?.id ?? selectedDirectionId} loading={scheduleManifestQuery.isLoading || Boolean(schedulePath&&scheduleQuery.isLoading)} error={scheduleManifestQuery.isError || scheduleQuery.isError} unavailable={scheduleManifestQuery.isSuccess&&!schedulePath} onRetry={()=>{void scheduleManifestQuery.refetch();if(schedulePath)void scheduleQuery.refetch();}} />}
           </div>
           {hasLiveVehicles&&<><div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
           <div className="mt-2 space-y-2">

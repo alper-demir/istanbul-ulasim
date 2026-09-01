@@ -117,6 +117,14 @@ Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gös
 
 `Uygulama hakkında → Tarifeler` penceresi genel İstanbulkart kart türlerini, Mavi Kart aylık abonmanlarını ve 1–12 geçişlik sınırlı biletleri tek yerde gösterir. Bu ekran da aynı statik çıktıdan beslenir; uygulama açılırken TUHİM’e istek göndermez. Mesafe, iskele, aktarma ve iade kuralları içeren hatlarda kesin ücret için ilgili hat ayrıntısı kullanılmalıdır.
 
+### Planlı sefer veri altyapısı
+
+Planlı hareket saatleri canlı araç konumundan ayrı bir veri sözleşmesiyle ele alınır. Ortak sözleşme; işletmeci, resmî kaynak bağlantısı, snapshot alınma zamanı, varsa geçerlilik aralığı, gün türleri, yönler, seferler ve ara durak/iskele saatlerini taşır. `24:15` gibi gece yarısını aşan toplu ulaşım saatleri korunur; bilinmeyen gün türü, ters geçerlilik aralığı veya geriye giden durak saatleri yayımlanmaz.
+
+Sefer kataloğu `public/schedules/manifest.json`, hat dosyaları `public/schedules/routes` altında tutulur. Hat ayrıntısındaki `Seferleri gör` alanı açılmadan manifest yüklenmez; manifestte seçili hat yoksa başka dosya isteği yapılmaz. Çalışma anında İETT, Şehir Hatları, Metro İstanbul veya TCDD tarife sayfalarına bağlanılmaz. İlk gerçek veri paketi ayrı `feature/ferry-schedules` dalında Şehir Hatları için üretilecektir.
+
+Arayüzde gösterilen saatler planlı bilgidir; gecikme, iptal, özel gün ve işletme değişikliği olabilir. Kaynağın geçerlilik tarihi bilinmiyorsa uygulama saati “bugün kesin geçerli” olarak nitelemez.
+
 ## Paylaşılabilir bağlantılar
 
 Hat, yön ve isteğe bağlı durak seçimi sorgu parametreleriyle saklanır:
