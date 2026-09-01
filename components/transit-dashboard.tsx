@@ -11,7 +11,7 @@ import {
   Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, Ticket, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SchedulePanel } from '@/components/schedule-panel';
+import { ScheduleDialog } from '@/components/schedule-panel';
 import { routes as fixtureRoutes, type TransitDirection, type TransitRoute, type TransitStop, type TransitVehicle } from '@/lib/transit-fixtures';
 import type { TransitRouteSummary } from '@/lib/data-sources/iett-route-store';
 import type { IettLiveVehicle } from '@/lib/data-sources/iett-live-vehicles';
@@ -985,6 +985,7 @@ export function TransitDashboard() {
       </div>}
 
       {fareCatalogOpen&&<FareCatalogDialog catalog={fareCatalogQuery.data?.data} onClose={()=>setFareCatalogOpen(false)} />}
+      {scheduleDetailsOpen&&<ScheduleDialog routeCode={selectedRoute.code} routeName={selectedRoute.name} dataset={scheduleQuery.data?.data} selectedDirectionId={selectedDirection?.id ?? selectedDirectionId} loading={scheduleManifestQuery.isLoading || Boolean(schedulePath&&scheduleQuery.isLoading)} error={scheduleManifestQuery.isError || scheduleQuery.isError} unavailable={scheduleManifestQuery.isSuccess&&!schedulePath} onRetry={()=>{void scheduleManifestQuery.refetch();if(schedulePath)void scheduleQuery.refetch();}} onClose={()=>setScheduleDetailsOpen(false)} />}
 
       {manualLocationMode&&<div className="glass-panel absolute left-1/2 top-[92px] z-40 flex w-[min(360px,calc(100%-24px))] -translate-x-1/2 items-center justify-between gap-3 rounded-xl px-3 py-2.5"><span className="text-xs font-bold"><MapPin className="mr-1.5 inline h-4 w-4 text-[var(--primary)]" />Haritadan konumunu seç</span><Button variant="ghost" size="sm" onClick={cancelManualLocation}>Vazgeç</Button></div>}
 
@@ -1031,8 +1032,8 @@ export function TransitDashboard() {
           </div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Planlı seferler</p><p className="mt-1 text-sm font-bold">Hareket saatleri</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Statik veri</span></div>
-            <Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setScheduleDetailsOpen((open)=>!open)} aria-expanded={scheduleDetailsOpen}><span>{scheduleDetailsOpen?'Seferleri gizle':'Seferleri gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',scheduleDetailsOpen&&'rotate-90')} /></Button>
-            {scheduleDetailsOpen&&<SchedulePanel dataset={scheduleQuery.data?.data} selectedDirectionId={selectedDirection?.id ?? selectedDirectionId} loading={scheduleManifestQuery.isLoading || Boolean(schedulePath&&scheduleQuery.isLoading)} error={scheduleManifestQuery.isError || scheduleQuery.isError} unavailable={scheduleManifestQuery.isSuccess&&!schedulePath} onRetry={()=>{void scheduleManifestQuery.refetch();if(schedulePath)void scheduleQuery.refetch();}} />}
+            <Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setScheduleDetailsOpen(true)} aria-haspopup="dialog"><span>Sefer saatlerini gör</span><ChevronRight className="h-3.5 w-3.5" /></Button>
+            <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Yalnızca bu hatta ait planlı saatler açılır.</p>
           </div>
           {hasLiveVehicles&&<><div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
           <div className="mt-2 space-y-2">

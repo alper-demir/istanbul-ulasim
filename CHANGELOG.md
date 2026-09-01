@@ -15,6 +15,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Ara iskeleden başlayan kısmi vapur seferlerinde gerçek ilk hareket iskelesini gösteren, kalkışları kronolojik sıralayan panel davranışı.
 - İETT resmî hareket saatleri tablosunu yön, gün türü ve ÖHO işaretiyle ortak statik sefer sözleşmesine çeviren bakım betiği; varsayılan toplu istek yerine açık hat kapsamı veya `--all` onayı zorunluluğu.
 - Türkçe karakterleri ve ayraçları normalleştiren; tam hat kodu, kod öneki ve token bazlı hat/durak aramasını önceliklendiren yerel keşif sıralaması.
+- Seçili hattın planlı saatlerini ana ayrıntı panelini büyütmeden, yön ve gün türü seçimi içeren ayrı pencerede gösteren sefer saatleri akışı.
 
 ### Performans
 
