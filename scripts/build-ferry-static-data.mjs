@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fareForRoute } from './fare-catalog.mjs';
+import { parseFerrySchedule } from './ferry-schedule-parser.mjs';
 
 const root = process.cwd();
 const output = join(root, 'public', 'ferry');
@@ -183,8 +184,11 @@ const routeLinks = [...new Set([...catalog.matchAll(/href="(\/tr\/seferler\/ic-h
 if (routeLinks.length < 25) throw new Error(`Expected at least 25 Şehir Hatları routes, received ${routeLinks.length}`);
 
 await mkdir(join(output, 'routes'), { recursive: true });
+const scheduleOutput = join(root, 'public', 'schedules');
+await mkdir(join(scheduleOutput, 'routes'), { recursive: true });
 const routeIndex = [];
 const stopIndex = new Map();
+const scheduleManifestRoutes = {};
 
 for (const link of routeLinks) {
   const sourceUrl = `${baseUrl}${link}`;
@@ -242,6 +246,31 @@ for (const link of routeLinks) {
     vehicles: [],
     directions,
   };
+  const schedule = parseFerrySchedule(html, directions, route.id);
+  if (schedule.unmatchedHeaders.length) {
+    throw new Error(`Unmatched ferry schedule stops for ${sourceUrl}: ${schedule.unmatchedHeaders.map((item) => `${item.directionId}:${item.header}`).join(', ')}`);
+  }
+  if (schedule.directions.some((direction) => !direction.patterns.length)) throw new Error(`Ferry schedule is empty: ${sourceUrl}`);
+  const scheduleFileName = `ferry-${routeNumber}.json`;
+  const scheduleSource = {
+    provider: 'sehir-hatlari',
+    label: 'Şehir Hatları sefer tarifesi',
+    url: sourceUrl,
+    retrievedAt: fetchedAt,
+    validityUnknown: true,
+  };
+  await writeFile(join(scheduleOutput, 'routes', scheduleFileName), JSON.stringify({
+    data: {
+      schemaVersion: 1,
+      routeId: route.id,
+      timezone: 'Europe/Istanbul',
+      source: scheduleSource,
+      dayTypes: schedule.dayTypes,
+      directions: schedule.directions,
+    },
+    meta: { source: 'sehir-hatlari', status: 'static', fetchedAt },
+  }));
+  scheduleManifestRoutes[route.id] = { path: `/schedules/routes/${scheduleFileName}`, ...scheduleSource };
   routeIndex.push({ ...route, coordinates: undefined, stops: undefined, vehicles: undefined, directions: undefined, vehicleCount: 0, stopCount: primary.stops.length });
   for (const direction of directions) {
     direction.stops.forEach((stop, index) => {
@@ -259,4 +288,9 @@ for (const link of routeLinks) {
 routeIndex.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
 await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: routeIndex, meta: { source: 'Şehir Hatları + İBB Açık Veri GTFS', status: 'static', geometry: 'ibb-gtfs-shape-with-schematic-fallback', routeCount: routeIndex.length, unlocatedPierCount: unlocatedPiers.size, fetchedAt, officialUrl: catalogUrl, geometrySource: gtfsSource.label, geometrySourceUpdatedAt: gtfsSource.publishedAt, geometrySourceUrl: gtfsSource.shapesUrl } }));
 await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: [...stopIndex.values()].sort((a, b) => a.name.localeCompare(b.name, 'tr')), meta: { source: 'Şehir Hatları', status: 'static', stopCount: stopIndex.size, unlocatedPierCount: unlocatedPiers.size, fetchedAt, officialUrl: catalogUrl } }));
+await writeFile(join(scheduleOutput, 'manifest.json'), JSON.stringify({
+  data: { schemaVersion: 1, generatedAt: fetchedAt, routes: scheduleManifestRoutes },
+  meta: { source: 'sehir-hatlari-static-snapshot', status: 'static', routeCount: Object.keys(scheduleManifestRoutes).length },
+}));
 console.log(`Generated ${routeIndex.length} static ferry routes and ${stopIndex.size} searchable piers.`);
+console.log(`Generated ${Object.keys(scheduleManifestRoutes).length} static ferry schedules.`);
