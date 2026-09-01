@@ -241,6 +241,15 @@ function formatSourceDate(value?: string | null) {
   }).format(timestamp);
 }
 
+function scrollPanelToSection(id: string) {
+  const target = document.getElementById(id);
+  const panel = target?.closest('aside');
+  if (!target || !panel) return;
+  const targetRect = target.getBoundingClientRect();
+  const panelRect = panel.getBoundingClientRect();
+  panel.scrollTo({ top: panel.scrollTop + targetRect.top - panelRect.top - 140, behavior:'smooth' });
+}
+
 function formatFare(value?: number) {
   if (value === undefined) return '—';
   return new Intl.NumberFormat('tr-TR', {
@@ -517,7 +526,7 @@ export function TransitDashboard() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [fareDetailsOpen, setFareDetailsOpen] = useState(false);
   const [scheduleDetailsOpen, setScheduleDetailsOpen] = useState(false);
-  const [showAllStops, setShowAllStops] = useState(false);
+  const [showAllStops, setShowAllStops] = useState(true);
   const { resolvedTheme, setTheme } = useTheme();
   const aboutDialogRef = useDialogFocus<HTMLElement>(() => setAboutOpen(false), aboutOpen);
 
@@ -1197,7 +1206,7 @@ export function TransitDashboard() {
           </div>
         </div>
         <nav className="sticky top-[81px] z-20 flex gap-1 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2 md:top-[81px]" aria-label="Hat detayı bölümleri">
-          {[['route-summary','Özet'],['route-vehicles','Araçlar'],['route-stops',stopKindPlural(selectedRoute.mode)]] .map(([id,label])=><button key={id} type="button" onClick={()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})} className="flex-1 rounded-lg bg-[var(--surface-muted)] px-2 py-1.5 text-[10px] font-bold text-[var(--muted)] transition hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]">{label}</button>)}
+          {[['route-summary','Özet'],['route-vehicles','Araçlar'],['route-stops','Duraklar']] .map(([id,label])=><button key={id} type="button" onClick={()=>scrollPanelToSection(id)} className="flex-1 rounded-lg bg-[var(--surface-muted)] px-2 py-1.5 text-[10px] font-bold text-[var(--muted)] transition hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]">{label}</button>)}
         </nav>
         <div className="p-4">
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
