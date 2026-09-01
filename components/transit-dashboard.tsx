@@ -192,6 +192,31 @@ function vehicleDirectionName(vehicle: TransitVehicle, directions?: TransitDirec
   return 'Yön bilgisi bulunamadı';
 }
 
+function vehicleFreshnessLabel(updatedSecondsAgo: number) {
+  if (updatedSecondsAgo <= 60) return 'CANLI';
+  if (updatedSecondsAgo <= 180) return 'GÜNCELLENİYOR';
+  return 'ESKİ VERİ';
+}
+
+function vehicleAgeLabel(updatedSecondsAgo: number) {
+  if (updatedSecondsAgo < 60) return `${updatedSecondsAgo} sn önce`;
+  const minutes = Math.floor(updatedSecondsAgo / 60);
+  const seconds = updatedSecondsAgo % 60;
+  return seconds ? `${minutes} dk ${seconds} sn önce` : `${minutes} dk önce`;
+}
+
+function vehicleFreshnessClass(updatedSecondsAgo: number) {
+  if (updatedSecondsAgo <= 60) return 'text-emerald-600 dark:text-emerald-300';
+  if (updatedSecondsAgo <= 180) return 'text-amber-600 dark:text-amber-300';
+  return 'text-orange-700 dark:text-orange-300';
+}
+
+function vehicleBadgeClass(updatedSecondsAgo: number) {
+  if (updatedSecondsAgo <= 60) return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300';
+  if (updatedSecondsAgo <= 180) return 'bg-amber-500/10 text-amber-600 dark:text-amber-300';
+  return 'bg-orange-500/10 text-orange-700 dark:text-orange-300';
+}
+
 function formatSourceTimestamp(value?: string | null) {
   if (!value) return null;
   const timestamp = new Date(value);
@@ -1185,7 +1210,7 @@ export function TransitDashboard() {
               <button key={vehicle.id} onClick={()=>{setSelectedStop(null);setSelectedVehicle(vehicle);}} className={cn('flex w-full items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3 text-left transition hover:border-[var(--primary)]',selectedVehicle?.id===vehicle.id&&'border-[var(--primary)] ring-2 ring-[var(--primary-soft)]')}>
                 <span className="grid h-9 w-9 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-4 w-4" /></span>
                 <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{vehicle.doorCode}</span><span className="mt-0.5 block truncate text-[10px] font-bold text-[var(--primary)]">{vehicleDirectionName(vehicle, routeData.directions)}</span><span className="mt-0.5 block truncate text-xs text-[var(--muted)]">Yakın: {vehicle.nextStop}</span></span>
-                <span className="text-right text-xs"><span className={cn('block font-bold',vehicle.updatedSecondsAgo>180?'text-amber-600 dark:text-amber-300':'text-emerald-600 dark:text-emerald-300')}>{vehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'}</span><span className="text-[var(--muted)]">{vehicle.updatedSecondsAgo} sn önce</span></span>
+                <span className="text-right text-xs"><span className={cn('block font-bold',vehicleFreshnessClass(vehicle.updatedSecondsAgo))}>{vehicleFreshnessLabel(vehicle.updatedSecondsAgo)}</span><span className="text-[var(--muted)]">{vehicleAgeLabel(vehicle.updatedSecondsAgo)}</span></span>
               </button>
             ))}
           </div></>}
@@ -1205,12 +1230,12 @@ export function TransitDashboard() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-1.5">
                 <p className="font-extrabold">{selectedVehicle.doorCode}</p>
-                <span className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-bold',selectedVehicle.source==='ibb-iett-live'&&selectedVehicle.updatedSecondsAgo<=180?'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300':'bg-amber-500/10 text-amber-600 dark:text-amber-300')}>{selectedVehicle.source==='ibb-iett-live'?(selectedVehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'):'DEMO'}</span>
+                <span className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-bold',selectedVehicle.source==='ibb-iett-live'?vehicleBadgeClass(selectedVehicle.updatedSecondsAgo):'bg-slate-500/10 text-slate-600 dark:text-slate-300')}>{selectedVehicle.source==='ibb-iett-live'?vehicleFreshnessLabel(selectedVehicle.updatedSecondsAgo):'DEMO'}</span>
               </div>
               <p className="mt-0.5 truncate text-[10px] font-bold text-[var(--primary)]">{vehicleDirectionName(selectedVehicle, routeData.directions)}</p>
               <p className="mt-0.5 truncate text-xs text-[var(--muted)]">Yakın: {selectedVehicle.nextStop}</p>
             </div>
-            <div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.source==='ibb-iett-live'?'Konum':`${selectedVehicle.speed} km/sa`}</p><p className="text-[10px] text-[var(--muted)]">{selectedVehicle.updatedSecondsAgo} sn önce</p></div>
+            <div className="text-right"><p className="text-sm font-extrabold">{selectedVehicle.source==='ibb-iett-live'?'Konum':`${selectedVehicle.speed} km/sa`}</p><p className="text-[10px] text-[var(--muted)]">Son veri: {vehicleAgeLabel(selectedVehicle.updatedSecondsAgo)}</p></div>
             <Button variant="ghost" size="icon" onClick={()=>setSelectedVehicle(null)} aria-label="Araç kartını kapat"><X className="h-4 w-4" /></Button>
           </div>
         </div>
@@ -1238,7 +1263,7 @@ export function TransitDashboard() {
               {liveVehiclesLoading && <p className="rounded-lg bg-[var(--surface-muted)] px-3 py-3 text-center text-[10px] font-medium text-[var(--muted)]">Canlı araçlar kontrol ediliyor…</p>}
               {liveVehiclesUnavailable && <p className="rounded-lg bg-amber-500/10 px-3 py-3 text-center text-[10px] font-medium text-amber-700 dark:text-amber-300">Canlı araç kaynağına şu anda erişilemiyor.</p>}
               {!liveVehiclesLoading&&!liveVehiclesUnavailable&&approachingVehicles.length===0&&<p className="rounded-lg bg-[var(--surface-muted)] px-3 py-3 text-center text-[10px] font-medium text-[var(--muted)]">Seçili hat ve yönde durağa yaklaşan aktif araç bulunamadı.</p>}
-              {approachingVehicles.length>0&&<div className="space-y-1.5">{approachingVehicles.map((item)=><button key={item.vehicle.id} type="button" onClick={()=>selectApproachingVehicle(item.vehicle)} aria-label={`${item.vehicle.doorCode} aracını haritada göster`} className="flex w-full items-center gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-left transition hover:border-[var(--primary)]"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-3.5 w-3.5" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-extrabold">{item.vehicle.doorCode}</span><span className="block truncate text-[10px] font-semibold text-[var(--primary)]">{approachingVehicleLabel(item)}</span></span><span className="text-right"><span className={cn('block text-[9px] font-black',item.vehicle.updatedSecondsAgo>180?'text-amber-600 dark:text-amber-300':'text-emerald-600 dark:text-emerald-300')}>{item.vehicle.updatedSecondsAgo>180?'ESKİ':'CANLI'}</span><span className="block text-[9px] text-[var(--muted)]">{item.vehicle.updatedSecondsAgo} sn</span></span></button>)}</div>}
+              {approachingVehicles.length>0&&<div className="space-y-1.5">{approachingVehicles.map((item)=><button key={item.vehicle.id} type="button" onClick={()=>selectApproachingVehicle(item.vehicle)} aria-label={`${item.vehicle.doorCode} aracını haritada göster`} className="flex w-full items-center gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-left transition hover:border-[var(--primary)]"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-3.5 w-3.5" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-extrabold">{item.vehicle.doorCode}</span><span className="block truncate text-[10px] font-semibold text-[var(--primary)]">{approachingVehicleLabel(item)}</span></span><span className="text-right"><span className={cn('block text-[9px] font-black',vehicleFreshnessClass(item.vehicle.updatedSecondsAgo))}>{vehicleFreshnessLabel(item.vehicle.updatedSecondsAgo)}</span><span className="block text-[9px] text-[var(--muted)]">{vehicleAgeLabel(item.vehicle.updatedSecondsAgo)}</span></span></button>)}</div>}
               <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Sıralama, aracın seçili yön güzergâhındaki yaklaşık konumuna dayanır; süre tahmini değildir.</p>
             </div>
           )}
