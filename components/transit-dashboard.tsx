@@ -487,6 +487,23 @@ export function TransitDashboard() {
   const [scheduleDetailsOpen, setScheduleDetailsOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
 
+  useEffect(() => {
+    if (!aboutOpen && !fareCatalogOpen && !fareDetailsOpen && !scheduleDetailsOpen && !manualLocationMode) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (scheduleDetailsOpen) setScheduleDetailsOpen(false);
+      else if (fareCatalogOpen) setFareCatalogOpen(false);
+      else if (fareDetailsOpen) setFareDetailsOpen(false);
+      else if (aboutOpen) setAboutOpen(false);
+      else if (manualLocationMode) {
+        manualLocationModeRef.current = false;
+        setManualLocationMode(false);
+      }
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [aboutOpen, fareCatalogOpen, fareDetailsOpen, manualLocationMode, scheduleDetailsOpen]);
+
   const routesQuery = useQuery({
     queryKey: ['routes', TRANSIT_DATA_VERSION],
     queryFn: async (): Promise<{ data: TransitRouteSummary[]; meta?:{ source?:string; routeCount?:number } }> => {
