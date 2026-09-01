@@ -10,12 +10,12 @@ describe('IETT schedule table parser', () => {
   it('retains direction, day types and the official ÖHO marker', () => {
     const payload = parseIettScheduleTables(`
       <table class="line-table"><thead><tr><th colspan="3">BAŞLANGIÇ KALKIŞ</th></tr><tr><th>İş Günleri</th><th>Cumartesi</th><th>Pazar</th></tr></thead>
-      <tbody><tr><td>04:10</td><td style="color:red;">04:20</td><td>04:30</td></tr></tbody></table>
+      <tbody><tr><td>04:10</td><td style="color:red;">04:20 (-1)</td><td>04:30</td></tr></tbody></table>
       <table class="line-table"><thead><tr><th colspan="3">BİTİŞ KALKIŞ</th></tr><tr><th>İş Günleri</th><th>Cumartesi</th><th>Pazar</th></tr></thead>
       <tbody><tr><td>05:10</td><td>05:20</td><td>05:30</td></tr></tbody></table>`, 'iett:example', directions);
     expect(payload.dayTypes.map((item) => item.id)).toEqual(['weekday', 'saturday', 'sunday']);
     expect(payload.directions.map((item) => item.directionId)).toEqual(['outbound', 'return']);
-    expect(payload.directions[0].patterns[1].journeys[0].calls[0]).toMatchObject({ stopId: 'start', time: '04:20', marker: 'ÖHO' });
+    expect(payload.directions[0].patterns[1].journeys[0].calls[0]).toMatchObject({ stopId: 'start', time: '04:20', marker: 'ÖHO · (-1)' });
   });
 
   it('rejects a table whose departure stop cannot be tied to the static route', () => {

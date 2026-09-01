@@ -1,7 +1,11 @@
 {
-  "retrievedAt": "2026-09-01T10:29:55.349Z",
-  "requested": 1,
+  "retrievedAt": "2026-09-01T10:34:18.150Z",
+  "requested": 5,
   "published": [
+    "10A",
+    "10EK",
+    "11L",
+    "11SA",
     "500T"
   ],
   "unavailable": [],

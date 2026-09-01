@@ -9,6 +9,7 @@ const output = join(scheduleRoot, 'routes');
 const args = new Map(process.argv.slice(2).map((argument) => argument.replace(/^--/, '').split('=')));
 const requestedCodes = args.get('codes')?.split(',').map((code) => code.trim().toLocaleUpperCase('tr-TR')).filter(Boolean);
 const routeLimit = args.has('limit') ? Number(args.get('limit')) : undefined;
+const requestDelayMs = Math.max(500, Number(args.get('delay-ms') ?? 1_000));
 if (!requestedCodes?.length && !Number.isInteger(routeLimit) && !args.has('all')) {
   throw new Error('İETT kaynağını korumak için --codes=500T, --limit=1 veya açıkça --all belirtin');
 }
@@ -27,21 +28,35 @@ function inputValue(html, id) {
   return (match?.[1] ?? match?.[2] ?? '').trim();
 }
 
+async function fetchWithRetry(url, options, label) {
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(url, { ...options, signal: AbortSignal.timeout(20_000) });
+      if (response.ok) return response;
+      lastError = new Error(`${label} ${response.status} döndürdü`);
+      if (response.status < 500) throw lastError;
+    } catch (error) {
+      lastError = error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, requestDelayMs * attempt));
+  }
+  throw lastError;
+}
+
 for (const [index, route] of routes.entries()) {
   const sourceUrl = `${sourceBase}${encodeURIComponent(route.code)}`;
   try {
-    const page = await fetch(sourceUrl, { signal: AbortSignal.timeout(20_000) });
-    if (!page.ok) throw new Error(`Hat sayfası ${page.status} döndürdü`);
+    const page = await fetchWithRetry(sourceUrl, {}, 'Hat sayfası');
     const pageHtml = await page.text();
     const body = new URLSearchParams({
       rstart: inputValue(pageHtml, 'SHATBASI'), rend: inputValue(pageHtml, 'SHATSONU'),
       timeschule: inputValue(pageHtml, 'GetPlanlananSeferSaati'), freq: inputValue(pageHtml, 'GetMetobusFrekans'),
       lngid: inputValue(pageHtml, 'languageid') || '1', hCode: route.code,
     });
-    const response = await fetch('https://iett.istanbul/tr/RouteStation/GetScheduledDepartureTimes', {
-      method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }, body, signal: AbortSignal.timeout(20_000),
-    });
-    if (!response.ok) throw new Error(`Kalkış tablosu ${response.status} döndürdü`);
+    const response = await fetchWithRetry('https://iett.istanbul/tr/RouteStation/GetScheduledDepartureTimes', {
+      method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }, body,
+    }, 'Kalkış tablosu');
     const routePayload = JSON.parse(await readFile(join(root, 'public', 'iett', 'routes', `${encodeURIComponent(route.code)}.json`), 'utf8'));
     const parsed = parseIettScheduleTables(await response.text(), routePayload.data.id, routePayload.data.directions);
     const source = { provider: 'iett', label: 'İETT hareket saatleri', url: sourceUrl, retrievedAt, validityUnknown: true };
@@ -55,7 +70,7 @@ for (const [index, route] of routes.entries()) {
     else report.failed.push({ code: route.code, reason: message });
   }
   if ((index + 1) % 25 === 0 || index + 1 === routes.length) console.log(`İETT seferleri: ${index + 1}/${routes.length}`);
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  await new Promise((resolve) => setTimeout(resolve, requestDelayMs));
 }
 
 await writeFile(join(scheduleRoot, 'manifest.json'), JSON.stringify({ data: { ...existingManifest.data, generatedAt: retrievedAt, routes: manifestRoutes }, meta: { ...existingManifest.meta, routeCount: Object.keys(manifestRoutes).length } }));

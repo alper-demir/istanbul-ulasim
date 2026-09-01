@@ -26,9 +26,9 @@ function cells(row) {
 }
 
 function time(value) {
-  const match = /^(\d{1,2})[:.](\d{2})(?:\s*([*A-Za-zÇĞİÖŞÜçğıöşü0-9-]+))?$/.exec(value.trim());
+  const match = /^(\d{1,2})[:.](\d{2})(?:\s*(.+))?$/.exec(value.trim());
   if (!match || Number(match[2]) > 59) return null;
-  return { value: `${match[1].padStart(2, '0')}:${match[2]}`, marker: match[3] };
+  return { value: `${match[1].padStart(2, '0')}:${match[2]}`, marker: match[3]?.trim() };
 }
 
 /** Parses the official GetScheduledDepartureTimes HTML fragment without DOM dependencies. */
@@ -67,7 +67,8 @@ export function parseIettScheduleTables(html, routeId, directions) {
       const pattern = patterns[columnIndex];
       if (!pattern) throw new Error(`İETT tablo sütunu gün türüyle eşleşmedi: ${routeId}/${departureStopName}`);
       const isOho = /color\s*:\s*red/i.test(cell.html);
-      pattern.journeys.push({ id: `${pattern.id}-${rowIndex + 1}`, calls: [{ stopId: stop.id, stopName: stop.name, time: parsed.value, ...(isOho ? { marker: 'ÖHO' } : {}), ...(parsed.marker ? { marker: parsed.marker } : {}) }] });
+      const marker = [isOho ? 'ÖHO' : undefined, parsed.marker].filter(Boolean).join(' · ');
+      pattern.journeys.push({ id: `${pattern.id}-${rowIndex + 1}`, calls: [{ stopId: stop.id, stopName: stop.name, time: parsed.value, ...(marker ? { marker } : {}) }] });
     }));
     if (patterns.some((pattern) => !pattern.journeys.length)) throw new Error(`İETT gün türü boş: ${routeId}/${departureStopName}`);
     parsedDirections.push({ directionId: selected.direction.id, name: selected.direction.name, patterns });
