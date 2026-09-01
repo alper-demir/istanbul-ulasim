@@ -59,6 +59,16 @@ export type CachedLiveVehicleSnapshot = LiveVehicleSnapshot & {
   cacheTtlMs: number;
 };
 
+export type LiveVehicleMetrics = {
+  cacheHits:number;
+  staleResponses:number;
+  upstreamRequests:number;
+  upstreamFailures:number;
+  lastUpstreamRequestAt:string | null;
+  lastSuccessAt:string | null;
+  lastFailureAt:string | null;
+};
+
 type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number; staleAt:number };
 type FailureEntry = { retryAt:number; error:unknown };
 
@@ -66,6 +76,14 @@ const snapshotCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
 const upstreamRequestTimes: number[] = [];
 const recentFailures = new Map<string, FailureEntry>();
+const liveMetrics: LiveVehicleMetrics = {
+  cacheHits:0, staleResponses:0, upstreamRequests:0, upstreamFailures:0,
+  lastUpstreamRequestAt:null, lastSuccessAt:null, lastFailureAt:null,
+};
+
+export function getIettLiveVehicleMetrics(): LiveVehicleMetrics {
+  return { ...liveMetrics };
+}
 
 function escapeXml(value: string) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
@@ -193,6 +211,8 @@ async function fetchSnapshot(routeCode: string) {
   while (upstreamRequestTimes[0] && upstreamRequestTimes[0] <= now - UPSTREAM_RATE_WINDOW_MS) upstreamRequestTimes.shift();
   if (UPSTREAM_RATE_LIMIT > 0 && upstreamRequestTimes.length >= UPSTREAM_RATE_LIMIT) throw new Error('İETT canlı araç servisinin saatlik istek bütçesi doldu');
   if (UPSTREAM_RATE_LIMIT > 0) upstreamRequestTimes.push(now);
+  liveMetrics.upstreamRequests += 1;
+  liveMetrics.lastUpstreamRequestAt = new Date(now).toISOString();
 
   const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
     method:'POST',
@@ -214,7 +234,10 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
   const now = Date.now();
   pruneCache(now);
   const cached = readCache(key, now);
-  if (cached && cached.expiresAt > now) return { ...cached.snapshot, cacheStatus:'hit', cacheTtlMs:CACHE_TTL_MS };
+  if (cached && cached.expiresAt > now) {
+    liveMetrics.cacheHits += 1;
+    return { ...cached.snapshot, cacheStatus:'hit', cacheTtlMs:CACHE_TTL_MS };
+  }
 
   let pending = pendingRequests.get(key);
   if (!pending) {
@@ -225,6 +248,7 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
     }
     pending = fetchSnapshot(key)
       .then((snapshot) => {
+        liveMetrics.lastSuccessAt = new Date().toISOString();
         recentFailures.delete(key);
         snapshotCache.set(key, {
           snapshot,
@@ -235,6 +259,8 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
         return snapshot;
       })
       .catch((error:unknown) => {
+        liveMetrics.upstreamFailures += 1;
+        liveMetrics.lastFailureAt = new Date().toISOString();
         recentFailures.set(key, { retryAt:Date.now() + FAILURE_BACKOFF_MS, error });
         throw error;
       });
@@ -246,7 +272,10 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
 
   // A stale value is immediately more useful than holding a map interaction
   // open behind a busy shared queue. The refresh continues in the background.
-  if (cached) return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
+  if (cached) {
+    liveMetrics.staleResponses += 1;
+    return { ...cached.snapshot, cacheStatus:'stale', cacheTtlMs:CACHE_TTL_MS };
+  }
 
   const snapshot = await pending;
   return { ...snapshot, cacheStatus:'miss', cacheTtlMs:CACHE_TTL_MS };

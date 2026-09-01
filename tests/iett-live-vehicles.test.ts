@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
-import { parseIettLiveVehicleResponse, runWithTimeout } from '@/lib/data-sources/iett-live-vehicles';
+import { getIettLiveVehicleMetrics, parseIettLiveVehicleResponse, runWithTimeout } from '@/lib/data-sources/iett-live-vehicles';
 
 const response = (payload: unknown) => `<GetHatOtoKonum_jsonResult>${JSON.stringify(payload).replaceAll('"', '&quot;')}</GetHatOtoKonum_jsonResult>`;
 
 describe('IETT live response parsing', () => {
+  it('exposes aggregate cache and upstream counters without vehicle-level logs', () => {
+    expect(getIettLiveVehicleMetrics()).toEqual(expect.objectContaining({
+      cacheHits:expect.any(Number), staleResponses:expect.any(Number), upstreamRequests:expect.any(Number), upstreamFailures:expect.any(Number),
+    }));
+  });
+
   it('normalizes valid Istanbul coordinates and discards malformed records', () => {
     const snapshot = parseIettLiveVehicleResponse(response([
       { kapino: 'B-42', boylam: '29,019', enlem: '41,043', hatkodu: '500T', son_konum_zamani: '2026-08-30 12:00:00' },
