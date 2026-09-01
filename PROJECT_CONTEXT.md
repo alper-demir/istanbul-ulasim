@@ -4,10 +4,9 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Entegrasyon dalı: `feature/expanded-static-networks`; aktif alt dal: `feature/fare-data`
-- Güncel kararlı sürüm: `0.6.0-rc.3`; geliştirme sürümü `0.7.0-beta.1` bu dalda hazırlanıyor.
-- Canlı araç özellikleri ve performans iyileştirmeleri `main` dalındadır.
-- Dağıtım: Uygulama canlı ortamda çalışıyor; bu özellik dalı kullanıcı onayı olmadan birleştirilmeyecek veya dağıtılmayacak.
+- Güncel yayımlanmış sürüm: `0.7.0-beta.2`; vapur/raylı ağlar, tarife kataloğu ve canlı araç sağlamlaştırmaları `main` dalında birleşiktir.
+- Aktif çalışma dalı: `docs/next-phases-roadmap`; yalnız sonraki faz analizini içerir.
+- Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
 Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve vapur hatlarını yön bazlı durak/istasyon/iskeleleriyle haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
@@ -24,7 +23,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - Açık/koyu tema, masaüstü ve mobil yerleşim
 - M1A, M1B, M2–M9 ve M11 için statik güzergâh/istasyon gösterimi; metroda canlı araç sorgusu yok
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
-- 31 Şehir Hatları güzergâhı ve 44 iskele; deniz çizgileri şematik, canlı gemi konumu yok
+- 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - Tümü/Otobüs/Raylı/Vapur filtresi ve hat detayında kaynak bağlantısı/veri tarihi
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - Durak detayında, seçili hat/yönde durağa yaklaşan en fazla üç canlı aracı yaklaşık güzergâh mesafesiyle gösterme
@@ -41,7 +40,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 | Metro hat/istasyon | Metro İstanbul hat sayfaları + OpenStreetMap snapshot | Geliştirme sırasında doğrulanıp `public/metro` altında sürümlü statik çıktıya dönüştürülür; çalışma anında canlı kaynak çağrısı yapılmaz. |
 | Tramvay/füniküler | Metro İstanbul + OpenStreetMap | Seçili T1/T3/T4/T5 ve F1/F4 hatları `public/rail` altında statik sunulur. |
 | Marmaray | TCDD Taşımacılık/Marmaray + OpenStreetMap | B1 Halkalı–Gebze hattı statiktir; canlı tren konumu sorgulanmaz. |
-| Vapur | Şehir Hatları sefer ve iskele sayfaları | 31 güzergâh ve 44 iskele `public/ferry` altında statiktir; deniz geometrisi şematiktir. |
+| Vapur | Şehir Hatları sefer/iskele sayfaları + İBB Açık Veri deniz ulaşım vektörleri | 30 güzergâh ve 44 iskele `public/ferry` altında statiktir; çizgiler yayımlanmış hat vektörleridir, gerçek gemi izi değildir. |
 | Tarife/bilet limiti | İBB TUHİM İstanbulkart ücret tarifesi + İETT/Şehir Hatları çapraz doğrulaması | `data/fares` altında sürümlü ve statik tutulur; çalışma anında tarife kaynağı sorgulanmaz. Hat bazında doğrulanmamış özel bilet sınıfı kesin bilgi gibi gösterilmez. |
 | Altlık haritası | OpenStreetMap | Sadece görsel harita katmanıdır; hat/durak doğruluğu için kaynak değildir. |
 
@@ -50,7 +49,7 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 ## Canlı veri performans tasarımı
 
 - İstemci yalnız seçili hattı sorgular; sayfa arka plandayken yenileme yapılmaz.
-- İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı varsayılan olarak 45 saniye kullanılır ve `IETT_LIVE_*` ortam ayarlarıyla değiştirilebilir.
+- İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı varsayılan olarak 30 saniye kullanılır ve `IETT_LIVE_*` ortam ayarlarıyla değiştirilebilir.
 - Aynı hat için eşzamanlı istekler tek İETT isteğinde birleştirilir.
 - Üst İETT kaynağı için varsayılan küresel süreç bütçesi saatte 360 istektir; üst kaynak yanıtı 1 MB ile sınırlıdır.
 - Son başarılı yanıt 10 dakika boyunca geri dönüş verisi olarak tutulur. Bir kaynağın hatası sonrasında aynı hat 15 saniye yeniden zorlanmaz.
@@ -101,11 +100,6 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-1. **Statik ağ özelliğini kapatma:** Görsel kontroller, üretim build'i ve kullanıcı onayından sonra bu dalı birleştirme.
-2. **Gerçek tarife/bilet verisi:** Veri sözleşmesi, kaynak manifesti, genel/mesafe bazlı profiller ve ilk hat eşleştirmeleri `feature/fare-data` dalında eklendi. `feature/fare-ui` dalı; hat kartında isteğe bağlı, kaynaklı tarife ayrıntısını sunuyor. Sonraki adım, daha fazla İETT hattının özel bilet sınıfını kontrollü snapshot ile doğrulamak.
-3. **Canlı konum araştırması:** Yalnız ücretsiz ve güvenilir kaynak bulunursa vapur/raylı sistem canlı konumunu ayrı bir spike ile değerlendirme.
-4. **İETT canlılık iyileştirmesi:** Kaynak kotasını ve gecikmesini gözeterek araçların daha akıcı/anlık görünmesini araştırma.
-5. **Veri yenileme süreci:** Statik kaynakları kontrollü indirip doğrulayan ve yeni veri tarihini yayımlayan iş akışı.
-6. **Ek ulaşım ağları:** Güvenilir ücretsiz kaynak bulunursa yeni ağları ayrıca değerlendirme; teleferik ve trafik mevcut kapsamın dışındadır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; ortak sefer altyapısı ve Şehir Hatları, İETT planlı kalkışları, keşif/arama deneyimi, raylı sistem tarifeleri, yük artırmayan canlı araç yumuşatma ve son kalite fazıdır.
 
-Sıradaki özellik başlamadan önce bu listedeki madde, kullanıcı önceliği ve veri kaynağının izin/kota durumu birlikte değerlendirilmelidir.
+Trafik ve teleferik kapsam dışıdır. Raylı/vapur canlı konumu yalnız ücretsiz, resmî ve sürdürülebilir bir kaynak doğrulanırsa ayrı spike ile değerlendirilir.

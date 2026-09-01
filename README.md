@@ -99,7 +99,7 @@ npm run data:build-rail
 npm run data:build-ferry
 ```
 
-Çıktılar `public/ferry` altında tutulur. İskeleler arasındaki çizgiler gerçek gemi izi değil şematik bağlantıdır; canlı vapur konumu henüz kullanılmaz.
+Çıktılar `public/ferry` altında tutulur. Uygulama yalnız iskele sırası doğrulanan ve İBB Açık Veri'deki yayımlanmış deniz hattı vektörüyle eşleşen rotaları sunar. Çizgiler gerçek gemi izi değildir; canlı vapur konumu henüz kullanılmaz.
 
 ### İstanbulkart tarife verisi
 
