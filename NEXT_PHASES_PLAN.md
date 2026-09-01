@@ -154,6 +154,8 @@ Uygulama notu: 20 saniyelik istemci tarafı görsel geçiş yalnız ardışık, 
 
 Dal: `hardening/next-release-quality`
 
+İlerleme: Sefer, tarife, bilgi ve konum seçimi akışlarında Escape ile kapanma; sefer modalı açıldığında kapatma kontrolüne otomatik odak eklendi. Kalan işler diğer klavye odak akışları, mobil smoke testleri, paket boyutu raporu ve endpoint gözlemlenebilirliğidir.
+
 - Klavye dolaşımı, odak tuzağı/geri dönüşü, Escape davranışı, filtrelerin seçili durumu ve ekran okuyucu adları.
 - Haritaya alternatif hat/durak listesi; renk tek bilgi taşıyıcısı olmamalı.
 - Hareket azaltma, kontrast ve mobil dokunma hedefi kontrolleri.
