@@ -154,7 +154,7 @@ Uygulama notu: 20 saniyelik istemci tarafı görsel geçiş yalnız ardışık, 
 
 Dal: `hardening/next-release-quality`
 
-İlerleme: Sefer, tarife ve bilgi akışlarında Escape ile kapanma; sefer ve bilgi/tarife modalları açıldığında kapatma kontrolüne otomatik odak eklendi. 390×844 mobil smoke kontrolü uygulama açılışı, 500T detay düğmesi ve bilgi modalı Escape akışıyla geçti. 1 Eyl 2026 build ölçümünde MapLibre istemci chunk'ı yaklaşık 967 KiB, İETT durak indeksi yaklaşık 2,36 MiB; bu mevcut optimizasyon çalışmasının başlangıç ölçümüdür. Kalan işler odak geri dönüşü/tam trap, E2E senaryoları ve endpoint gözlemlenebilirliğidir.
+İlerleme: Sefer, tarife ve bilgi akışlarında Escape ile kapanma; tüm ana modallarda açılış odağı, Tab odağı döngüsü ve kapanınca açan kontrole odak dönüşü eklendi. 390×844 mobil smoke kontrolü uygulama açılışı, 500T detay düğmesi ve bilgi modalı Escape akışıyla geçti. 1 Eyl 2026 build ölçümünde MapLibre istemci chunk'ı yaklaşık 967 KiB, İETT durak indeksi yaklaşık 2,36 MiB; bu mevcut optimizasyon çalışmasının başlangıç ölçümüdür. Kalan işler gerçek E2E senaryoları ve endpoint gözlemlenebilirliğidir.
 
 - Klavye dolaşımı, odak tuzağı/geri dönüşü, Escape davranışı, filtrelerin seçili durumu ve ekran okuyucu adları.
 - Haritaya alternatif hat/durak listesi; renk tek bilgi taşıyıcısı olmamalı.
