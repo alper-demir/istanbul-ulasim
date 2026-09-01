@@ -136,9 +136,9 @@ Dal: `feature/discovery-ux`
 
 Kabul: Arama ve yakın durak özellikleri tamamen yerel statik indekslerle çalışmalı; ağ isteği sayısı artmamalı.
 
-### Faz 6 — Canlı araçların daha akıcı görünmesi
+### Faz 6 — Canlı araçların daha akıcı görünmesi — tamamlandı (`feature/live-vehicles-ux`)
 
-Dal: `feature/live-vehicle-motion`
+Dal: `feature/live-vehicles-ux`
 
 - İki başarılı konum snapshot’ı arasında aynı araç için istemci tarafı hareket yumuşatma.
 - Araç geometriden aşırı uzaksa, çok büyük sıçrama yaptıysa, veri eskiyse veya sekme görünmüyorsa interpolasyonu kapatma.
@@ -147,6 +147,8 @@ Dal: `feature/live-vehicle-motion`
 - İlk sürümde 30 saniyelik kaynak sorgu aralığını düşürmeme. Sonraki ölçümde değişmeyen/boş sonuçlarda 60–90 saniyeye çıkan adaptif geri çekilme değerlendirilebilir.
 
 Kabul: Üst kaynak istek sayısı mevcut sürümden fazla olmamalı; marker hareketi rota dışına taşmamalı.
+
+Uygulama notu: 20 saniyelik istemci tarafı görsel geçiş yalnız ardışık, taze ve makul mesafedeki aynı araç konumlarında uygulanır. Başlangıç/bitiş noktaları seçili rota geometrisine projekte edilir; eski, büyük sıçramalı veya rotadan uzak veri kaynak koordinatı olarak kalır ve animasyon yapılmaz. Bu davranış reduced-motion tercihinde ya da sekme görünmezken kapalıdır.
 
 ### Faz 7 — Erişilebilirlik, test, performans ve gözlemlenebilirlik
 

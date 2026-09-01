@@ -18,6 +18,7 @@ import type { IettLiveVehicle } from '@/lib/data-sources/iett-live-vehicles';
 import { parseScheduleManifestPayload, parseSchedulePayload, type ScheduleManifestPayload, type SchedulePayload } from '@/lib/schedule-data';
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
 import { normalizeTransitSearch, rankRouteMatches, rankStopMatches } from '@/lib/transit-discovery';
+import { safeInterpolatedCoordinate } from '@/lib/live-vehicle-motion';
 import { APP_VERSION } from '@/lib/app-version';
 import { type RecentTransitItem, type SavedManualLocation, USER_STATE_KEYS } from '@/lib/transit-user-state';
 import { cn } from '@/lib/utils';
@@ -279,6 +280,122 @@ function projectPointOnRoute(point: [number, number], route: [number, number][])
   return { progressMeters:closestProgress, distanceToRouteMeters:closestDistance };
 }
 
+function useReducedMotionPreference() {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  return reducedMotion;
+}
+
+function usePageVisibility() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const update = () => setIsVisible(document.visibilityState === 'visible');
+    update();
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+
+  return isVisible;
+}
+
+type VehicleMotionFrame = {
+  vehicle:TransitVehicle;
+  from:[number, number];
+  to:[number, number] | null;
+};
+
+function useSmoothedVehicleMarkers({
+  vehicles,
+  route,
+  routeKey,
+  snapshotKey,
+  isLive,
+}: {
+  vehicles:TransitVehicle[];
+  route:[number, number][];
+  routeKey:string;
+  snapshotKey:string | undefined;
+  isLive:boolean;
+}) {
+  const reducedMotion = useReducedMotionPreference();
+  const isPageVisible = usePageVisibility();
+  const [displayVehicles, setDisplayVehicles] = useState<TransitVehicle[]>(vehicles);
+  const displayVehiclesRef = useRef<TransitVehicle[]>(vehicles);
+  const priorSnapshotRef = useRef<{ routeKey:string; snapshotKey:string | undefined } | null>(null);
+
+  useEffect(() => {
+    const previousSnapshot = priorSnapshotRef.current;
+    priorSnapshotRef.current = { routeKey, snapshotKey };
+    const previousById = new Map(displayVehiclesRef.current.map((vehicle) => [vehicle.id, vehicle]));
+    const canAnimate = Boolean(
+      isLive
+      && isPageVisible
+      && !reducedMotion
+      && previousSnapshot?.routeKey === routeKey
+      && previousSnapshot.snapshotKey
+      && previousSnapshot.snapshotKey !== snapshotKey,
+    );
+    const frames: VehicleMotionFrame[] = vehicles.map((vehicle) => {
+      const previous = previousById.get(vehicle.id);
+      if (!canAnimate || !previous) return { vehicle, from:vehicle.coordinates, to:null };
+      const from = safeInterpolatedCoordinate({
+        from:previous.coordinates,
+        to:vehicle.coordinates,
+        route,
+        fromUpdatedSecondsAgo:previous.updatedSecondsAgo,
+        toUpdatedSecondsAgo:vehicle.updatedSecondsAgo,
+        progress:0,
+      });
+      const to = safeInterpolatedCoordinate({
+        from:previous.coordinates,
+        to:vehicle.coordinates,
+        route,
+        fromUpdatedSecondsAgo:previous.updatedSecondsAgo,
+        toUpdatedSecondsAgo:vehicle.updatedSecondsAgo,
+        progress:1,
+      });
+      return from && to ? { vehicle, from, to } : { vehicle, from:vehicle.coordinates, to:null };
+    });
+    const hasMotion = frames.some((frame) => frame.to);
+    const publish = (progress:number) => {
+      const next = frames.map(({ vehicle, from, to }) => ({ ...vehicle, coordinates:to ? [
+        from[0] + (to[0] - from[0]) * progress,
+        from[1] + (to[1] - from[1]) * progress,
+      ] as [number, number] : from }));
+      displayVehiclesRef.current = next;
+      setDisplayVehicles(next);
+    };
+
+    if (!hasMotion) {
+      publish(1);
+      return;
+    }
+
+    const startedAt = performance.now();
+    const durationMs = 20_000;
+    let animationFrame = 0;
+    const animate = (now:number) => {
+      const progress = Math.min(1, (now - startedAt) / durationMs);
+      publish(progress);
+      if (progress < 1) animationFrame = window.requestAnimationFrame(animate);
+    };
+    publish(0);
+    animationFrame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isLive, isPageVisible, reducedMotion, route, routeKey, snapshotKey, vehicles]);
+
+  return displayVehicles;
+}
+
 function approachingVehicleLabel(item: ApproachingVehicle) {
   if (item.nearSelectedStop || item.remainingMeters <= 250) return 'Durağa çok yakın';
   return `Güzergâhta yaklaşık ${formatDistance(item.remainingMeters)} geride`;
@@ -522,6 +639,13 @@ export function TransitDashboard() {
   const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading;
   const liveVehiclesUnavailable = hasLiveVehicles && liveVehiclesQuery.isError;
   const liveCacheStatus = liveVehiclesQuery.data?.meta.cacheStatus;
+  const mapVehicles = useSmoothedVehicleMarkers({
+    vehicles:selectedRoute.vehicles,
+    route:selectedRoute.coordinates,
+    routeKey:`${selectedRoute.id}:${selectedDirection?.id ?? 'default'}`,
+    snapshotKey:liveVehiclesQuery.data?.meta.fetchedAt,
+    isLive:hasLiveVehicles && liveVehiclesQuery.data?.meta.status === 'live',
+  });
   const liveRefreshSeconds = Math.max(1, Math.round((liveVehiclesQuery.data?.meta.cacheTtlMs ?? 30_000) / 1_000));
   const liveVehicleStatusLabel = liveVehiclesLoading
     ? 'Canlı konumlar yükleniyor'
@@ -751,11 +875,11 @@ export function TransitDashboard() {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(VEHICLE_SOURCE)) return;
-    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(selectedRoute.vehicles, selectedVehicle?.id));
+    (map.getSource(VEHICLE_SOURCE) as GeoJSONSource).setData(vehicleFeatures(mapVehicles, selectedVehicle?.id));
     if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
     if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
     if (map.getLayer('selected-vehicle-ring')) map.setPaintProperty('selected-vehicle-ring','circle-color',selectedRoute.color);
-  }, [mapReady, selectedRoute.color, selectedRoute.vehicles, selectedVehicle?.id]);
+  }, [mapReady, mapVehicles, selectedRoute.color, selectedVehicle?.id]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1028,7 +1152,7 @@ export function TransitDashboard() {
               <span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">{resolvedFare ? fareVerificationLabel(resolvedFare.verification) : isOfficialRoute ? 'Kaynaklı veri' : 'Demo veri'}</span>
             </div>
             {resolvedFare&&<><Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setFareDetailsOpen((open)=>!open)} aria-expanded={fareDetailsOpen}><span>{fareDetailsOpen?'Tarife ayrıntılarını gizle':'Tarifeyi gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',fareDetailsOpen&&'rotate-90')} /></Button>{fareDetailsOpen&&<FareDetails fare={resolvedFare} />}</>}
-            {isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB Açık Veri vektör verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}
+            {isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; harita işaretçisi iki kaynak kaydı arasında görsel olarak yumuşatılabilir, kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB Açık Veri vektör verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}
           </div>
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Planlı seferler</p><p className="mt-1 text-sm font-bold">Hareket saatleri</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Statik veri</span></div>
