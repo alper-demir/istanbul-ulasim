@@ -31,6 +31,20 @@ function time(value) {
   return { value: `${match[1].padStart(2, '0')}:${match[2]}`, marker: match[3]?.trim() };
 }
 
+function departureMatchScore(departureStopName, direction) {
+  const departure = normalize(departureStopName);
+  const stops = direction.stops.map((stop, index) => ({ index, normalized: normalize(stop.name) }));
+  const exact = stops.filter(({ normalized }) => normalized === departure);
+  if (exact.some(({ index }) => index === 0)) return 2;
+  if (exact.some(({ index }) => index === direction.stops.length - 1)) return 1;
+
+  // Some official tables name a terminal by its station/area while the
+  // static route starts at the first physical stop (e.g. SEYRANTEPE).
+  const origin = normalize(direction.name.split('→')[0] ?? '');
+  if (origin && (departure === origin || departure.startsWith(origin) || origin.startsWith(departure))) return 2;
+  return 0;
+}
+
 /** Parses the official GetScheduledDepartureTimes HTML fragment without DOM dependencies. */
 export function parseIettScheduleTables(html, routeId, directions) {
   const tables = [...html.matchAll(/<table\b[^>]*class="[^"]*\bline-table\b[^"]*"[^>]*>([\s\S]*?)<\/table>/gi)];
@@ -44,12 +58,7 @@ export function parseIettScheduleTables(html, routeId, directions) {
     if (rows.length < 3) throw new Error(`İETT planlı kalkış tablosu eksik: ${routeId}/${tableIndex + 1}`);
     const departureStopName = rows[0][0]?.text.replace(/\s+KALKIŞ$/iu, '').trim();
     if (!departureStopName) throw new Error(`İETT kalkış durağı bulunamadı: ${routeId}/${tableIndex + 1}`);
-    const candidates = directions.filter((direction) => !usedDirectionIds.has(direction.id)).map((direction) => ({
-      direction,
-      score: Math.max(...direction.stops.map((stop, index) => ({ index, normalized: normalize(stop.name) }))
-        .filter(({ normalized }) => normalized === normalize(departureStopName))
-        .map(({ index }) => index === 0 ? 2 : index === direction.stops.length - 1 ? 1 : 0), 0),
-    })).sort((left, right) => right.score - left.score);
+    const candidates = directions.filter((direction) => !usedDirectionIds.has(direction.id)).map((direction) => ({ direction, score: departureMatchScore(departureStopName, direction) })).sort((left, right) => right.score - left.score);
     const selected = candidates[0];
     if (!selected || selected.score === 0) throw new Error(`İETT kalkış durağı statik güzergâhla eşleşmedi: ${routeId}/${departureStopName}`);
     usedDirectionIds.add(selected.direction.id);

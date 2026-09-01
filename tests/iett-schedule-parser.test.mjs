@@ -21,4 +21,16 @@ describe('IETT schedule table parser', () => {
   it('rejects a table whose departure stop cannot be tied to the static route', () => {
     expect(() => parseIettScheduleTables('<table class="line-table"><tr><th>Başka Yer Kalkış</th></tr><tr><th>İş Günleri</th></tr><tr><td>04:10</td></tr></table>', 'iett:example', directions)).toThrow(/eşleşmedi/);
   });
+
+  it('maps an official terminal label to the first static stop when the route uses a terminal area name', () => {
+    const payload = parseIettScheduleTables(`
+      <table class="line-table"><thead><tr><th>SEYRANTEPE KALKIŞ</th></tr><tr><th>İş Günleri</th></tr></thead>
+      <tbody><tr><td>05:30</td></tr></tbody></table>
+      <table class="line-table"><thead><tr><th>BİTİŞ KALKIŞ</th></tr><tr><th>İş Günleri</th></tr></thead>
+      <tbody><tr><td>06:00</td></tr></tbody></table>`, 'iett:terminal-label', [
+      { id: 'outbound', name: 'Seyrantepe → Bitiş', stops: [{ id: 'first', name: 'Mescid-i Nur Camii' }, { id: 'last', name: 'Bitiş' }] },
+      { id: 'return', name: 'Bitiş → Seyrantepe', stops: [{ id: 'last', name: 'Bitiş' }, { id: 'first', name: 'Mescid-i Nur Camii' }] },
+    ]);
+    expect(payload.directions[0].patterns[0].journeys[0].calls[0]).toMatchObject({ stopId: 'first', time: '05:30' });
+  });
 });
