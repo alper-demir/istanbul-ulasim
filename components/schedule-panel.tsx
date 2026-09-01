@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, CalendarClock, ExternalLink, RotateCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { scheduleAvailability, scheduleTimeToMinutes, type ScheduleDataset } from '@/lib/schedule-data';
@@ -66,10 +66,20 @@ type ScheduleDialogProps = Omit<SchedulePanelProps, 'selectedDirectionId' | 'sho
 export function ScheduleDialog({ routeCode, routeName, selectedDirectionId, onClose, dataset, loading, error, unavailable, onRetry }: ScheduleDialogProps) {
   const [directionId, setDirectionId] = useState(selectedDirectionId);
   const directions = dataset?.directions ?? [];
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
 
   return <div className="absolute inset-0 z-[80] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={onClose}>
     <section role="dialog" aria-modal="true" aria-labelledby="schedule-dialog-title" className="glass-panel max-h-[min(720px,calc(100dvh-32px))] w-full max-w-xl overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
-      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">{routeCode} · planlı seferler</p><h2 id="schedule-dialog-title" className="mt-1 text-lg font-extrabold">{routeName}</h2><p className="mt-1 text-[11px] text-[var(--muted)]">Yalnızca seçili hattın resmî snapshot verisi gösterilir.</p></div><Button variant="ghost" size="icon" aria-label="Sefer saatleri penceresini kapat" onClick={onClose}><X className="h-4 w-4" /></Button></div>
+      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">{routeCode} · planlı seferler</p><h2 id="schedule-dialog-title" className="mt-1 text-lg font-extrabold">{routeName}</h2><p className="mt-1 text-[11px] text-[var(--muted)]">Yalnızca seçili hattın resmî snapshot verisi gösterilir.</p></div><button ref={closeButtonRef} type="button" aria-label="Sefer saatleri penceresini kapat" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
       {directions.length>1&&<div className="mt-5"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön</p><div className="grid grid-cols-2 gap-2">{directions.map((direction)=><button key={direction.directionId} type="button" aria-pressed={directionId===direction.directionId} onClick={()=>setDirectionId(direction.directionId)} className={directionId===direction.directionId?'rounded-lg border border-[var(--primary)] bg-[var(--primary-soft)] px-3 py-2 text-left text-xs font-bold text-[var(--primary)]':'rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-xs font-bold transition hover:border-[var(--primary)]'}>{direction.name}</button>)}</div></div>}
       <SchedulePanel dataset={dataset} selectedDirectionId={directionId} loading={loading} error={error} unavailable={unavailable} onRetry={onRetry} showAll />
     </section>
