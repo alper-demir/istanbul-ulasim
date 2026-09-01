@@ -14,6 +14,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:smoke": "node scripts/smoke-check.mjs",
     "test:watch": "vitest",
     "data:build-iett": "node scripts/build-iett-static-data.mjs",
     "data:build-metro": "node scripts/build-metro-static-data.mjs",
