@@ -4,7 +4,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel yayımlanmış sürüm: `0.7.0-beta.3` (`12cf2f1`); tamamlanan geliştirmelerin tümü `main` dalında birleşik ve GitHub'a pushlanmıştır.
+- Güncel yayımlanmış sürüm: `0.7.1`; beta.3 sonrası UX ve marker performans geliştirmeleri `main` dalında birleşiktir.
 - Aktif entegrasyon dalı yoktur. Yeni çalışma, güncel `main`den açılan ayrı bir `feature/*` dalında başlatılmalıdır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.

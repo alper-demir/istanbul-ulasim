@@ -2,6 +2,19 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.7.1 — UX ve performans polish
+
+### Eklendi
+
+- Arama alanında `/` odak kısayolu, Enter ile ilk sonucu açma ve Esc ile kapatma.
+- Favori, karşılaştırma ve bağlantı kopyalama eylemleri için erişilebilir Türkçe toast bildirimleri.
+- Şehir ölçeğinde durak marker’ları ertelenerek harita çizim yükünün azaltılması; yaklaşıldığında durakların yeniden gösterilmesi.
+- Statik sefer manifestleri için eklenen/silinen rotaları ve kaynak/geçerlilik değişikliklerini raporlayan bakım komutu.
+
+### Doğrulama
+
+- Test, typecheck, lint ve production build kontrolleri temiz geçti.
+
 ## 0.7.0-beta.3 — Planlı seferler ve kompakt hat paneli
 
 ### Eklendi

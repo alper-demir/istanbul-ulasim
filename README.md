@@ -167,7 +167,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel beta sürüm: `0.7.0-beta.3`. Planlı sefer altyapısı, genişletilmiş statik ulaşım ağı, kaynaklı tarife kataloğu ve canlı araç güncelliği iyileştirmeleri bu sürümde birlikte yayımlanır.
+Güncel sürüm: `0.7.1`. Planlı sefer altyapısı, UX geri bildirimleri, marker performans iyileştirmesi, kaynaklı tarife kataloğu ve canlı araç güncelliği bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 
