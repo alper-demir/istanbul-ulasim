@@ -2,7 +2,15 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
-## Yayımlanmamış — Planlı sefer altyapısı
+## 0.7.0-beta.3 — Planlı seferler ve kompakt hat paneli
+
+### Eklendi
+
+- Planlı sefer modalında statik snapshot alınma tarihi, geçerlilik bilgisi ve güncellik uyarıları görünür hâle getirildi.
+- Canlı araç kartlarında veri tazeliği etiketleri ve açıklama tooltip’leri eklendi.
+- Hat ayrıntı panelinde bölüm hızlı geçişleri ve tüm durakların açık görünümü düzenlendi.
+
+## Yayımlanmamış — Sonraki fazlar
 
 ### Eklendi
 
