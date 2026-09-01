@@ -837,7 +837,11 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-halo', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':9, 'line-opacity':0.72 } });
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
       map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(initialRoute) });
-      map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, paint:{
+      // Drawing every stop while viewing the whole city gives little navigational
+      // value and is needlessly expensive on mobile GPUs. The route and endpoints
+      // remain visible; individual stops appear once the user zooms into a useful
+      // inspection level.
+      map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, minzoom:10.5, paint:{
         'circle-radius':STOP_RADIUS,
         'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
       } });
@@ -918,7 +922,7 @@ export function TransitDashboard() {
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(route));
     if (map.getSource(ENDPOINT_SOURCE)) (map.getSource(ENDPOINT_SOURCE) as GeoJSONSource).setData(endpointFeatures(route));
     if (map.getLayer('route-stops')) {
-      map.setLayerZoomRange('route-stops', 0, 24);
+      map.setLayerZoomRange('route-stops', 10.5, 24);
       map.setLayoutProperty('route-stops','visibility','visible');
       map.setPaintProperty('route-stops','circle-radius',STOP_RADIUS);
       map.setPaintProperty('route-stops','circle-color',['case',['get','selected'],route.color,'#ffffff']);
