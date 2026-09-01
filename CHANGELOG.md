@@ -10,11 +10,15 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Gece yarısını aşan `24:xx` saatlerini koruyan, geriye giden saatleri ve bilinmeyen gün türlerini reddeden sözleşme testleri.
 - Sefer manifesti ve yalnız kullanıcı isteğiyle yüklenen hat bazlı sefer dosyası yapısı.
 - Hat ayrıntısında planlı seferler için yükleniyor, kullanılamıyor, hata, eski/gelecek ve geçerliliği bilinmiyor durumlarını destekleyen sade panel.
+- Şehir Hatları'nın resmî hat sayfalarından iki yönü, gün türlerini, ara iskele saatlerini, işaretli seferleri ve açıklama notlarını çıkaran statik üretim adımı.
+- Vektör geometrisiyle yayımlanan 30 vapur hattının tamamı için 84 yön/gün deseni, 1.257 sefer ve 3.629 iskele saatinden oluşan kaynaklı snapshot.
+- Ara iskeleden başlayan kısmi vapur seferlerinde gerçek ilk hareket iskelesini gösteren, kalkışları kronolojik sıralayan panel davranışı.
 
 ### Performans
 
 - Sefer paneli açılmadan manifest isteği, seçili hatta ait dosya bulunmadan da sefer dosyası isteği gönderilmez.
 - Kurum kaynakları çalışma anında çağrılmaz; sonraki işletmeci entegrasyonları doğrulanmış statik snapshot üretecek şekilde sınırlandırıldı.
+- Vapur sefer dosyaları hat seçilene ve panel açılana kadar indirilmez; en büyük çıktı 100 KB bütçesinin altında kalır.
 
 ## 0.7.0-beta.2 — Tarifeler ve canlı veri güncelliği
 

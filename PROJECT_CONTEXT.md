@@ -24,6 +24,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - M1A, M1B, M2–M9 ve M11 için statik güzergâh/istasyon gösterimi; metroda canlı araç sorgusu yok
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
+- 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
 - Tümü/Otobüs/Raylı/Vapur filtresi ve hat detayında kaynak bağlantısı/veri tarihi
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - Durak detayında, seçili hat/yönde durağa yaklaşan en fazla üç canlı aracı yaklaşık güzergâh mesafesiyle gösterme
@@ -40,7 +41,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 | Metro hat/istasyon | Metro İstanbul hat sayfaları + OpenStreetMap snapshot | Geliştirme sırasında doğrulanıp `public/metro` altında sürümlü statik çıktıya dönüştürülür; çalışma anında canlı kaynak çağrısı yapılmaz. |
 | Tramvay/füniküler | Metro İstanbul + OpenStreetMap | Seçili T1/T3/T4/T5 ve F1/F4 hatları `public/rail` altında statik sunulur. |
 | Marmaray | TCDD Taşımacılık/Marmaray + OpenStreetMap | B1 Halkalı–Gebze hattı statiktir; canlı tren konumu sorgulanmaz. |
-| Vapur | Şehir Hatları sefer/iskele sayfaları + İBB Açık Veri deniz ulaşım vektörleri | 30 güzergâh ve 44 iskele `public/ferry` altında statiktir; çizgiler yayımlanmış hat vektörleridir, gerçek gemi izi değildir. |
+| Vapur | Şehir Hatları sefer/iskele sayfaları + İBB Açık Veri deniz ulaşım vektörleri | 30 güzergâh `public/ferry`, planlı sefer snapshot'ları `public/schedules` altında statiktir; çalışma anında dış çağrı yapılmaz. Çizgiler gerçek gemi izi değildir. |
 | Tarife/bilet limiti | İBB TUHİM İstanbulkart ücret tarifesi + İETT/Şehir Hatları çapraz doğrulaması | `data/fares` altında sürümlü ve statik tutulur; çalışma anında tarife kaynağı sorgulanmaz. Hat bazında doğrulanmamış özel bilet sınıfı kesin bilgi gibi gösterilmez. |
 | Altlık haritası | OpenStreetMap | Sadece görsel harita katmanıdır; hat/durak doğruluğu için kaynak değildir. |
 
@@ -102,6 +103,6 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; ortak sefer altyapısı ve Şehir Hatları, İETT planlı kalkışları, keşif/arama deneyimi, raylı sistem tarifeleri, yük artırmayan canlı araç yumuşatma ve son kalite fazıdır.
 
-Ortak sefer sözleşmesi, lazy-loaded manifest/dosya erişimi ve temel arayüz durumları `feature/schedule-foundation` dalında hazırlanmıştır. Bu dal doğrulandıktan sonra sıradaki geliştirme `feature/ferry-schedules` olmalıdır.
+Ortak sefer sözleşmesi ve lazy-loaded panel `feature/schedule-foundation`, 30 vapur hattının resmî planlı sefer snapshot'ları `feature/ferry-schedules` dalında hazırlanmıştır. Sıradaki geliştirme `feature/iett-schedules` olmalıdır.
 
 Trafik ve teleferik kapsam dışıdır. Raylı/vapur canlı konumu yalnız ücretsiz, resmî ve sürdürülebilir bir kaynak doğrulanırsa ayrı spike ile değerlendirilir.

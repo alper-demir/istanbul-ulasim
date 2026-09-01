@@ -101,6 +101,10 @@ npm run data:build-ferry
 
 Çıktılar `public/ferry` altında tutulur. Uygulama yalnız iskele sırası doğrulanan ve İBB Açık Veri'deki yayımlanmış deniz hattı vektörüyle eşleşen rotaları sunar. Çizgiler gerçek gemi izi değildir; canlı vapur konumu henüz kullanılmaz.
 
+Aynı üretim komutu, yayımlanan vapur rotalarının Şehir Hatları sayfalarındaki sefer tablolarını da `public/schedules/routes` altında statik snapshot'a dönüştürür. İki yön, hafta içi/Cumartesi/Pazar-tatil gün türleri, ara iskele saatleri, `*` işaretleri ve resmî açıklamalar korunur. Kaynak tablosunda hattın ilk iskelesi boş olan kısmi seferler, gerçekten hareket ettikleri ilk iskeleyle gösterilir.
+
+Şehir Hatları sayfaları güncel tabloları yayımlamakla birlikte her sayfada açık bir başlangıç/bitiş geçerlilik aralığı vermediğinden arayüz alınma tarihini gösterir ve kaynağı kontrol etme uyarısını korur. Uygulama çalışırken Şehir Hatları'na istek göndermez.
+
 ### İstanbulkart tarife verisi
 
 Tarife verisi uygulama çalışma anında dış kaynaktan çekilmez. [İBB TUHİM İstanbulkart ücret tarifesi](https://tuhim.ibb.gov.tr/media/27491/%C4%B0stanbulkart.pdf) kontrollü olarak `data/fares/istanbulkart-2026-07-20.json` dosyasına dönüştürülür; kaynak, karar, geçerlilik ve doğrulama tarihleri veriyle birlikte taşınır:
@@ -121,7 +125,7 @@ Hat detayındaki ücret kartı başlangıçta yalnız kısa tarife özetini gös
 
 Planlı hareket saatleri canlı araç konumundan ayrı bir veri sözleşmesiyle ele alınır. Ortak sözleşme; işletmeci, resmî kaynak bağlantısı, snapshot alınma zamanı, varsa geçerlilik aralığı, gün türleri, yönler, seferler ve ara durak/iskele saatlerini taşır. `24:15` gibi gece yarısını aşan toplu ulaşım saatleri korunur; bilinmeyen gün türü, ters geçerlilik aralığı veya geriye giden durak saatleri yayımlanmaz.
 
-Sefer kataloğu `public/schedules/manifest.json`, hat dosyaları `public/schedules/routes` altında tutulur. Hat ayrıntısındaki `Seferleri gör` alanı açılmadan manifest yüklenmez; manifestte seçili hat yoksa başka dosya isteği yapılmaz. Çalışma anında İETT, Şehir Hatları, Metro İstanbul veya TCDD tarife sayfalarına bağlanılmaz. İlk gerçek veri paketi ayrı `feature/ferry-schedules` dalında Şehir Hatları için üretilecektir.
+Sefer kataloğu `public/schedules/manifest.json`, hat dosyaları `public/schedules/routes` altında tutulur. Hat ayrıntısındaki `Seferleri gör` alanı açılmadan manifest yüklenmez; manifestte seçili hat yoksa başka dosya isteği yapılmaz. Çalışma anında İETT, Şehir Hatları, Metro İstanbul veya TCDD tarife sayfalarına bağlanılmaz. İlk gerçek veri paketi Şehir Hatları'nın yayımlanan 30 vapur hattını kapsar; diğer işletmeciler ayrı feature dallarında eklenecektir.
 
 Arayüzde gösterilen saatler planlı bilgidir; gecikme, iptal, özel gün ve işletme değişikliği olabilir. Kaynağın geçerlilik tarihi bilinmiyorsa uygulama saati “bugün kesin geçerli” olarak nitelemez.
 
