@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: 'İstanbulum — Şehrin ulaşımı, tek haritada',
   description: "İstanbul'un otobüs, metrobüs, durak ve trafik akışlarını keşfedin.",
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'İstanbulum',
     description: 'Şehrin ulaşımı, tek haritada.',
