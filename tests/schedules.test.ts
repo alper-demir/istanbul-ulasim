@@ -73,10 +73,12 @@ describe('schedule data contract', () => {
   it('publishes a validated and size-bounded schedule for every exposed ferry route', async () => {
     const manifest = parseScheduleManifestPayload(JSON.parse(await readFile(new URL('../public/schedules/manifest.json', import.meta.url), 'utf8')));
     const ferryIndex = JSON.parse(await readFile(new URL('../public/ferry/route-index.json', import.meta.url), 'utf8')) as { data:Array<{ id:string }> };
-    expect(Object.keys(manifest.data.routes).sort()).toEqual(ferryIndex.data.map((route) => route.id).sort());
-    expect(manifest.meta.routeCount).toBe(30);
+    const ferryRouteIds = ferryIndex.data.map((route) => route.id).sort();
+    expect(ferryRouteIds.every((routeId) => routeId in manifest.data.routes)).toBe(true);
+    expect(manifest.meta.routeCount).toBeGreaterThanOrEqual(ferryRouteIds.length);
 
-    for (const [routeId, entry] of Object.entries(manifest.data.routes)) {
+    for (const routeId of ferryRouteIds) {
+      const entry = manifest.data.routes[routeId]!;
       const fileUrl = new URL(`../public${entry.path}`, import.meta.url);
       expect((await stat(fileUrl)).size).toBeLessThanOrEqual(100_000);
       const payload = parseSchedulePayload(JSON.parse(await readFile(fileUrl, 'utf8')));
@@ -96,5 +98,14 @@ describe('schedule data contract', () => {
         }
       }
     }
+  });
+
+  it('publishes a validated IETT snapshot only for the route explicitly captured from the official page', async () => {
+    const payload = parseSchedulePayload(JSON.parse(await readFile(new URL('../public/schedules/routes/iett-500T.json', import.meta.url), 'utf8')));
+    expect(payload.data.routeId).toBe('iett:500T');
+    expect(payload.data.source.provider).toBe('iett');
+    expect(payload.data.directions.map((direction) => direction.directionId).sort()).toEqual(['outbound', 'return']);
+    expect(payload.data.dayTypes.map((dayType) => dayType.id).sort()).toEqual(['saturday', 'sunday', 'weekday']);
+    expect(payload.data.directions.every((direction) => direction.patterns.every((pattern) => pattern.journeys.length > 0))).toBe(true);
   });
 });

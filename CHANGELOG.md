@@ -13,6 +13,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 - Şehir Hatları'nın resmî hat sayfalarından iki yönü, gün türlerini, ara iskele saatlerini, işaretli seferleri ve açıklama notlarını çıkaran statik üretim adımı.
 - Vektör geometrisiyle yayımlanan 30 vapur hattının tamamı için 84 yön/gün deseni, 1.257 sefer ve 3.629 iskele saatinden oluşan kaynaklı snapshot.
 - Ara iskeleden başlayan kısmi vapur seferlerinde gerçek ilk hareket iskelesini gösteren, kalkışları kronolojik sıralayan panel davranışı.
+- İETT resmî hareket saatleri tablosunu yön, gün türü ve ÖHO işaretiyle ortak statik sefer sözleşmesine çeviren bakım betiği; varsayılan toplu istek yerine açık hat kapsamı veya `--all` onayı zorunluluğu.
 
 ### Performans
 
