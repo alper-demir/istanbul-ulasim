@@ -1,6 +1,6 @@
 # İstanbulum — Sonraki Geliştirme Fazları
 
-Bu belge `v0.7.0-beta.2` sonrasındaki ürün ve teknik geliştirmeleri planlar. Trafik verisi, kesin varış süresi tahmini ve teleferik bu planın kapsamı dışındadır. Öncelik; ücretsiz ve mümkün olduğunca resmî kaynaklardan alınan bilgiyi, uygulamanın çalışma zamanı yükünü artırmadan anlaşılır biçimde sunmaktır.
+Bu belge `v0.7.0-beta.3` sonrasındaki ürün ve teknik geliştirmeleri planlar. Sefer altyapısı, Şehir Hatları ve doğrulanabilen İETT sefer snapshot'ları, arama/keşif, erişilebilirlik iyileştirmeleri ve canlı araç yumuşatma `main` dalında tamamlanmıştır. Trafik verisi, kesin varış süresi tahmini, teleferik ve raylı/vapur araçlarının canlı konumları kapsam dışındadır. Öncelik; ücretsiz ve mümkün olduğunca resmî kaynaklardan alınan bilgiyi, uygulamanın çalışma zamanı yükünü artırmadan anlaşılır biçimde sunmaktır.
 
 ## Temel kararlar
 
@@ -65,11 +65,15 @@ data/schedules/snapshots/{provider}/...
 
 Ana hat kataloğu sefer saatlerini içermeyecek. `routes/{routeId}.json` yalnız kullanıcı “Seferler” bölümünü açtığında yüklenecek.
 
+## Tamamlanan temel
+
+`v0.7.0-beta.3` ile ortak planlı sefer sözleşmesi ve lazy loading; 30 Şehir Hatları rotasının sefer snapshot'ları; doğrulanabilen İETT sefer snapshot'ları; tarife/bilet kataloğu; yerel arama, favori, yakın duraklar ve karşılaştırma; erişilebilirlik/modal iyileştirmeleri; kompakt hat paneli; İETT canlı araçları, güncellik etiketleri ve görsel yumuşatma `main` dalına alınmıştır.
+
 ## Fazlar
 
-### Faz 0 — Sefer altyapısı ve kaynak denetimi
+### Tamamlandı — Sefer altyapısı ve kaynak denetimi
 
-Dal: `feature/schedule-foundation`
+Tamamlanan dal: `feature/schedule-foundation` (artık `main`de)
 
 - Ortak veri tipleri, kaynak manifesti, gün türleri ve saat yardımcıları.
 - Kaynak yaşı/geçerlilik kontrolü ve üretimi durduran doğrulamalar.
@@ -80,9 +84,9 @@ Dal: `feature/schedule-foundation`
 
 Kabul: Veri bulunmadığında mevcut harita ve canlı araç deneyimi değişmeden çalışmalı; sefer dosyası yalnız kullanıcı açınca yüklenmeli.
 
-### Faz 1 — Şehir Hatları seferleri
+### Tamamlandı — Şehir Hatları seferleri
 
-Dal: `feature/ferry-schedules` (Faz 0’dan)
+Tamamlanan dal: `feature/ferry-schedules` (artık `main`de)
 
 - Mevcut `build-ferry-static-data.mjs` içindeki resmî sayfa ayrıştırmasını sefer tablolarıyla genişletme.
 - İki yön, ara iskele saatleri, hafta içi/cumartesi/pazar-tatil ayrımı ve dipnotları koruma.
@@ -91,9 +95,9 @@ Dal: `feature/ferry-schedules` (Faz 0’dan)
 
 Kabul: Her gösterilen saatin resmî sayfadaki aynı yön/iskeleden geldiği fixture ve örneklem denetimiyle kanıtlanmalı.
 
-### Faz 2 — İETT planlı kalkışları
+### Tamamlandı — İETT planlı kalkışları
 
-Dal: `feature/iett-schedules` (Faz 0 ve onaylı vapur deneyiminden)
+Tamamlanan dal: `feature/iett-schedules` (artık `main`de)
 
 - İETT hat sayfasının planlı kalkış çıktısını düşük eşzamanlılık, zaman aşımı ve yeniden deneme sınırıyla snapshot alma.
 - 801 statik hat kodunun kaynak kapsamını raporlama; geçici/kapalı/sonuçsuz hatları ayrı sınıflandırma.
@@ -124,9 +128,9 @@ Dal: `feature/tcdd-schedules`
 
 Kabul: TCDD kaynağına çalışma anı bağımlılığı ve sınırsız kombinasyon sorgusu eklenmemeli.
 
-### Faz 5 — Arama, yakın duraklar ve favoriler
+### Tamamlandı — Arama, yakın duraklar ve favoriler
 
-Dal: `feature/discovery-ux`
+Tamamlanan dal: `feature/discovery-ux` (artık `main`de)
 
 - Aramayı ardışık metin eşleşmesinden Türkçe karakter duyarlı, token bazlı AND eşleşmesine geçirmek. Örneğin `Kadıköy Beşiktaş`, ayraçtan bağımsız sonuç bulmalı.
 - Sıralama: tam hat kodu, kod öneki, hat adı, durak adı ve bölge öncelikleri.
@@ -138,7 +142,7 @@ Kabul: Arama ve yakın durak özellikleri tamamen yerel statik indekslerle çal�
 
 ### Faz 6 — Canlı araçların daha akıcı görünmesi — tamamlandı (`feature/live-vehicles-ux`)
 
-Dal: `feature/live-vehicles-ux`
+Tamamlanan dal: `feature/live-vehicles-ux` (artık `main`de)
 
 - İki başarılı konum snapshot’ı arasında aynı araç için istemci tarafı hareket yumuşatma.
 - Araç geometriden aşırı uzaksa, çok büyük sıçrama yaptıysa, veri eskiyse veya sekme görünmüyorsa interpolasyonu kapatma.
@@ -150,11 +154,11 @@ Kabul: Üst kaynak istek sayısı mevcut sürümden fazla olmamalı; marker hare
 
 Uygulama notu: 20 saniyelik istemci tarafı görsel geçiş yalnız ardışık, taze ve makul mesafedeki aynı araç konumlarında uygulanır. Başlangıç/bitiş noktaları seçili rota geometrisine projekte edilir; eski, büyük sıçramalı veya rotadan uzak veri kaynak koordinatı olarak kalır ve animasyon yapılmaz. Bu davranış reduced-motion tercihinde ya da sekme görünmezken kapalıdır.
 
-### Faz 7 — Erişilebilirlik, test, performans ve gözlemlenebilirlik
+### Faz 5 — Kalıcı E2E testleri
 
-Dal: `hardening/next-release-quality`
+Dal: güncel `main`den açılacak `feature/persistent-e2e`
 
-İlerleme: Sefer, tarife ve bilgi akışlarında Escape ile kapanma; tüm ana modallarda açılış odağı, Tab odağı döngüsü ve kapanınca açan kontrole odak dönüşü eklendi. 390×844 mobil smoke kontrolü uygulama açılışı, 500T detay düğmesi ve bilgi modalı Escape akışıyla geçti. Canlı kaynak için `/api/v1/source-health` altında süreç içi cache/upstream sayaçları eklendi ve endpoint 200 yanıtıyla doğrulandı. Playwright bağımlılığı eklemeden çalıştırılabilen `npm run test:smoke` temel uygulama, sağlık, kaynak, dört statik ağ indeksi ve hatalı canlı istek sözleşmesini kontrol eder. 1 Eyl 2026 build ölçümünde MapLibre istemci chunk'ı yaklaşık 967 KiB, İETT durak indeksi yaklaşık 2,36 MiB; bu mevcut optimizasyon çalışmasının başlangıç ölçümüdür.
+Mevcut temel: Sefer, tarife ve bilgi akışlarında Escape ile kapanma; ana modallarda açılış odağı, Tab odağı döngüsü ve kapanınca açan kontrole odak dönüşü; `npm run test:smoke` ile uygulama, sağlık, kaynak, dört statik ağ indeksi ve hatalı canlı istek sözleşmesi kontrolü. Bunlar kalıcı tarayıcı tabanlı E2E setinin başlangıç noktasıdır.
 
 - Klavye dolaşımı, odak tuzağı/geri dönüşü, Escape davranışı, filtrelerin seçili durumu ve ekran okuyucu adları.
 - Haritaya alternatif hat/durak listesi; renk tek bilgi taşıyıcısı olmamalı.
@@ -165,6 +169,36 @@ Dal: `hardening/next-release-quality`
 - Örneklenmiş hata logları ve canlı endpoint için cache niteliği/kaynak süresi sayaçları; araç başına veya her poll için gürültülü log tutmama.
 
 Kabul: `test`, `typecheck`, `lint`, `build`, bağımlılık denetimi ve E2E smoke temiz; ana kullanıcı akışlarında erişilebilirlik açısından kritik hata yok.
+
+### Faz 6 — Snapshot bakım ve fark raporu sistemi
+
+Dal: güncel `main`den açılacak `feature/snapshot-maintenance`
+
+- Resmî kaynaklardan alınan her statik snapshot için tekrar üretilebilir bakım akışı kurmak.
+- Önceki snapshot ile eklenen/silinen hat, yön, sefer ve geçerlilik değişikliklerini raporlamak.
+- Büyük veya beklenmeyen farkları yayın öncesinde manuel onaya bağlamak.
+
+Kabul: Kaynak yenilemeleri çalışma zamanına dış istek eklemeden, fark raporu ve açık onay akışıyla yürütülmeli.
+
+### Faz 7 — Çoklu kullanıcı için ortak edge cache ve kota katmanı
+
+Dal: güncel `main`den açılacak `feature/shared-edge-cache`
+
+- Cloudflare Cache/KV ve gerekli ise Durable Object ile Worker örnekleri arasında canlı araç cache ve kota bilgisini paylaşmak.
+- Cache tazeliği, stale fallback ve kullanıcı başı hız limiti davranışını çoklu örnekte test etmek.
+- İETT upstream bütçesini merkezi olarak görünür ve ölçülebilir kılmak.
+
+Kabul: Aynı hat için farklı Worker örneklerinden gelen eşzamanlı istekler gereksiz upstream çağrı üretmemeli.
+
+### Faz 8 — Performans ve son polish
+
+Dal: güncel `main`den açılacak `feature/performance-polish`
+
+- Build paketleri ve statik JSON boyutları için önce/sonra fark raporu üretmek.
+- Ana kullanıcı akışlarındaki gereksiz istemci yükü ve arayüz pürüzlerini gidermek.
+- Erişilebilirlik, odak yönetimi, kontrast ve mobil dokunma hedeflerinde regresyon bırakmamak.
+
+Kabul: Kalıcı E2E seti ve kalite kapısı temiz geçmeli; kritik erişilebilirlik veya performans gerilemesi kalmamalı.
 
 ## Performans ve yük bütçesi
 
@@ -185,7 +219,7 @@ Kabul: `test`, `typecheck`, `lint`, `build`, bağımlılık denetimi ve E2E smok
 4. Büyük veya beklenmeyen fark manuel onay olmadan yayımlanmaz.
 5. Küçük statik çıktılar üretilir; kaynak metadata’sı arayüze taşınır.
 6. Fixture testleri, kalite kapısı ve örnek tarayıcı kontrolleri tamamlanır.
-7. Feature dalı önce entegrasyon dalına alınır. Kullanıcı onayından sonra tüm fazlar tek sürüm adayı olarak `main`e birleştirilir.
+7. Feature dalı, kullanıcı onayından sonra `main`e birleştirilir; onay olmadan merge, push veya canlı dağıtım yapılmaz.
 
 Arayüzde kaynak etiketi üç düzeyde olmalı:
 
@@ -195,7 +229,7 @@ Arayüzde kaynak etiketi üç düzeyde olmalı:
 
 ## Branch ve birleştirme stratejisi
 
-Ana geliştirme entegrasyon dalı `feature/next-transit-experience` olarak `main`den açılmalı. Yukarıdaki feature dalları ilgili öncül daldan açılıp küçük ve anlamlı commitlerle entegrasyon dalına birleştirilmeli. Hiçbiri kullanıcı onayı olmadan `main`e veya canlıya gönderilmemeli.
+Aktif bir entegrasyon dalı yoktur. Her yeni faz, güncel `main`den ayrı bir `feature/*` dalında açılmalı ve küçük, anlamlı commitlerle ilerlemelidir. Kullanıcı onayı olmadan hiçbir dal `main`e birleştirilemez, GitHub'a pushlanamaz veya canlıya gönderilemez.
 
 Önerilen commit ayrımı:
 
@@ -211,11 +245,11 @@ Her faz sonunda `README.md`, `PROJECT_CONTEXT.md` ve gerekiyorsa `CHANGELOG.md` 
 
 Uygulama değerini hızla artırıp riski düşük tutan sıra şöyledir:
 
-1. Faz 0 + Faz 1: ortak sefer altyapısı ve Şehir Hatları,
-2. Faz 2: İETT planlı kalkışları,
-3. Faz 5: arama/yakın durak/favori iyileştirmeleri,
-4. Faz 3 + Faz 4: raylı sistem tarifeleri,
-5. Faz 6: yük artırmadan canlı hareket yumuşatma,
-6. Faz 7: sürüm öncesi bütünsel sağlamlaştırma.
+1. Faz 3: metro, tramvay ve füniküler tarifeleri,
+2. Faz 4: Marmaray ve M11 tarifeleri,
+3. Snapshot bakım ve fark raporu sistemi,
+4. Çoklu kullanıcı için ortak edge cache/kota katmanı,
+5. Faz 5: kalıcı E2E testleri,
+6. Performans ve son polish.
 
 Bu sıra, en iyi yapılandırılmış resmî sefer sayfalarından başlayıp daha değişken TCDD/Metro kaynaklarına geçer. Canlı sorgu sıklığını artırma işi, gözlem verisi ve gerçek ihtiyaç ortaya çıkana kadar ertelenir.

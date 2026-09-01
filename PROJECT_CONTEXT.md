@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel yayımlanmış sürüm: `0.7.0-beta.2`; vapur/raylı ağlar, tarife kataloğu ve canlı araç sağlamlaştırmaları `main` dalında birleşiktir.
-- Aktif entegrasyon dalı: `feature/next-transit-experience`; ilk geliştirme dalı `feature/schedule-foundation`.
+- Güncel yayımlanmış sürüm: `0.7.0-beta.3` (`12cf2f1`); tamamlanan geliştirmelerin tümü `main` dalında birleşik ve GitHub'a pushlanmıştır.
+- Aktif entegrasyon dalı yoktur. Yeni çalışma, güncel `main`den açılan ayrı bir `feature/*` dalında başlatılmalıdır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -102,8 +102,8 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; ortak sefer altyapısı ve Şehir Hatları, İETT planlı kalkışları, keşif/arama deneyimi, raylı sistem tarifeleri, yük artırmayan canlı araç yumuşatma ve son kalite fazıdır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; metro/tramvay/füniküler tarifeleri, Marmaray ve M11 tarifeleri, snapshot bakım/fark raporu, ortak edge cache/kota katmanı, kalıcı E2E testleri ve performans/son polish'tir.
 
-Ortak sefer sözleşmesi ve lazy-loaded panel `feature/schedule-foundation`, 30 vapur hattının resmî planlı sefer snapshot'ları `feature/ferry-schedules` dalında hazırlanmıştır. İETT planlı kalkışları için resmî `RouteDetail`/`GetScheduledDepartureTimes` uçlarını yalnız bakım anında kullanan üretici `feature/iett-schedules` dalında başlatılmış ve `feature/iett-schedules-all` dalında katalogdaki 801 İETT kodu kontrol edilerek kaynakta doğrulanabilen snapshot kapsamı genişletilmiştir. Kaynağın tablo üretmediği veya 500 döndürdüğü hatlarda veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. `feature/discovery-ux` dalı, yerel statik indekslerde Türkçe karakter ve token bazlı arama sıralamasını geliştirir; canlı veri isteği eklemez. `feature/live-vehicles-ux` dalı, iki canlı snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte ederek yumuşatır; bu, kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
+Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 
 Trafik ve teleferik kapsam dışıdır. Raylı/vapur canlı konumu yalnız ücretsiz, resmî ve sürdürülebilir bir kaynak doğrulanırsa ayrı spike ile değerlendirilir.
