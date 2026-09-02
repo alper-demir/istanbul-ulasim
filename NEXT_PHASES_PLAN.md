@@ -106,12 +106,18 @@ Tamamlanan dal: `feature/iett-schedules` (artık `main`de)
 
 Kabul: Kaynak hat sayfası değiştiğinde bakım betiği açık hata vermeli; çalışma anında İETT sefer kaynağına hiçbir yeni istek eklenmemeli.
 
-### Faz 3 — Metro, tramvay ve füniküler tarifeleri
+### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
-Dal: `feature/metro-schedules`
+Dal: `feature/rail-schedule-lite`
+
+Tamamlanan küçük dilim:
+
+- Metro İstanbul tarife sayfasındaki geçici bakım isteği sözleşmesi fixture ile doğrulandı.
+- M1A, M2 ve M4'ün ana yönleri için yalnız ilk/son hareket snapshot'ı statik olarak yayımlandı.
+- M2 Seyrantepe dalı; statik istasyon eşlemesi tamamlanana kadar kapsam dışında tutuldu.
 
 - Önce küçük bir teknik spike ile Metro İstanbul tarife ekranının istek sözleşmesini ve tarih davranışını doğrulama.
-- M1A–M9, T1/T3/T4/T5 ve F1/F4 için ilk/son tren ve mümkünse istasyon bazlı planlı saat snapshot’ı.
+- M1A–M9, T1/T3/T4/T5 ve F1/F4 için ilk/son tren ve mümkünse istasyon bazlı planlı saat snapshot’ını, yön/durak eşlemesi tek tek doğrulandıktan sonra genişletme.
 - Gece Metrosu ve hat bazlı işletme saati notlarını ayrı gün türü/uyarı olarak taşıma.
 - Eksik hatlarda tahmini saat üretmek yerine resmî kaynak bağlantısı ve işletme saati özeti gösterme.
 

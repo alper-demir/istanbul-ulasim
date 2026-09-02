@@ -49,6 +49,7 @@ export type ScheduleDataset = {
   source: ScheduleSource;
   dayTypes: ScheduleDayType[];
   directions: ScheduleDirection[];
+  summary?: 'first-last';
 };
 
 export type SchedulePayload = {
@@ -229,6 +230,8 @@ export function parseSchedulePayload(value: unknown): SchedulePayload {
     return { directionId, name: requireString(direction, 'name'), patterns };
   });
   if (!directions.length) throw new Error('En az bir sefer yönü gerekli');
+  const summary = data.summary;
+  if (summary !== undefined && summary !== 'first-last') throw new Error('Desteklenmeyen sefer özeti');
 
   const meta = requireRecord(payload.meta, 'meta');
   const fetchedAt = requireString(meta, 'fetchedAt');
@@ -243,6 +246,7 @@ export function parseSchedulePayload(value: unknown): SchedulePayload {
       source: parseSource(data.source),
       dayTypes,
       directions,
+      ...(summary ? { summary } : {}),
     },
     meta: { source: requireString(meta, 'source'), status: 'static', fetchedAt },
   };

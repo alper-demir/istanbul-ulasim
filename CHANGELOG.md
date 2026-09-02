@@ -5,7 +5,6 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 ## 0.7.1 — UX ve performans polish
 
 ### Eklendi
-
 - Arama alanında `/` odak kısayolu, Enter ile ilk sonucu açma ve Esc ile kapatma.
 - Favori, karşılaştırma ve bağlantı kopyalama eylemleri için erişilebilir Türkçe toast bildirimleri.
 - Şehir ölçeğinde durak marker’ları ertelenerek harita çizim yükünün azaltılması; yaklaşıldığında durakların yeniden gösterilmesi.
@@ -26,6 +25,10 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 ## Yayımlanmamış — Sonraki fazlar
 
 ### Eklendi
+
+- M1A, M2 ve M4'ün ana yönleri için Metro İstanbul kaynağından alınan, sade ilk/son hareket snapshot'ları.
+- İlk/son hareket özetini uzun tarife tablosundan ayıran iki kutulu sefer paneli sunumu.
+- Metro İstanbul sayfasındaki hat/yön/istasyon ve kısa ömürlü istek kodu sözleşmesini denetleyen parser ve fixture testleri.
 
 - İşletmeciden bağımsız planlı sefer veri sözleşmesi; kaynak, alınma/geçerlilik tarihi, gün türü, yön, sefer ve durak saatlerini doğrular.
 - Gece yarısını aşan `24:xx` saatlerini koruyan, geriye giden saatleri ve bilinmeyen gün türlerini reddeden sözleşme testleri.

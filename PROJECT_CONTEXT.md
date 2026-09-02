@@ -5,7 +5,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 ## Mevcut durum
 
 - Güncel yayımlanmış sürüm: `0.7.1`; beta.3 sonrası UX ve marker performans geliştirmeleri `main` dalında birleşiktir.
-- Aktif entegrasyon dalı yoktur. Yeni çalışma, güncel `main`den açılan ayrı bir `feature/*` dalında başlatılmalıdır.
+- Aktif yerel çalışma dalı: `feature/rail-schedule-lite`; güncel `main`den açıldı, henüz merge veya push yapılmadı.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -25,6 +25,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
+- M1A, M2 ve M4 için Metro İstanbul kaynaklı, yön bazlı ilk/son hareket özeti; tam tarife veya kesin günlük geçerlilik iddiası yoktur
 - Tümü/Otobüs/Raylı/Vapur filtresi ve hat detayında kaynak bağlantısı/veri tarihi
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - İki taze ve makul canlı araç snapshot'ı arasında, yalnız harita işaretçisinde rota üstüne sabitlenen görsel yumuşatma; kaynak sorgu aralığı artmaz, eski/atlamalı veri ile görünmeyen veya hareket azaltma tercihli sekmede çalışmaz
@@ -102,7 +103,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; metro/tramvay/füniküler tarifeleri, Marmaray ve M11 tarifeleri, snapshot bakım/fark raporu, ortak edge cache/kota katmanı, kalıcı E2E testleri ve performans/son polish'tir.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; Metro İstanbul lite özetinin diğer doğrulanabilir hatlara genişletilmesi, Marmaray ve M11 tarifeleri, ortak edge cache/kota katmanı, kalıcı E2E testleri ve performans/son polish'tir.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

@@ -44,6 +44,11 @@ describe('schedule data contract', () => {
     expect(scheduleTimeToMinutes('24:15')).toBe(1455);
   });
 
+  it('preserves a compact first/last movement summary', () => {
+    const payload = { ...structuredClone(validPayload), data: { ...structuredClone(validPayload).data, summary: 'first-last' } };
+    expect(parseSchedulePayload(payload).data.summary).toBe('first-last');
+  });
+
   it('rejects a journey whose call times move backwards', () => {
     const invalid = structuredClone(validPayload);
     invalid.data.directions[0]!.patterns[0]!.journeys[0]!.calls[1]!.time = '22:15';
@@ -107,5 +112,15 @@ describe('schedule data contract', () => {
     expect(payload.data.directions.map((direction) => direction.directionId).sort()).toEqual(['outbound', 'return']);
     expect(payload.data.dayTypes.map((dayType) => dayType.id).sort()).toEqual(['saturday', 'sunday', 'weekday']);
     expect(payload.data.directions.every((direction) => direction.patterns.every((pattern) => pattern.journeys.length > 0))).toBe(true);
+  });
+
+  it('publishes compact first/last movement summaries for the verified Metro İstanbul lines', async () => {
+    for (const code of ['M1A', 'M2', 'M4']) {
+      const payload = parseSchedulePayload(JSON.parse(await readFile(new URL(`../public/schedules/routes/metro-${code}.json`, import.meta.url), 'utf8')));
+      expect(payload.data.routeId).toBe(`metro:${code}`);
+      expect(payload.data.source.provider).toBe('metro-istanbul');
+      expect(payload.data.summary).toBe('first-last');
+      expect(payload.data.directions.every((direction) => direction.patterns[0]?.journeys.length === 2)).toBe(true);
+    }
   });
 });

@@ -21,6 +21,7 @@
     "data:build-rail": "node scripts/build-osm-static-network.mjs rail",
     "data:build-ferry": "node scripts/build-ferry-static-data.mjs",
     "data:build-iett-schedules": "node scripts/build-iett-schedule-data.mjs",
+    "data:build-metro-schedules": "node scripts/build-metro-schedule-lite.mjs",
     "data:diff-schedule-snapshots": "node scripts/schedule-snapshot-diff.mjs",
     "data:build-fares": "node scripts/build-fare-static-data.mjs",
     "data:audit-iett-fares": "node scripts/audit-iett-fare-snapshot.mjs"
