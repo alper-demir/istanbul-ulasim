@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.7.2 — Durak ayrıntıları ve favori geri bildirimi
+
+### Düzeltildi
+
+- Durak ayrıntı panelindeki aç/kapat metni ve görsel durum göstergesi tutarlı hâle getirildi.
+- Durak favoriye ekleme/çıkarma işlemlerinde toast bildirimi gösterildi.
+
 ## 0.7.1 — UX ve performans polish
 
 ### Eklendi
