@@ -1314,7 +1314,11 @@ export function TransitDashboard() {
           <details className="group mt-3 border-t border-[var(--border)] pt-2">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl border border-[var(--primary)]/40 bg-[var(--primary-soft)] px-3 py-2.5 text-xs font-bold text-[var(--foreground)] shadow-sm transition hover:border-[var(--primary)] hover:bg-[var(--primary-soft)] [&::-webkit-details-marker]:hidden">
               <span>{hasLiveVehicles&&approachingVehicles.length>0?`${approachingVehicles.length} yaklaşan araç · `:''}{stopIndexQuery.isLoading?'Hatlar yükleniyor…':`${new Set(selectedStopOccurrences.map(({route})=>route.id)).size} hat`}</span>
-              <span className="flex items-center gap-1.5 text-[10px] font-extrabold text-[var(--primary)]">Ayrıntıları göster<ChevronDown className="h-4 w-4 transition group-open:rotate-180" /></span>
+              <span className="flex items-center gap-1.5 text-[10px] font-extrabold text-[var(--primary)]">
+                <span className="group-open:hidden">Ayrıntıları göster</span>
+                <span className="hidden group-open:inline">Ayrıntıları gizle</span>
+                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
+              </span>
             </summary>
             <div className="mt-2 max-h-[46vh] space-y-3 overflow-y-auto pr-1">
               <p className="font-mono text-[10px] text-[var(--muted)]">Konum: {selectedStop.coordinates[1].toFixed(5)}, {selectedStop.coordinates[0].toFixed(5)}</p>
