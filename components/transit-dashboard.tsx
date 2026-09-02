@@ -1298,7 +1298,7 @@ export function TransitDashboard() {
         </div>
       )}
       {selectedStop && (
-        <div className={cn('glass-panel absolute bottom-5 left-3 right-3 z-30 rounded-2xl p-3 md:right-auto md:w-[380px]',routeListOpen?'md:left-[360px]':'md:left-5')}>
+        <div className="glass-panel absolute bottom-5 left-1/2 z-30 w-[min(420px,calc(100%-24px))] -translate-x-1/2 rounded-2xl p-3 md:left-[calc(50%-10px)]">
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white" style={{background:selectedRoute.color}}><MapPin className="h-5 w-5" /></span>
             <div className="min-w-0 flex-1">
