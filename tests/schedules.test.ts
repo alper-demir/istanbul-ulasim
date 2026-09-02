@@ -114,14 +114,15 @@ describe('schedule data contract', () => {
     expect(payload.data.directions.every((direction) => direction.patterns.every((pattern) => pattern.journeys.length > 0))).toBe(true);
   });
 
-  it('publishes compact first/last movement summaries for the verified Metro İstanbul lines', async () => {
-    for (const code of ['M1A', 'M2', 'M4']) {
-      const payload = parseSchedulePayload(JSON.parse(await readFile(new URL(`../public/schedules/routes/metro-${code}.json`, import.meta.url), 'utf8')));
-      expect(payload.data.routeId).toBe(`metro:${code}`);
+  it('publishes compact first/last movement summaries for every verified Metro İstanbul line', async () => {
+    for (const code of ['M1A', 'M1B', 'M2', 'M3', 'M4', 'M5', 'M6', 'M8', 'M9', 'T1', 'T3', 'T4', 'T5', 'F1', 'F4']) {
+      const network = code.startsWith('M') ? 'metro' : 'rail';
+      const payload = parseSchedulePayload(JSON.parse(await readFile(new URL(`../public/schedules/routes/${network}-${code}.json`, import.meta.url), 'utf8')));
+      expect(payload.data.routeId).toBe(`${network}:${code}`);
       expect(payload.data.source.provider).toBe('metro-istanbul');
       expect(payload.data.summary).toBe('first-last');
       expect(payload.data.directions.every((direction) => direction.patterns[0]?.journeys.length === 2)).toBe(true);
-      const route = JSON.parse(await readFile(new URL(`../public/metro/routes/${code}.json`, import.meta.url), 'utf8')) as { data: { directions: Array<{ id: string; stops: Array<{ id: string }> }> } };
+      const route = JSON.parse(await readFile(new URL(`../public/${network}/routes/${code}.json`, import.meta.url), 'utf8')) as { data: { directions: Array<{ id: string; stops: Array<{ id: string }> }> } };
       for (const direction of payload.data.directions) {
         const routeDirection = route.data.directions.find((candidate) => candidate.id === direction.directionId);
         expect(routeDirection, `${code}/${direction.directionId} yönü statik rotada bulunmalı`).toBeDefined();

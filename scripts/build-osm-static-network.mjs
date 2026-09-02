@@ -8,6 +8,9 @@ if (!network) throw new Error('Usage: node scripts/build-osm-static-network.mjs 
 
 const manifestPath = join(root, 'data', network, 'lines.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+const requestedCodes = (process.argv.find((argument) => argument.startsWith('--codes='))?.slice(8).split(',').map((code) => code.trim().toUpperCase()).filter(Boolean) ?? null);
+const lines = requestedCodes ? manifest.lines.filter((line) => requestedCodes.includes(line.code)) : manifest.lines;
+if (!lines.length || requestedCodes?.some((code) => !lines.some((line) => line.code === code))) throw new Error('İstenen hat veri kataloğunda bulunamadı');
 const output = join(root, 'public', network);
 const endpoint = 'https://overpass-api.de/api/interpreter';
 const unique = (values) => [...new Set(values)];
@@ -25,7 +28,7 @@ async function requestRelations(ids) {
   return (await response.json()).elements;
 }
 
-const allRelationIds = unique(manifest.lines.flatMap((line) => line.directions.flatMap((direction) => direction.relationIds)));
+const allRelationIds = unique(lines.flatMap((line) => line.directions.flatMap((direction) => direction.relationIds)));
 const elements = await requestRelations(allRelationIds);
 const relationById = new Map(elements.filter((item) => item.type === 'relation').map((item) => [item.id, item]));
 const nodeById = new Map(elements.filter((item) => item.type === 'node').map((item) => [item.id, item]));
@@ -108,7 +111,7 @@ await mkdir(join(output, 'routes'), { recursive: true });
 const routeIndex = [];
 const stopIndex = new Map();
 
-for (const line of manifest.lines) {
+for (const line of lines) {
   const directions = line.directions.map((direction) => {
     const stops = [...(direction.prependStops ?? []), ...stationsForRelations(direction.relationIds), ...(direction.appendStops ?? [])];
     return { ...direction, durationMinutes: line.durationMinutes ?? 0, coordinates: geometryForRelations(direction.relationIds, stops.map((stop) => stop.coordinates)), stops };
@@ -154,7 +157,9 @@ for (const line of manifest.lines) {
   }));
 }
 
-routeIndex.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
-await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: routeIndex, meta: { source: manifest.label, status: 'static', routeCount: routeIndex.length, fetchedAt: sourceUpdatedAt, license: 'OpenStreetMap contributors, ODbL' } }));
-await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: [...stopIndex.values()].sort((a, b) => a.name.localeCompare(b.name, 'tr')), meta: { source: manifest.label, status: 'static', stopCount: stopIndex.size, fetchedAt: sourceUpdatedAt, license: 'OpenStreetMap contributors, ODbL' } }));
-console.log(`Generated ${routeIndex.length} ${network} route records and ${stopIndex.size} searchable stops.`);
+if (!requestedCodes) {
+  routeIndex.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
+  await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: routeIndex, meta: { source: manifest.label, status: 'static', routeCount: routeIndex.length, fetchedAt: sourceUpdatedAt, license: 'OpenStreetMap contributors, ODbL' } }));
+  await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: [...stopIndex.values()].sort((a, b) => a.name.localeCompare(b.name, 'tr')), meta: { source: manifest.label, status: 'static', stopCount: stopIndex.size, fetchedAt: sourceUpdatedAt, license: 'OpenStreetMap contributors, ODbL' } }));
+}
+console.log(`Generated ${routeIndex.length} ${network} route record${routeIndex.length === 1 ? '' : 's'}${requestedCodes ? ' (scoped refresh)' : ` and ${stopIndex.size} searchable stops`}.`);

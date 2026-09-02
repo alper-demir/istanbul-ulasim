@@ -113,11 +113,11 @@ Dal: `feature/rail-schedule-lite`
 Tamamlanan küçük dilim:
 
 - Metro İstanbul tarife sayfasındaki geçici bakım isteği sözleşmesi fixture ile doğrulandı.
-- M1A ve M4'ün ana yönleri ile M2'nin Hacıosman ve Seyrantepe kolları için yalnız ilk/son hareket snapshot'ı statik olarak yayımlandı.
+- M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4 için kaynak–yön eşleşmesi doğrulanmış ilk/son hareket snapshot'ları statik olarak yayımlandı.
 - M2 Seyrantepe kolunun iki uç durağı, resmî yön adları ve OpenStreetMap istasyon konumuyla doğrulandı.
 
 - Önce küçük bir teknik spike ile Metro İstanbul tarife ekranının istek sözleşmesini ve tarih davranışını doğrulama.
-- M1A–M9, T1/T3/T4/T5 ve F1/F4 için ilk/son tren ve mümkünse istasyon bazlı planlı saat snapshot’ını, yön/durak eşlemesi tek tek doğrulandıktan sonra genişletme.
+- M7'nin kaynakta yayımlanan kısa işletme yönlerini statik rota kesitleriyle ayrı ayrı eşleme; M11 ve B1 için işletmeci kaynak adaptörünü doğrulama.
 - Gece Metrosu ve hat bazlı işletme saati notlarını ayrı gün türü/uyarı olarak taşıma.
 - Eksik hatlarda tahmini saat üretmek yerine resmî kaynak bağlantısı ve işletme saati özeti gösterme.
 

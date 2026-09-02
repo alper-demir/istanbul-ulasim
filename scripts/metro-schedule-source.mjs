@@ -20,6 +20,18 @@ export function normalizeStationName(value) {
     .replace(/[^a-z0-9]+/g, '');
 }
 
+const stationAliasGroups = [
+  ['kirazli', 'kirazlibagcilar'],
+  ['kadikoyido', 'kadikoyidometro'],
+  ['bogaziciuhisarustu', 'bogaziciuniversitesihisarustu'],
+];
+
+function stationNamesMatch(left, right) {
+  const normalizedLeft = normalizeStationName(left);
+  const normalizedRight = normalizeStationName(right);
+  return normalizedLeft === normalizedRight || stationAliasGroups.some((group) => group.includes(normalizedLeft) && group.includes(normalizedRight));
+}
+
 function optionValues(html, id) {
   const select = new RegExp(`<select[^>]+id=["']${id}["'][^>]*>([\\s\\S]*?)</select>`, 'i').exec(html)?.[1];
   if (!select) throw new Error(`Metro İstanbul kaynak sayfasında ${id} seçicisi bulunamadı`);
@@ -56,11 +68,13 @@ export function extractMetroRequestCode(html) {
 }
 
 export function findSourceDirection(catalogLine, directionName) {
-  const [from, to, ...remainder] = directionName.split('→').map((part) => part.trim());
-  if (!from || !to || remainder.length) throw new Error(`Uygulama yön adı çözümlenemedi: ${directionName}`);
-  const route = catalogLine.routes.find((item) => normalizeStationName(item.from) === normalizeStationName(from) && normalizeStationName(item.to) === normalizeStationName(to));
+  const stops = directionName.split('→').map((part) => part.trim()).filter(Boolean);
+  const from = stops[0];
+  const to = stops.at(-1);
+  if (!from || !to) throw new Error(`Uygulama yön adı çözümlenemedi: ${directionName}`);
+  const route = catalogLine.routes.find((item) => stationNamesMatch(item.from, from) && stationNamesMatch(item.to, to));
   if (!route) throw new Error(`Kaynakta ${directionName} yönü bulunamadı`);
-  const station = catalogLine.stations.find((item) => normalizeStationName(item.label) === normalizeStationName(from));
+  const station = catalogLine.stations.find((item) => stationNamesMatch(item.label, from));
   if (!station) throw new Error(`Kaynakta ${from} başlangıç istasyonu bulunamadı`);
   return { routeId: route.id, stationId: station.id, sourceFrom: route.from, sourceTo: route.to };
 }

@@ -11,6 +11,11 @@ describe('Metro İstanbul sefer kaynağı', () => {
     expect(extractMetroRequestCode(fixture)).toBe('temporary-code');
   });
 
+  it('istasyon adlarındaki küçük kaynak farklarını ve tek yönlü ring hattını eşleştirir', () => {
+    const line = parseMetroScheduleCatalog('<a onclick="changeTheElements(3);"><span>T3</span></a><select id="seferler_3"><option value="4">Kadıköy İDO-->>Damga Sokak</option></select><select id="istasyonlar_3"><option value="5">Kadıköy İDO</option></select>').get('T3');
+    expect(findSourceDirection(line!, 'Kadıköy - İDO- Metro → Damga Sokak')).toMatchObject({ routeId: '4', stationId: '5' });
+  });
+
   it('gece yarısını geçen son hareketi 24 saat gösterimine taşır', () => {
     expect(summarizeFirstLastDepartures({ durum: '0', sefer: [{ zaman: '06:00' }, { zaman: '00:00' }] })).toEqual({ first: '06:00', last: '24:00' });
   });

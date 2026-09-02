@@ -4,9 +4,11 @@ import { extractMetroRequestCode, findSourceDirection, parseMetroScheduleCatalog
 
 const root = process.cwd();
 const sourceUrl = 'https://www.metro.istanbul/SeferDurumlari/SeferDetaylari';
-const requestedCodes = (process.argv.find((argument) => argument.startsWith('--codes='))?.slice(8).split(',').map((code) => code.trim().toUpperCase()).filter(Boolean) ?? ['M1A', 'M2', 'M4']);
-const supportedCodes = new Set(['M1A', 'M2', 'M4']);
-if (!requestedCodes.length || requestedCodes.some((code) => !supportedCodes.has(code))) throw new Error(`Bu lite snapshot yalnız ${[...supportedCodes].join(', ')} hatlarını destekler; --codes=M1A,M2,M4 kullanın.`);
+// M7 resmî ekranda yalnız kısa işletme parçalarıyla listeleniyor; statik tam
+// hat yönleriyle eşleşmediği için yanıltıcı bir ilk/son özeti yayımlanmaz.
+const supportedCodes = ['M1A', 'M1B', 'M2', 'M3', 'M4', 'M5', 'M6', 'M8', 'M9', 'T1', 'T3', 'T4', 'T5', 'F1', 'F4'];
+const requestedCodes = process.argv.find((argument) => argument.startsWith('--codes='))?.slice(8).split(',').map((code) => code.trim().toUpperCase()).filter(Boolean) ?? supportedCodes;
+if (!requestedCodes.length || requestedCodes.some((code) => !supportedCodes.includes(code))) throw new Error(`Bu snapshot yalnız ${supportedCodes.join(', ')} hatlarını destekler.`);
 
 const headers = { 'user-agent': 'istanbulum-schedule-maintenance/0.7', accept: 'text/html,application/xhtml+xml', 'accept-language': 'tr-TR,tr;q=0.9' };
 const pageResponse = await fetch(sourceUrl, { headers, signal: AbortSignal.timeout(25_000) });
@@ -34,7 +36,8 @@ async function fetchSummary(direction) {
 }
 
 for (const code of requestedCodes) {
-  const routePayload = JSON.parse(await readFile(join(root, 'public', 'metro', 'routes', `${encodeURIComponent(code)}.json`), 'utf8'));
+  const network = code.startsWith('M') ? 'metro' : 'rail';
+  const routePayload = JSON.parse(await readFile(join(root, 'public', network, 'routes', `${encodeURIComponent(code)}.json`), 'utf8'));
   const sourceLine = catalog.get(code);
   if (!sourceLine) throw new Error(`Metro İstanbul kaynak kataloğunda ${code} bulunamadı`);
   const directions = [];
@@ -51,7 +54,7 @@ for (const code of requestedCodes) {
     ] }] });
   }
   const routeId = routePayload.data.id;
-  const filename = `metro-${code}.json`;
+  const filename = `${network}-${code}.json`;
   const source = { provider: 'metro-istanbul', label: 'Metro İstanbul sefer tarifesi', url: sourceUrl, retrievedAt, validityUnknown: true };
   await writeFile(join(output, filename), JSON.stringify({ data: { schemaVersion: 1, routeId, timezone: 'Europe/Istanbul', source, dayTypes: [{ id: 'source-day', label: 'Kaynakta seçilen gün', publicHolidayPolicy: 'unknown' }], directions, summary: 'first-last' }, meta: { source: 'metro-istanbul-static-snapshot', status: 'static', fetchedAt: retrievedAt } }));
   manifest.data.routes[routeId] = { path: `/schedules/routes/${filename}`, ...source };

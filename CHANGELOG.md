@@ -26,7 +26,7 @@ Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
 ### Eklendi
 
-- M1A ve M4'ün ana yönleri ile M2'nin Hacıosman ve Seyrantepe kolları için Metro İstanbul kaynağından alınan, sade ilk/son hareket snapshot'ları.
+- M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4'ün doğrulanmış yönleri için Metro İstanbul kaynağından alınan sade ilk/son hareket snapshot'ları.
 - İlk/son hareket özetini uzun tarife tablosundan ayıran iki kutulu sefer paneli sunumu.
 - Metro İstanbul sayfasındaki hat/yön/istasyon ve kısa ömürlü istek kodu sözleşmesini denetleyen parser ve fixture testleri.
 
