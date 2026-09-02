@@ -121,6 +121,13 @@ describe('schedule data contract', () => {
       expect(payload.data.source.provider).toBe('metro-istanbul');
       expect(payload.data.summary).toBe('first-last');
       expect(payload.data.directions.every((direction) => direction.patterns[0]?.journeys.length === 2)).toBe(true);
+      const route = JSON.parse(await readFile(new URL(`../public/metro/routes/${code}.json`, import.meta.url), 'utf8')) as { data: { directions: Array<{ id: string; stops: Array<{ id: string }> }> } };
+      for (const direction of payload.data.directions) {
+        const routeDirection = route.data.directions.find((candidate) => candidate.id === direction.directionId);
+        expect(routeDirection, `${code}/${direction.directionId} yönü statik rotada bulunmalı`).toBeDefined();
+        const stopIds = new Set(routeDirection?.stops.map((stop) => stop.id));
+        expect(direction.patterns[0]?.journeys.every((journey) => journey.calls.every((call) => stopIds.has(call.stopId))), `${code}/${direction.directionId} özet kalkışları rota duraklarına bağlı olmalı`).toBe(true);
+      }
     }
   });
 });

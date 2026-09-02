@@ -38,11 +38,9 @@ for (const code of requestedCodes) {
   const sourceLine = catalog.get(code);
   if (!sourceLine) throw new Error(`Metro İstanbul kaynak kataloğunda ${code} bulunamadı`);
   const directions = [];
-  // M2'nin Seyrantepe dalı gibi ana güzergâhtan ayrılan servisler, kaynak ve
-  // statik istasyon kimlikleri ayrı doğrulanana kadar bu lite özete girmez.
-  const primaryDirections = routePayload.data.directions.filter((direction) => ['outbound', 'return'].includes(direction.id));
-  if (!primaryDirections.length) throw new Error(`${code}: yayımlanabilir ana yön bulunamadı`);
-  for (const direction of primaryDirections) {
+  const publishableDirections = routePayload.data.directions.filter((direction) => direction.stops.length >= 2);
+  if (!publishableDirections.length) throw new Error(`${code}: yayımlanabilir yön bulunamadı`);
+  for (const direction of publishableDirections) {
     const sourceDirection = findSourceDirection(sourceLine, direction.name);
     const firstStop = direction.stops[0];
     if (!firstStop || !direction.stops.at(-1)) throw new Error(`${code}/${direction.id}: statik hat uç istasyonları bulunamadı`);

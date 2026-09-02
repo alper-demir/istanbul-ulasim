@@ -4,6 +4,11 @@ import { fareForRoute } from './fare-catalog.mjs';
 
 const root = process.cwd();
 const manifest = JSON.parse(await readFile(join(root, 'data', 'metro', 'lines.json'), 'utf8'));
+const requestedCodes = (process.argv.find((argument) => argument.startsWith('--codes='))?.slice(8).split(',').map((code) => code.trim().toUpperCase()).filter(Boolean) ?? null);
+const lines = requestedCodes
+  ? manifest.lines.filter((line) => requestedCodes.includes(line.code))
+  : manifest.lines;
+if (!lines.length || requestedCodes?.some((code) => !lines.some((line) => line.code === code))) throw new Error('İstenen metro hattı veri kataloğunda bulunamadı');
 const output = join(root, 'public', 'metro');
 const endpoint = 'https://overpass-api.de/api/interpreter';
 const unique = (values) => [...new Set(values)];
@@ -21,7 +26,7 @@ async function requestRelations(ids) {
   return payload.elements;
 }
 
-const allRelationIds = unique(manifest.lines.flatMap((line) => line.directions.flatMap((direction) => direction.relationIds)));
+const allRelationIds = unique(lines.flatMap((line) => line.directions.flatMap((direction) => direction.relationIds)));
 const elements = await requestRelations(allRelationIds);
 const relationById = new Map(elements.filter((item) => item.type === 'relation').map((item) => [item.id, item]));
 const nodeById = new Map(elements.filter((item) => item.type === 'node').map((item) => [item.id, item]));
@@ -93,7 +98,7 @@ function validateLine(line, directions) {
 await mkdir(join(output, 'routes'), { recursive: true });
 const routeIndex = [];
 const stopIndex = new Map();
-for (const line of manifest.lines) {
+for (const line of lines) {
   const directions = line.directions.map((direction) => {
     const stops = [...(direction.prependStops ?? []), ...stationsForRelations(direction.relationIds), ...(direction.appendStops ?? [])];
     return { ...direction, durationMinutes: 0, coordinates: geometryForRelations(direction.relationIds, stops.map((stop) => stop.coordinates)), stops };
@@ -117,7 +122,9 @@ for (const line of manifest.lines) {
     meta: { source: 'metro-istanbul + openstreetmap', status: 'static', fetchedAt: new Date().toISOString(), officialUrl: line.officialUrl },
   }));
 }
-routeIndex.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
-await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: routeIndex, meta: { source: 'metro-istanbul + openstreetmap', status: 'static', routeCount: routeIndex.length, fetchedAt: new Date().toISOString(), license: 'OpenStreetMap contributors, ODbL' } }));
-await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: [...stopIndex.values()].sort((a, b) => a.name.localeCompare(b.name, 'tr')), meta: { source: 'metro-istanbul + openstreetmap', status: 'static', stopCount: stopIndex.size, fetchedAt: new Date().toISOString(), license: 'OpenStreetMap contributors, ODbL' } }));
-console.log(`Generated ${routeIndex.length} static metro route records and ${stopIndex.size} searchable stations.`);
+if (!requestedCodes) {
+  routeIndex.sort((a, b) => a.code.localeCompare(b.code, 'tr'));
+  await writeFile(join(output, 'route-index.json'), JSON.stringify({ data: routeIndex, meta: { source: 'metro-istanbul + openstreetmap', status: 'static', routeCount: routeIndex.length, fetchedAt: new Date().toISOString(), license: 'OpenStreetMap contributors, ODbL' } }));
+  await writeFile(join(output, 'stop-index.json'), JSON.stringify({ data: [...stopIndex.values()].sort((a, b) => a.name.localeCompare(b.name, 'tr')), meta: { source: 'metro-istanbul + openstreetmap', status: 'static', stopCount: stopIndex.size, fetchedAt: new Date().toISOString(), license: 'OpenStreetMap contributors, ODbL' } }));
+}
+console.log(`Generated ${routeIndex.length} static metro route record${routeIndex.length === 1 ? '' : 's'}${requestedCodes ? ' (scoped refresh)' : ` and ${stopIndex.size} searchable stations`}.`);

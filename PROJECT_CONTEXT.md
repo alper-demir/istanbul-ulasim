@@ -25,7 +25,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
-- M1A, M2 ve M4 için Metro İstanbul kaynaklı, yön bazlı ilk/son hareket özeti; tam tarife veya kesin günlük geçerlilik iddiası yoktur
+- M1A ve M4'ün ana yönleri ile M2'nin Hacıosman ve Seyrantepe kolları için Metro İstanbul kaynaklı ilk/son hareket özeti; tam tarife veya kesin günlük geçerlilik iddiası yoktur
 - Tümü/Otobüs/Raylı/Vapur filtresi ve hat detayında kaynak bağlantısı/veri tarihi
 - Seçili resmî hat için yön bazlı canlı araç konumları; araçtan haritada odaklanma
 - İki taze ve makul canlı araç snapshot'ı arasında, yalnız harita işaretçisinde rota üstüne sabitlenen görsel yumuşatma; kaynak sorgu aralığı artmaz, eski/atlamalı veri ile görünmeyen veya hareket azaltma tercihli sekmede çalışmaz
