@@ -39,6 +39,8 @@ export type ScheduleServicePattern = {
 export type ScheduleDirection = {
   directionId: string;
   name: string;
+  scope?: 'full-route' | 'branch' | 'segment';
+  stopIds?: string[];
   patterns: ScheduleServicePattern[];
 };
 
@@ -227,7 +229,17 @@ export function parseSchedulePayload(value: unknown): SchedulePayload {
       });
       return { id, dayTypeId, notes, journeys };
     });
-    return { directionId, name: requireString(direction, 'name'), patterns };
+    const scope = direction.scope;
+    if (scope !== undefined && !['full-route', 'branch', 'segment'].includes(String(scope))) throw new Error('Geçersiz sefer yön kapsamı');
+    const stopIds = direction.stopIds === undefined
+      ? undefined
+      : requireArray(direction.stopIds, `directions[${directionIndex}].stopIds`).map((stopId) => {
+          if (typeof stopId !== 'string' || !stopId.trim()) throw new Error('stopIds boş olmayan metinlerden oluşmalı');
+          return stopId.trim();
+        });
+    if (stopIds && new Set(stopIds).size < 2) throw new Error('Sefer yönü en az iki farklı doğrulanmış istasyona bağlı olmalı');
+    if (scope === 'segment' && !stopIds) throw new Error('Segment sefer yönünde açık istasyon kimlikleri zorunludur');
+    return { directionId, name: requireString(direction, 'name'), ...(scope ? { scope: scope as ScheduleDirection['scope'] } : {}), ...(stopIds ? { stopIds } : {}), patterns };
   });
   if (!directions.length) throw new Error('En az bir sefer yönü gerekli');
   const summary = data.summary;

@@ -127,13 +127,15 @@ Planlı hareket saatleri canlı araç konumundan ayrı bir veri sözleşmesiyle 
 
 Sefer kataloğu `public/schedules/manifest.json`, hat dosyaları `public/schedules/routes` altında tutulur. Hat ayrıntısındaki `Seferleri gör` alanı açılmadan manifest yüklenmez; manifestte seçili hat yoksa başka dosya isteği yapılmaz. Çalışma anında İETT, Şehir Hatları, Metro İstanbul veya TCDD tarife sayfalarına bağlanılmaz. İlk gerçek veri paketi Şehir Hatları'nın yayımlanan 30 vapur hattını kapsar. İETT planlı kalkışları için aynı sözleşmeyi kullanan bakım betiği `data:build-iett-schedules` komutudur; kaynağa yük vermemek için açık hat kapsamı ister, örneğin `node scripts/build-iett-schedule-data.mjs --codes=500T`. Tüm katalog yalnız `--all` ile ve manuel bakım sırasında alınabilir.
 
-Metro İstanbul için ilk kullanıcı odaklı dilim, resmî tarife yönleri statik rota yönleriyle doğrulanabilen M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4 hatlarının ilk/son hareket özetidir. Bu özet yalnız bakım sırasında resmî sayfada seçilen gün için alınır; kaynak geçerlilik aralığı yayımlamadığından uygulama bunu "bugün kesin geçerli" diye sunmaz. M7'nin kaynakta yayımlanan kısa işletme parçaları statik tam hat yönleriyle eşleşmediği için; M11 ve B1 ise bu Metro İstanbul tarife kaynağında yer almadığı için kapsam dışındadır.
+Metro İstanbul için ilk kullanıcı odaklı dilim, resmî tarife yönleri statik rota yönleriyle doğrulanabilen M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4 hatlarının ilk/son hareket özetidir. M7'nin kaynakta yayımlanan kısa işletme parçaları ayrı segmentler olarak yayımlanır. M11 ve B1 saatleri ise TCDD Taşımacılık API'sinden yalnız bakım sırasında alınır; çalışma anında dış kaynağa istek gönderilmez.
 
 ```bash
 npm run data:build-metro-schedules
 ```
 
 Komut varsayılan olarak 15 doğrulanmış hat için 33 kontrollü kaynak sorgusu yapar. Tam istasyon bazlı saatler, durak eşlemeleri ayrıca doğrulanana kadar bu çıktıya eklenmez. Tek bir statik hat yenilemek gerektiğinde `npm run data:build-metro -- --codes=M2` veya `npm run data:build-rail -- --codes=T3` kullanılabilir; bu, ilgili ağın hat/istasyon genel indekslerini değiştirmez.
+
+TCDD snapshot bakımı için `TCDD_API_BASIC_TOKEN` yalnız bakım ortamında tanımlanmalıdır. Ardından `npm run data:build-tcdd-schedules -- --codes=B1,M11` çalıştırılır. API yönü ve iki uç istasyon eşleşmezse üretim durur; ara istasyon saatleri tahmin edilmez.
 
 Arayüzde gösterilen saatler planlı bilgidir; gecikme, iptal, özel gün ve işletme değişikliği olabilir. Kaynağın geçerlilik tarihi bilinmiyorsa uygulama saati “bugün kesin geçerli” olarak nitelemez.
 
@@ -175,7 +177,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.7.1`. Planlı sefer altyapısı, UX geri bildirimleri, marker performans iyileştirmesi, kaynaklı tarife kataloğu ve canlı araç güncelliği bu sürümde yayımlanır.
+Güncel sürüm: `0.8.0`. M7, B1 ve M11 planlı sefer snapshot'ları, İETT duyuruları, snapshot bakım/fark raporları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 

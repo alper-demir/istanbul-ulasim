@@ -79,6 +79,15 @@ export function findSourceDirection(catalogLine, directionName) {
   return { routeId: route.id, stationId: station.id, sourceFrom: route.from, sourceTo: route.to };
 }
 
+export function findExplicitSourceDirection(catalogLine, mapping) {
+  if (!mapping?.sourceFrom || !mapping?.sourceTo) throw new Error('Açık kaynak yön eşlemesi eksik');
+  const route = catalogLine.routes.find((item) => normalizeStationName(item.from) === normalizeStationName(mapping.sourceFrom) && normalizeStationName(item.to) === normalizeStationName(mapping.sourceTo));
+  if (!route) throw new Error(`Kaynakta açık bölüm eşlemesi bulunamadı: ${mapping.sourceFrom} → ${mapping.sourceTo}`);
+  const station = catalogLine.stations.find((item) => normalizeStationName(item.label) === normalizeStationName(mapping.sourceFrom));
+  if (!station) throw new Error(`Kaynakta açık bölüm başlangıç istasyonu bulunamadı: ${mapping.sourceFrom}`);
+  return { routeId: route.id, stationId: station.id, sourceFrom: route.from, sourceTo: route.to };
+}
+
 export function summarizeFirstLastDepartures(value) {
   if (!value || value.durum !== '0' || !Array.isArray(value.sefer) || !value.sefer.length) throw new Error('Metro İstanbul kaynak yanıtında sefer bulunamadı');
   const departures = value.sefer.map((item) => {

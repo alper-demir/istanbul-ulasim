@@ -25,12 +25,19 @@ export const IETT_SOURCES = {
     endpoint: 'https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx',
     refresh: '30 seconds',
   },
+  announcements: {
+    id: 'ibb-iett-announcements',
+    label: 'İETT Duyuruları',
+    wsdl: 'https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl',
+    endpoint: 'https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx',
+    refresh: '120 seconds',
+  },
 } as const;
 
 export type SourceHealth = {
   id: string;
   label: string;
-  kind: 'static-network' | 'live-vehicles';
+  kind: 'static-network' | 'live-vehicles' | 'announcements';
   status: 'ready-to-import' | 'connected' | 'credentials-required' | 'fixture';
   detail: string;
   updatedAt: string;
@@ -56,6 +63,15 @@ export function getIettSourceHealth(): SourceHealth[] {
       detail: 'Resmî hat bazlı araç konum metodu bağlı; sunucu adaptörü kısa süreli önbellek ve saatlik istek bütçesiyle kaynağı korur.',
       updatedAt: new Date().toISOString(),
       attributionUrl: IETT_SOURCES.vehiclePositions.wsdl,
+    },
+    {
+      id: IETT_SOURCES.announcements.id,
+      label: IETT_SOURCES.announcements.label,
+      kind: 'announcements',
+      status: 'connected',
+      detail: 'İETT duyuruları sunucu tarafı cache, stale fallback ve hat kodu filtresiyle alınır.',
+      updatedAt: new Date().toISOString(),
+      attributionUrl: IETT_SOURCES.announcements.wsdl,
     },
     {
       id: 'istanbulum-fixtures',

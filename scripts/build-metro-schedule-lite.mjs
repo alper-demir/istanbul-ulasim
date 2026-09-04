@@ -1,12 +1,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { extractMetroRequestCode, findSourceDirection, parseMetroScheduleCatalog, summarizeFirstLastDepartures } from './metro-schedule-source.mjs';
+import { extractMetroRequestCode, findExplicitSourceDirection, findSourceDirection, parseMetroScheduleCatalog, summarizeFirstLastDepartures } from './metro-schedule-source.mjs';
+import { m7SegmentForDirection } from './m7-segment-mappings.mjs';
 
 const root = process.cwd();
 const sourceUrl = 'https://www.metro.istanbul/SeferDurumlari/SeferDetaylari';
-// M7 resmî ekranda yalnız kısa işletme parçalarıyla listeleniyor; statik tam
-// hat yönleriyle eşleşmediği için yanıltıcı bir ilk/son özeti yayımlanmaz.
-const supportedCodes = ['M1A', 'M1B', 'M2', 'M3', 'M4', 'M5', 'M6', 'M8', 'M9', 'T1', 'T3', 'T4', 'T5', 'F1', 'F4'];
+// M7 source directions are published as operating segments. They are written
+// with an explicit segment scope instead of being presented as a full-route
+// schedule when the official endpoints do not match the static geometry.
+const supportedCodes = ['M1A', 'M1B', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'T1', 'T3', 'T4', 'T5', 'F1', 'F4'];
 const requestedCodes = process.argv.find((argument) => argument.startsWith('--codes='))?.slice(8).split(',').map((code) => code.trim().toUpperCase()).filter(Boolean) ?? supportedCodes;
 if (!requestedCodes.length || requestedCodes.some((code) => !supportedCodes.includes(code))) throw new Error(`Bu snapshot yalnız ${supportedCodes.join(', ')} hatlarını destekler.`);
 
@@ -44,14 +46,20 @@ for (const code of requestedCodes) {
   const publishableDirections = routePayload.data.directions.filter((direction) => direction.stops.length >= 2);
   if (!publishableDirections.length) throw new Error(`${code}: yayımlanabilir yön bulunamadı`);
   for (const direction of publishableDirections) {
-    const sourceDirection = findSourceDirection(sourceLine, direction.name);
-    const firstStop = direction.stops[0];
-    if (!firstStop || !direction.stops.at(-1)) throw new Error(`${code}/${direction.id}: statik hat uç istasyonları bulunamadı`);
-    const summary = await fetchSummary(sourceDirection);
-    directions.push({ directionId: direction.id, name: direction.name, patterns: [{ id: `${direction.id}-source-day`, dayTypeId: 'source-day', notes: [`${requestedDate} için resmî kaynaktan alınan ilk/son hareket özetidir.`], journeys: [
-      { id: `${direction.id}-first`, calls: [{ stopId: firstStop.id, stopName: firstStop.name, time: summary.first }] },
-      { id: `${direction.id}-last`, calls: [{ stopId: firstStop.id, stopName: firstStop.name, time: summary.last }] },
-    ] }] });
+    const m7Segments = code === 'M7' ? m7SegmentForDirection(direction) : null;
+    const segments = m7Segments ?? [{ sourceDirection: findSourceDirection(sourceLine, direction.name), staticFrom: direction.stops[0]?.name }];
+    if (!direction.stops[0] || !direction.stops.at(-1)) throw new Error(`${code}/${direction.id}: statik hat uç istasyonları bulunamadı`);
+    for (const [segmentIndex, segment] of segments.entries()) {
+      const sourceDirection = segment.sourceDirection ?? findExplicitSourceDirection(sourceLine, segment);
+      const firstStop = direction.stops.find((stop) => stop.name === (segment.staticFrom ?? direction.stops[0].name));
+      if (!firstStop) throw new Error(`${code}/${direction.id}: ${segment.staticFrom} statik istasyonu bulunamadı`);
+      const summary = await fetchSummary(sourceDirection);
+      const directionId = m7Segments ? `${direction.id}-segment-${segmentIndex + 1}` : direction.id;
+      directions.push({ directionId, name: m7Segments ? `${segment.sourceFrom} → ${segment.sourceTo}` : direction.name, ...(m7Segments ? { scope: 'segment', stopIds: segment.stopIds } : {}), patterns: [{ id: `${directionId}-source-day`, dayTypeId: 'source-day', notes: [`${requestedDate} için resmî kaynaktan alınan ilk/son hareket özetidir.`, ...(m7Segments ? ['M7 işletme bölümü; tam hat seferi olarak yorumlanmamalıdır.'] : [])], journeys: [
+        { id: `${directionId}-first`, calls: [{ stopId: firstStop.id, stopName: firstStop.name, time: summary.first }] },
+        { id: `${directionId}-last`, calls: [{ stopId: firstStop.id, stopName: firstStop.name, time: summary.last }] },
+      ] }] });
+    }
   }
   const routeId = routePayload.data.id;
   const filename = `${network}-${code}.json`;

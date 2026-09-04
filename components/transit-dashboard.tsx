@@ -7,7 +7,7 @@ import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import type { FeatureCollection } from 'geojson';
 import { useTheme } from 'next-themes';
 import {
-  BusFront, Check, ChevronDown, ChevronRight, Clock3, LocateFixed, MapPin, Moon,
+  AlertTriangle, BusFront, Check, ChevronDown, ChevronRight, Clock3, LocateFixed, MapPin, Moon,
   Info, Navigation2, Route as RouteIcon, Search, Share2, Star, Sun, Ticket, TramFront, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,7 @@ type LiveVehicleResponse = {
   data:IettLiveVehicle[];
   meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; cacheStatus:'hit' | 'miss' | 'stale'; cacheTtlMs:number; fetchedAt:string; newestPositionAt:string | null };
 };
+type Announcement = { id:string; title:string; description:string; routeCodes:string[]; status:'active'|'upcoming'|'expired'|'unknown'; publishedAt:string|null; effectiveTo:string|null; sourceUrl:string };
 type FarePriceKey = 'full' | 'student' | 'discounted' | 'student30Plus';
 type FareCatalogProfile = {
   id:string;
@@ -665,6 +666,20 @@ export function TransitDashboard() {
     refetchOnReconnect:true,
     retry:1,
   });
+  const announcementsQuery = useQuery({
+    queryKey:['announcements', selectedRouteId],
+    queryFn:async ():Promise<{ data:Announcement[]; meta:{ status:string; cacheStatus:string; fetchedAt:string } }> => {
+      const code = selectedRouteId.replace(/^iett:/, '');
+      const response = await fetch(`/api/v1/announcements?route=${encodeURIComponent(code)}`);
+      if (!response.ok) throw new Error('Duyurular alınamadı');
+      return response.json();
+    },
+    enabled:selectedRouteId.startsWith('iett:'),
+    staleTime:90_000,
+    refetchInterval:120_000,
+    refetchIntervalInBackground:false,
+    retry:1,
+  });
   const comparisonQueries = useQueries({
     queries: comparisonRouteKeys.map(({ routeId }) => ({
       queryKey:['comparison-route', TRANSIT_DATA_VERSION, routeId],
@@ -1256,6 +1271,13 @@ export function TransitDashboard() {
             {resolvedFare&&<><Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setFareDetailsOpen((open)=>!open)} aria-expanded={fareDetailsOpen}><span>{fareDetailsOpen?'Tarife ayrıntılarını gizle':'Tarifeyi gör'}</span><ChevronRight className={cn('h-3.5 w-3.5 transition-transform',fareDetailsOpen&&'rotate-90')} /></Button>{fareDetailsOpen&&<FareDetails fare={resolvedFare} />}</>}
             {isOfficialRoute&&<div className="mt-3 border-t border-[var(--border)] pt-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"><span>Güzergâh verisi: {selectedRoute.geometrySourceUrl?<a className="font-semibold text-[var(--primary)] underline underline-offset-2" href={selectedRoute.geometrySourceUrl} target="_blank" rel="noreferrer">{selectedRoute.geometrySource ?? selectedRoute.sourceLabel ?? 'Kaynak'}</a>:(selectedRoute.sourceLabel ?? (selectedRoute.mode==='Metro'?'Metro İstanbul + OpenStreetMap':'İBB Açık Veri'))}{formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)&&` · ${formatSourceDate(selectedRoute.geometrySourceUpdatedAt ?? selectedRoute.sourceUpdatedAt)}`}</span>{hasLiveVehicles&&<span>{liveSourceUpdatedLabel}</span>}</div><p className="mt-1">{hasLiveVehicles?'Canlı konumlar bilgilendirme amaçlıdır; harita işaretçisi iki kaynak kaydı arasında görsel olarak yumuşatılabilir, kesin sefer veya varış bilgisi değildir.':selectedRoute.mode==='Vapur'?'İskele sırası Şehir Hatları kaynağından alınır; çizgi, güncel gemi GPS izi değil İBB Açık Veri vektör verisine dayalı statik yaklaşık güzergâhtır.':`Bu hat statik güzergâh ve ${stopKind(selectedRoute.mode)} verisiyle gösterilir; canlı araç konumu sorgulanmaz.`}</p></div>}
           </div>
+          {selectedRouteId.startsWith('iett:') && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+            <div className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-300" /><p className="text-xs font-extrabold">İETT duyuruları</p><span className="ml-auto text-[9px] font-semibold text-[var(--muted)]">{announcementsQuery.data?.meta.cacheStatus === 'stale' ? 'önceki yanıt' : 'kaynaklı'}</span></div>
+            {announcementsQuery.isLoading && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular kontrol ediliyor…</p>}
+            {announcementsQuery.isError && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular geçici olarak alınamadı. Hat ve araç bilgileri kullanılmaya devam ediyor.</p>}
+            {!announcementsQuery.isLoading && !announcementsQuery.isError && !(announcementsQuery.data?.data.length) && <p className="mt-2 text-[10px] text-[var(--muted)]">Bu hat için aktif duyuru bulunmuyor.</p>}
+            {announcementsQuery.data?.data.slice(0, 3).map((announcement) => <details key={announcement.id} className="mt-2 rounded-lg bg-[var(--surface-strong)] p-2"><summary className="cursor-pointer text-[11px] font-bold">{announcement.title}</summary><p className="mt-2 text-[10px] leading-relaxed text-[var(--muted)]">{announcement.description}</p><a className="mt-1 inline-block text-[10px] font-semibold text-[var(--primary)] underline" href={announcement.sourceUrl} target="_blank" rel="noreferrer">İETT kaynağını aç</a></details>)}
+          </div>}
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Planlı seferler</p><p className="mt-1 text-sm font-bold">Hareket saatleri</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Statik veri</span></div>
             <Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setScheduleDetailsOpen(true)} aria-haspopup="dialog"><span>Sefer saatlerini gör</span><ChevronRight className="h-3.5 w-3.5" /></Button>

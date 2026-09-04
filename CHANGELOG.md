@@ -2,6 +2,26 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.8.0 — Kaynaklı sefer kapsamı ve sağlamlaştırma
+
+### Eklendi
+
+- M7’nin Metro İstanbul kaynağındaki dört kısa işletme bölümü ayrı `segment` olarak yayımlandı.
+- B1 Marmaray ve M11 için TCDD Taşımacılık API’sinden ilk/son kalkış snapshot’ları eklendi; ara saat tahmini yapılmaz.
+- İETT duyuruları için sunucu cache, stale fallback, single-flight, rate limit, güvenli HTML temizleme ve hat eşleme katmanı eklendi.
+- Snapshot yenileme/fark raporu, manuel `--apply` akışı ve bakım workflow’u eklendi.
+- Playwright Chromium masaüstü/mobil E2E ve build sonrası performans raporu eklendi.
+
+### Doğrulama
+
+- 45 test, masaüstü 2/2 E2E, mobil 2/2 E2E, typecheck, lint, production build ve audit başarılı.
+- Bilinmeyen kaynak yapısı, yön, istasyon veya saat snapshot üretimini durdurur.
+
+### Bilinen uyarılar
+
+- `iett-BA-2.json` ve `iett-97.json` ham 100 KB bütçesini aşıyor; veri kaybı riski nedeniyle değiştirilmedi.
+- MapLibre client chunk’ı için 500 KB üstü build uyarısı devam ediyor.
+
 ## 0.7.2 — Durak ayrıntıları ve favori geri bildirimi
 
 ### Düzeltildi

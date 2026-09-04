@@ -75,6 +75,16 @@ describe('schedule data contract', () => {
     expect(() => parseScheduleManifestPayload({ ...manifest, data: { ...manifest.data, routes: { 'ferry:165': { ...entry, path: '/../secret.json' } } } })).toThrow(/Güvensiz/);
   });
 
+  it('requires two explicit station IDs for segment schedules', () => {
+    const segment = structuredClone(validPayload);
+    const direction = segment.data.directions[0] as (typeof segment.data.directions)[number] & { scope?: string; stopIds?: string[] };
+    direction.scope = 'segment';
+    direction.stopIds = ['only-one'];
+    expect(() => parseSchedulePayload(segment)).toThrow(/en az iki farklı/);
+    direction.stopIds = ['first', 'last'];
+    expect(parseSchedulePayload(segment).data.directions[0]?.scope).toBe('segment');
+  });
+
   it('publishes a validated and size-bounded schedule for every exposed ferry route', async () => {
     const manifest = parseScheduleManifestPayload(JSON.parse(await readFile(new URL('../public/schedules/manifest.json', import.meta.url), 'utf8')));
     const ferryIndex = JSON.parse(await readFile(new URL('../public/ferry/route-index.json', import.meta.url), 'utf8')) as { data:Array<{ id:string }> };

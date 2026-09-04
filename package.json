@@ -1,6 +1,6 @@
 {
   "name": "istanbulum-web",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,6 +14,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile-chromium --config=playwright.mobile.config.ts",
     "test:smoke": "node scripts/smoke-check.mjs",
     "test:watch": "vitest",
     "data:build-iett": "node scripts/build-iett-static-data.mjs",
@@ -22,7 +24,10 @@
     "data:build-ferry": "node scripts/build-ferry-static-data.mjs",
     "data:build-iett-schedules": "node scripts/build-iett-schedule-data.mjs",
     "data:build-metro-schedules": "node scripts/build-metro-schedule-lite.mjs",
+    "data:build-tcdd-schedules": "node scripts/build-tcdd-schedules.mjs",
     "data:diff-schedule-snapshots": "node scripts/schedule-snapshot-diff.mjs",
+    "data:refresh": "node scripts/data-refresh.mjs",
+    "report:performance": "node scripts/report-performance.mjs",
     "data:build-fares": "node scripts/build-fare-static-data.mjs",
     "data:audit-iett-fares": "node scripts/audit-iett-fare-snapshot.mjs"
   },
@@ -46,6 +51,7 @@
     "@cloudflare/vite-plugin": "^1.54.2",
     "@cloudflare/workers-types": "^5.20260830.1",
     "@openai/sites-vite-plugin": "^0.1.0 || ^0.2.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",

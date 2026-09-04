@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel yayımlanmış sürüm: `0.7.1`; beta.3 sonrası UX ve marker performans geliştirmeleri `main` dalında birleşiktir.
-- Aktif yerel çalışma dalı: `feature/rail-schedule-lite`; güncel `main`den açıldı, henüz merge veya push yapılmadı.
+- Güncel hedef sürüm: `0.8.0`; M7, B1, M11, İETT duyuru, snapshot bakım ve E2E geliştirmeleri bu dalda hazırlanmıştır.
+- Aktif yerel çalışma dalı: `feature/v0.8-development`; duyuru, sefer bakım ve E2E geliştirmeleri bu dalda sürdürülmektedir.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -22,7 +22,10 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - En fazla üç hattı aynı haritada karşılaştırma ve bunları tek eylemle temizleme
 - Açık/koyu tema, masaüstü ve mobil yerleşim
 - M1A, M1B, M2–M9 ve M11 için statik güzergâh/istasyon gösterimi; metroda canlı araç sorgusu yok
+- M7 için Metro İstanbul’un dört ayrı işletme segmentinden kaynaklı ilk/son hareket özetleri
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
+- B1 Marmaray ve M11 için TCDD kaynaklı ilk/son hareket özetleri; ara istasyon saati tahmini yapılmaz
+- İETT duyuru rozeti, ayrıntısı, stale fallback ve kaynak sağlık metrikleri
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
 - M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4'ün kaynak–yön eşleşmesi doğrulanan yönleri için Metro İstanbul kaynaklı ilk/son hareket özeti; tam tarife veya kesin günlük geçerlilik iddiası yoktur
@@ -87,7 +90,7 @@ Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım
 - Biçim: `0.x.y`; küçük düzeltme/iyileştirmeler son haneyi artırır.
 - Yeni kullanıcı özellikleri `feature/*` dallarında geliştirilir; kararlı sürümler `main` dalında tutulur.
 - Her sürümde `package.json`, `lib/app-version.ts`, `CHANGELOG.md` ve bu belge güncellenir; ardından yerel Git commit’i ve annotated etiket oluşturulur.
-- Kullanıcı istemedikçe `push`, `merge` veya `main`e alma yapılmaz.
+- `v0.8.0` için test/build kapıları doğrulanmıştır; merge, tag ve push kullanıcı onayıyla yürütülür.
 - Geri dönüş için etiket örneği: `git switch --detach v0.5.0`. Yeni bir deneme dalı için: `git switch -c deneme v0.5.0`.
 
 ## Doğrulama
@@ -103,7 +106,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. Önerilen sıra; Marmaray ve M11 tarifeleri, Metro İstanbul M7 kısa işletme yönlerinin ayrı eşlemesi, ortak edge cache/kota katmanı, kalıcı E2E testleri ve performans/son polish'tir.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.8.0` sonrasında öncelik ortak edge cache/kota gözlemi, tam erişilebilirlik kapsamı ve kontrollü performans optimizasyonudur.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

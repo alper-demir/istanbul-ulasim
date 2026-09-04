@@ -16,6 +16,28 @@ function sourceShape(entry) {
   };
 }
 
+export function summarizeSchedulePayload(payload) {
+  const data = payload?.data ?? {};
+  const directions = Array.isArray(data.directions) ? data.directions : [];
+  return {
+    directionCount: directions.length,
+    directions: directions.map((direction) => ({
+      id: direction.directionId,
+      scope: direction.scope ?? 'full-route',
+      stopCount: Array.isArray(direction.stopIds) ? direction.stopIds.length : undefined,
+      patternCount: Array.isArray(direction.patterns) ? direction.patterns.length : 0,
+      journeyCounts: Array.isArray(direction.patterns) ? direction.patterns.map((pattern) => ({ id: pattern.id, dayTypeId: pattern.dayTypeId, count: Array.isArray(pattern.journeys) ? pattern.journeys.length : 0 })) : [],
+      firstLast: Array.isArray(direction.patterns) ? direction.patterns.flatMap((pattern) => (pattern.journeys ?? []).flatMap((journey) => journey.calls?.[0]?.time ? [journey.calls[0].time] : [])).slice(0, 2) : [],
+    })),
+  };
+}
+
+export function diffSchedulePayloads(before, after) {
+  const left = summarizeSchedulePayload(before);
+  const right = summarizeSchedulePayload(after);
+  return { before: left, after: right, changed: JSON.stringify(left) !== JSON.stringify(right) };
+}
+
 export function diffScheduleManifests(before, after) {
   const beforeRoutes = entries(before);
   const afterRoutes = entries(after);

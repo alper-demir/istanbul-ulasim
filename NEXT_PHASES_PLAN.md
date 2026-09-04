@@ -1,6 +1,6 @@
 # İstanbulum — Sonraki Geliştirme Fazları
 
-Bu belge `v0.7.0-beta.3` sonrasındaki ürün ve teknik geliştirmeleri planlar. Sefer altyapısı, Şehir Hatları ve doğrulanabilen İETT sefer snapshot'ları, arama/keşif, erişilebilirlik iyileştirmeleri ve canlı araç yumuşatma `main` dalında tamamlanmıştır. Trafik verisi, kesin varış süresi tahmini, teleferik ve raylı/vapur araçlarının canlı konumları kapsam dışındadır. Öncelik; ücretsiz ve mümkün olduğunca resmî kaynaklardan alınan bilgiyi, uygulamanın çalışma zamanı yükünü artırmadan anlaşılır biçimde sunmaktır.
+Bu belge `v0.8.0` sonrası ürün ve teknik geliştirmeleri planlar. M7, B1, M11, İETT duyuruları, snapshot bakımı ve E2E sağlamlaştırması bu sürüm kapsamına alındı. Trafik verisi, kesin varış süresi tahmini, teleferik ve raylı/vapur araçlarının canlı konumları kapsam dışındadır. Sonraki öncelik ücretsiz edge cache/kota gözlemi ve kontrollü performans iyileştirmesidir.
 
 ## Temel kararlar
 
@@ -64,6 +64,10 @@ data/schedules/snapshots/{provider}/...
 ```
 
 Ana hat kataloğu sefer saatlerini içermeyecek. `routes/{routeId}.json` yalnız kullanıcı “Seferler” bölümünü açtığında yüklenecek.
+
+## v0.8.0 tamamlanan kapsam
+
+M7 segment seferleri, TCDD kaynaklı B1/M11 sefer özetleri, İETT duyuruları, snapshot bakım/fark raporları, Playwright masaüstü/mobil E2E ve build/performance raporu tamamlandı. Son kontrolde 45 test, 2 masaüstü E2E, 2 mobil E2E, typecheck, lint, build ve audit başarılıdır. İki İETT rota dosyası ham 100 KB bütçesini aşıyor; veri kaybı riski nedeniyle değiştirilmedi.
 
 ## Tamamlanan temel
 

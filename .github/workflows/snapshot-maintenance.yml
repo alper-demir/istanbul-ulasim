@@ -1,0 +1,31 @@
+name: Snapshot maintenance report
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: Source provider to inspect
+        required: true
+        default: metro
+        type: choice
+        options: [iett, metro, tcdd, ferry, fares]
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/data-refresh.mjs --provider=${{ inputs.provider }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-report-${{ inputs.provider }}
+          path: data/reports/
