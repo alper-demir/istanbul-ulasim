@@ -248,7 +248,13 @@ function scrollPanelToSection(id: string) {
   if (!target || !panel) return;
   const targetRect = target.getBoundingClientRect();
   const panelRect = panel.getBoundingClientRect();
-  panel.scrollTo({ top: panel.scrollTop + targetRect.top - panelRect.top - 140, behavior:'smooth' });
+  const stickyHeader = panel.querySelector<HTMLElement>('[data-route-panel-sticky]');
+  const stickyHeaderHeight = stickyHeader?.getBoundingClientRect().height ?? 0;
+  const sectionGap = 12;
+  panel.scrollTo({
+    top: panel.scrollTop + targetRect.top - panelRect.top - stickyHeaderHeight - sectionGap,
+    behavior:'smooth',
+  });
 }
 
 function formatFare(value?: number) {
@@ -1245,7 +1251,7 @@ export function TransitDashboard() {
       {!routeListOpen && <Button className="absolute left-5 top-[104px] z-20 hidden shadow-lg md:inline-flex" onClick={()=>setRouteListOpen(true)}><BusFront className="h-4 w-4" />Hatları göster</Button>}
 
       <aside className={cn('glass-panel absolute bottom-3 left-3 right-3 z-20 max-h-[58vh] overflow-y-auto rounded-2xl transition-transform md:bottom-auto md:left-auto md:right-5 md:top-[104px] md:max-h-[calc(100vh-128px)] md:w-[350px]',!mobilePanelOpen&&'translate-y-[calc(100%+24px)] md:translate-y-0')}>
-        <div className="sticky top-0 z-30 bg-[var(--surface-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.12)]">
+        <div data-route-panel-sticky className="sticky top-0 z-30 bg-[var(--surface-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.12)]">
         <div className="isolate border-b border-[var(--border)] px-4 py-4">
           <div className="flex items-start gap-3">
             <div className="grid h-12 min-w-16 shrink-0 place-items-center rounded-xl text-base font-black text-white" style={{background:selectedRoute.color}}>{selectedRoute.code}</div>
