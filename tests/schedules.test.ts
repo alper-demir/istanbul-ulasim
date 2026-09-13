@@ -152,4 +152,20 @@ describe('schedule data contract', () => {
       }
     }
   });
+
+  it('keeps TCDD B1 and M11 snapshots limited to verified endpoint departures', async () => {
+    for (const [network, code, endpointIds] of [
+      ['rail', 'B1', ['rail-stop:osm:7711800031', 'rail-stop:osm:7716752898']],
+      ['metro', 'M11', ['metro-stop:osm:11568561814', 'metro-stop:osm:13952092132']],
+    ] as const) {
+      const payload = parseSchedulePayload(JSON.parse(await readFile(new URL(`../public/schedules/routes/${network}-${code}.json`, import.meta.url), 'utf8')));
+      expect(payload.data.source.provider).toBe('tcdd-tasimacilik');
+      expect(payload.data.summary).toBe('first-last');
+      expect(payload.data.source.validityUnknown).toBe(true);
+      expect(payload.data.directions.every((direction) => direction.stopIds?.length === 2)).toBe(true);
+      expect(payload.data.directions[0]?.stopIds).toEqual(endpointIds);
+      expect(payload.data.directions.every((direction) => direction.patterns[0]?.journeys.length === 2)).toBe(true);
+      expect(payload.data.directions.every((direction) => direction.patterns[0]?.notes.some((note) => note.includes('zaman taahhüdü değildir')))).toBe(true);
+    }
+  });
 });

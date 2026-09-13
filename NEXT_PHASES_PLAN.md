@@ -203,6 +203,7 @@ Dal: `feature/tcdd-schedules`
 - B1 ve M11 istasyon kimliklerini mevcut statik duraklarla açık eşleme dosyasında tutma.
 - İlk/son tren, planlı/muhtemel hareket saati ve resmî kaynağın taahhüt uyarısını gösterme.
 - Kaynak yalnız nokta-nokta sorguya izin veriyorsa bakım sırasında çağrı sayısını istasyon çifti karesi kadar büyütmemek: uçtan uca ve ardışık istasyon örneklerinden hat tablosu üretilebildiği kanıtlanmalı; aksi halde yalnız seçili başlangıç için sınırlı snapshot ya da ilk/son tren özeti kullanılmalı.
+- Marmaray ve M11 snapshot’larında yalnız açık uç istasyon eşleşmesi ve ilk/son hareket özeti gösterilir; ara istasyon saatleri veya yolculuk süresi türetilmez.
 
 Kabul: TCDD kaynağına çalışma anı bağımlılığı ve sınırsız kombinasyon sorgusu eklenmemeli.
 

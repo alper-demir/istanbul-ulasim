@@ -2,6 +2,14 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.7 — Marmaray/M11 tarife sınırlarının görünürleştirilmesi
+
+### Eklendi
+
+- Marmaray ve M11 planlı sefer penceresinde TCDD kayıtları ayrı bir “ilk / son hareket özeti” olarak açıkça etiketleniyor.
+- Ara istasyon saatlerinin ve yolculuk süresinin tahmin edilmediği görünür uyarıyla belirtiliyor.
+- B1 ve M11 snapshot’larının yalnız doğrulanmış uç istasyonlara bağlı, iki hareketlik özet olması test kapsamına alındı.
+
 ## 0.11.6 — Tarifede doğru gün türü seçimi
 
 ### Eklendi

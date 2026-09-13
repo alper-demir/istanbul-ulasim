@@ -49,11 +49,13 @@ export function SchedulePanel({ dataset, selectedDirectionId, loading, error, un
   const departureStopNames = [...new Set(departures.map((departure) => departure.stopName))];
   const departureHeading = departureStopNames.length === 1 ? `${departureStopNames[0]} kalkışları` : 'İlk hareketler';
   const firstLastSummary = dataset.summary === 'first-last';
+  const isTcddSummary = firstLastSummary && dataset.source.provider === 'tcdd-tasimacilik';
 
   const retrievedDate = formatDate(dataset.source.retrievedAt.slice(0, 10)) ?? 'Bilinmiyor';
 
   return <div className="mt-3 space-y-3">
     {warning&&<div className="flex gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 text-[10px] leading-relaxed text-[var(--warning-foreground)]"><AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />{warning}</div>}
+    {isTcddSummary&&<div className="rounded-lg border border-[var(--primary)]/25 bg-[var(--primary-soft)] p-2.5 text-[10px] leading-relaxed text-[var(--muted)]"><p className="font-bold text-[var(--foreground)]">TCDD ilk / son hareket özeti</p><p className="mt-1">Bu kayıt TCDD’nin doğruladığı uç istasyon kalkış özetidir. Ara istasyon saatleri ve yolculuk süresi tahmini gösterilmez; saatler zaman taahhüdü değildir.</p></div>}
     <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] p-2.5 text-[10px] leading-relaxed">
       <p className="font-bold">Statik tarife verisi</p>
       <p className="mt-1 text-[var(--muted)]">Veri alınma tarihi: <span className="font-semibold text-[var(--foreground)]">{retrievedDate}</span>. Bu saatler planlı sefer bilgisidir; anlık değişiklik, iptal ve gecikmeleri garanti etmez. Güncel durumu resmî kaynaktan kontrol edin.</p>
