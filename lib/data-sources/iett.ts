@@ -74,6 +74,15 @@ export function getIettSourceHealth(): SourceHealth[] {
       attributionUrl: IETT_SOURCES.announcements.wsdl,
     },
     {
+      id: 'metro-istanbul-announcements',
+      label: 'Metro İstanbul Duyuruları',
+      kind: 'announcements',
+      status: 'connected',
+      detail: 'Metro İstanbul duyuru listesi sunucu tarafı cache ve stale fallback ile alınır; detay sayfası bağlantısı korunur.',
+      updatedAt: new Date().toISOString(),
+      attributionUrl: 'https://www.metro.istanbul/Home/Duyurular',
+    },
+    {
       id: 'istanbulum-fixtures',
       label: 'İstanbulum geliştirme verisi',
       kind: 'static-network',

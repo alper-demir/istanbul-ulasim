@@ -52,7 +52,7 @@ type SourceHealthResponse = {
   status:'unknown' | 'operational' | 'unavailable';
   data:Array<{ id:string; runtime:{ operationalStatus:'unknown' | 'operational' | 'unavailable'; lastSuccessAt:string|null; lastFailureAt:string|null } | null }>;
 };
-type Announcement = { id:string; title:string; description:string; routeCodes:string[]; routeName:string|null; announcementType:string|null; sourceUpdateLabel:string|null; status:'active'|'upcoming'|'expired'|'unknown'; publishedAt:string|null; effectiveTo:string|null; sourceUrl:string };
+type Announcement = { id:string; title:string; description:string; routeCodes:string[]; routeName:string|null; announcementType:string|null; sourceUpdateLabel:string|null; sourceLabel:string; provider:'iett'|'metro-istanbul'; status:'active'|'upcoming'|'expired'|'unknown'; publishedAt:string|null; effectiveTo:string|null; sourceUrl:string };
 type FarePriceKey = 'full' | 'student' | 'discounted' | 'student30Plus';
 type FareCatalogProfile = {
   id:string;
@@ -832,6 +832,7 @@ export function TransitDashboard() {
     const announcements = globalAnnouncementsQuery.data?.data ?? [];
     return announcements.filter((announcement) => {
       if (announcementModeFilter === 'all') return true;
+      if (announcement.provider === 'metro-istanbul') return announcementModeFilter === 'rail';
       if (!announcement.routeCodes.length) return false;
       return announcement.routeCodes.some((code) => {
         const route = routeByCode.get(code);
@@ -1472,6 +1473,7 @@ function GlobalAnnouncementsDialog({
 }) {
   const dialogRef = useDialogFocus<HTMLElement>(onClose, true);
   const routeByCode = new Map(routes.map((route) => [route.code, route]));
+  const visibleAnnouncements = announcements.slice(0, 40);
   const formatFetchedAt = fetchedAt ? new Intl.DateTimeFormat('tr-TR', { dateStyle:'short', timeStyle:'short' }).format(new Date(fetchedAt)) : null;
   const statusLabel = (status:Announcement['status']) => status === 'upcoming' ? 'Yaklaşan' : status === 'unknown' ? 'Tarihi belirsiz' : 'Aktif';
   const affectedRoutes = (announcement:Announcement) => announcement.routeCodes.length
@@ -1485,8 +1487,8 @@ function GlobalAnnouncementsDialog({
       {loading&&<div className="mt-4 rounded-xl border border-dashed border-[var(--border)] px-4 py-8 text-center"><AlertTriangle className="mx-auto h-5 w-5 animate-pulse text-[var(--primary)]" /><p className="mt-2 text-xs font-bold">Duyurular kontrol ediliyor…</p></div>}
       {error&&<div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3"><p className="text-xs font-bold">Duyurular geçici olarak alınamadı</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">Bu durum hat ve harita verilerini etkilemez.</p><Button variant="ghost" size="sm" className="mt-2 w-full" onClick={onRetry}>Tekrar dene</Button></div>}
       {!loading&&!error&&announcements.length===0&&<div className="mt-4 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-8 text-center"><AlertTriangle className="mx-auto h-5 w-5 text-[var(--muted)]" /><p className="mt-2 text-xs font-bold">Bu filtrede aktif duyuru yok</p><p className="mt-1 text-[10px] text-[var(--muted)]">Bu, ulaşımın kesintisiz olduğu garantisi değildir; kaynakta duyuru yayımlanmamış olabilir.</p></div>}
-      {!loading&&!error&&announcements.length>0&&<div className="mt-4 space-y-2">{announcements.map((announcement)=><article key={announcement.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-300" /><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-1.5"><h3 className="text-xs font-extrabold">{announcement.title}</h3><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 dark:text-amber-300">{statusLabel(announcement.status)}</span>{announcement.announcementType&&<span className="rounded-md bg-[var(--primary-soft)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--primary)]">{announcement.announcementType}</span>}</div><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">{announcement.description}</p><p className="mt-2 text-[9px] font-semibold text-[var(--primary)]">Etkilenen: {affectedRoutes(announcement)}</p>{announcement.sourceUpdateLabel&&<p className="mt-1 text-[9px] text-[var(--muted)]">{announcement.sourceUpdateLabel}</p>}</div></div></article>)}</div>}
-      <div className="mt-4 border-t border-[var(--border)] pt-3 text-[9px] leading-relaxed text-[var(--muted)]"><p>Kaynak: İETT duyuru servisi{formatFetchedAt&&` · Son kontrol: ${formatFetchedAt}`}{cacheStatus === 'stale'&&' · Önceki geçerli yanıt gösteriliyor'}</p><p className="mt-1">Duyuru bulunmaması kesinti olmadığı anlamına gelmez. Resmî kaynağın kapsamı ve güncelliğiyle sınırlıdır.</p></div>
+      {!loading&&!error&&announcements.length>0&&<div className="mt-4 space-y-2">{visibleAnnouncements.map((announcement)=><article key={announcement.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-300" /><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-1.5"><h3 className="text-xs font-extrabold">{announcement.title}</h3><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 dark:text-amber-300">{statusLabel(announcement.status)}</span>{announcement.announcementType&&<span className="rounded-md bg-[var(--primary-soft)] px-1.5 py-0.5 text-[9px] font-bold text-[var(--primary)]">{announcement.announcementType}</span>}</div><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">{announcement.description}</p><p className="mt-2 text-[9px] font-semibold text-[var(--primary)]">Etkilenen: {affectedRoutes(announcement)}</p>{announcement.sourceUpdateLabel&&<p className="mt-1 text-[9px] text-[var(--muted)]">{announcement.sourceUpdateLabel}</p>}{announcement.provider==='metro-istanbul'&&<a className="mt-1 inline-block text-[10px] font-semibold text-[var(--primary)] underline" href={announcement.sourceUrl} target="_blank" rel="noreferrer">Metro İstanbul detayını aç</a>}</div></div></article>)}{announcements.length>visibleAnnouncements.length&&<p className="pt-1 text-center text-[9px] text-[var(--muted)]">İlk {visibleAnnouncements.length} duyuru gösteriliyor · kaynak toplamı {announcements.length}</p>}</div>}
+      <div className="mt-4 border-t border-[var(--border)] pt-3 text-[9px] leading-relaxed text-[var(--muted)]"><p>Kaynaklar: İETT ve Metro İstanbul duyuru listeleri{formatFetchedAt&&` · Son kontrol: ${formatFetchedAt}`}{cacheStatus === 'stale'&&' · Önceki geçerli yanıt gösteriliyor'}</p><p className="mt-1">Duyuru bulunmaması kesinti olmadığı anlamına gelmez. Resmî kaynağın kapsamı ve güncelliğiyle sınırlıdır.</p></div>
     </section>
   </div>;
 }

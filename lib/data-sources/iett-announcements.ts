@@ -10,6 +10,8 @@ export type IettAnnouncement = {
   routeName: string | null;
   announcementType: string | null;
   sourceUpdateLabel: string | null;
+  sourceLabel: string;
+  provider: 'iett';
   stopCodes: string[];
   publishedAt: string | null;
   effectiveFrom: string | null;
@@ -111,7 +113,7 @@ export function normalizeIettAnnouncements(value: unknown, now = Date.now()): Ie
     const stopCodes = codes(pick(record, ['stopCodes', 'durakkodu', 'duraklar', 'durak']));
     const title = text(pick(record, ['title', 'baslik', 'duyurubaslik'])) || routeName || (routeCodes.length ? `${routeCodes[0]} duyurusu` : 'İETT duyurusu');
     const description = text(pick(record, ['description', 'aciklama', 'duyuru', 'message', 'mesaj'])) || title;
-    const item: IettAnnouncement = { id, title, description, routeCodes, routeName, announcementType, sourceUpdateLabel, stopCodes, publishedAt, effectiveFrom, effectiveTo, sourceUrl: SOURCE_URL, status: statusFor(effectiveFrom, effectiveTo, now) };
+    const item: IettAnnouncement = { id, title, description, routeCodes, routeName, announcementType, sourceUpdateLabel, sourceLabel:'İETT duyurusu', provider:'iett', stopCodes, publishedAt, effectiveFrom, effectiveTo, sourceUrl: SOURCE_URL, status: statusFor(effectiveFrom, effectiveTo, now) };
     if (seen.has(id)) return;
     seen.add(id);
     if (item.status !== 'expired') normalized.push(item);
