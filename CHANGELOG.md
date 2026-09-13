@@ -2,6 +2,15 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.8 — Kalıcı E2E regresyon seti
+
+### Eklendi
+
+- Playwright masaüstü ve mobil akışları güncel çok kaynaklı duyuru sözleşmesine göre kalıcılaştırıldı.
+- Uygulama açılışı ve arama, Escape ile modal kapatma, duraktan sefer açma, global duyuru paneli, Vapur filtresi ve TCDD kapsam uyarısı test ediliyor.
+- E2E testleri canlı upstream duyurularına bağlanmadan kontrollü fixture yanıtları kullanıyor.
+- Başlangıç yükleme zamanlamasına bağlı kırılgan test beklemeleri güçlendirildi.
+
 ## 0.11.7 — Marmaray/M11 tarife sınırlarının görünürleştirilmesi
 
 ### Eklendi

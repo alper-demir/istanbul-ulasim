@@ -233,7 +233,7 @@ Kabul: Üst kaynak istek sayısı mevcut sürümden fazla olmamalı; marker hare
 
 Uygulama notu: 20 saniyelik istemci tarafı görsel geçiş yalnız ardışık, taze ve makul mesafedeki aynı araç konumlarında uygulanır. Başlangıç/bitiş noktaları seçili rota geometrisine projekte edilir; eski, büyük sıçramalı veya rotadan uzak veri kaynak koordinatı olarak kalır ve animasyon yapılmaz. Bu davranış reduced-motion tercihinde ya da sekme görünmezken kapalıdır.
 
-### Faz 5 — Kalıcı E2E testleri
+### Tamamlandı — Kalıcı E2E testleri
 
 Dal: güncel `main`den açılacak `feature/persistent-e2e`
 
@@ -246,8 +246,12 @@ Mevcut temel: Sefer, tarife ve bilgi akışlarında Escape ile kapanma; ana moda
 - Parser fixture testleri, gece yarısı saatleri, resmî tatil ve stale veri senaryoları.
 - Build paket ve statik JSON boyut raporu; değişiklik öncesi/sonrası karşılaştırması.
 - Örneklenmiş hata logları ve canlı endpoint için cache niteliği/kaynak süresi sayaçları; araç başına veya her poll için gürültülü log tutmama.
+- Güncel çok kaynaklı duyuru sağlayıcıları, Vapur filtresi ve TCDD ilk/son hareket sınırı için fixture tabanlı regresyon akışları.
+- Masaüstü ve Pixel 5 mobil projelerinde uygulama açılışı, arama, modal klavye davranışı, durak sefer akışı ve duyuru filtreleri doğrulandı.
 
 Kabul: `test`, `typecheck`, `lint`, `build`, bağımlılık denetimi ve E2E smoke temiz; ana kullanıcı akışlarında erişilebilirlik açısından kritik hata yok.
+
+Son doğrulama: Playwright Chromium 6/6 ve mobile-chromium 6/6 başarılı.
 
 ### Faz 6 — Snapshot bakım ve fark raporu sistemi
 
