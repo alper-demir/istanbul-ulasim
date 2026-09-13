@@ -132,6 +132,16 @@ Tamamlanan dal: `feature/next-vehicle-experience`
 
 Kabul: Kullanıcı dakika cinsinden tahmin görmez; canlı kaynak sorunu, eski veri ve doğrulanamayan konum açıkça belirtilir. Ortak cache/KV/DO ve yolculuk planı bu faza dahil değildir.
 
+### Tamamlandı — Durak merkezli sefer akışı
+
+Tamamlanan dal: `feature/stop-centric-experience`
+
+- Durak detayındaki her hat/yön için hat detayını açma ve planlı seferleri doğrudan açma eylemleri ayrıştırıldı.
+- Duraktan geçen hat listesi, seçili durak bağlamını koruyarak kullanıcıyı ilgili hat/yöne taşır.
+- Canlı araç ve planlı sefer bilgisi aynı durak akışında ayrı kavramlar olarak korunur.
+
+Kabul: Kullanıcı duraktan geçen hatlardan birini seçip ilgili planlı sefer paneline tek ek işlemle ulaşır; statik saatler canlı ETA veya yolculuk planı olarak sunulmaz.
+
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
 Dal: `feature/rail-schedule-lite`

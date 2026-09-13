@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.10.0`; canlı kaynak sağlığı ve bir sonraki araç durum görünürlüğü eklendi.
-- Aktif yerel çalışma dalı: `feature/next-vehicle-experience`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
+- Güncel hedef sürüm: `0.11.0`; canlı kaynak sağlığı, bir sonraki araç durumları ve durak merkezli sefer akışı eklendi.
+- Aktif yerel çalışma dalı: `feature/stop-centric-experience`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -114,7 +114,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.10.0` ile canlı araç/durak deneyimi güçlendirildi; sonraki öncelik durak merkezli planlı sefer görünümü ve global kesinti katmanıdır. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.0` ile durak merkezli planlı sefer akışı eklendi; sonraki öncelik global kesinti katmanıdır. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

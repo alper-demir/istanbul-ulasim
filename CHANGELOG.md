@@ -2,6 +2,18 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.0 — Durak merkezli sefer akışı
+
+### Eklendi
+
+- Durak detayındaki her hat/yön için “Hatı aç” ve “Seferleri gör” eylemleri ayrıştırıldı.
+- Kullanıcı, duraktan geçen hat listesinden doğrudan ilgili statik planlı sefer panelini açabilir.
+- Durak merkezli akışta hat, yön ve durak bağlamı korunur; canlı araç görünürlüğü seçilen hatta devam eder.
+
+### Sınırlar
+
+- Planlı saatler hâlâ statik snapshot’tır; canlı ETA, gecikme veya yolculuk planı üretilmez.
+
 ## 0.10.0 — Bir sonraki araç görünürlüğü
 
 ### Eklendi
