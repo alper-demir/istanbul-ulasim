@@ -188,7 +188,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.8.0`. M7, B1 ve M11 planlı sefer snapshot'ları, İETT duyuruları, snapshot bakım/fark raporları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
+Güncel sürüm: `0.10.0`. Kaynak sağlığı, bir sonraki araç durumları, İETT duyuruları, planlı sefer snapshot'ları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 

@@ -1,6 +1,6 @@
 # İstanbulum — Sonraki Geliştirme Fazları
 
-Bu belge `v0.9.0` sonrası ürün ve teknik geliştirmeleri planlar. M7, B1, M11, İETT duyuruları, snapshot bakımı, E2E sağlamlaştırması ve canlı kaynak gözlemi tamamlandı. Trafik verisi, kesin varış süresi tahmini, teleferik, raylı/vapur araçlarının canlı konumları ve A–B yolculuk planlama kapsam dışındadır. Cloudflare KV/Durable Object tabanlı ortak cache/kota katmanı kullanıcı kararıyla şimdilik ertelendi.
+Bu belge `v0.10.0` sonrası ürün ve teknik geliştirmeleri planlar. M7, B1, M11, İETT duyuruları, snapshot bakımı, E2E sağlamlaştırması, canlı kaynak gözlemi ve bir sonraki araç görünürlüğü tamamlandı. Trafik verisi, kesin varış süresi tahmini, teleferik, raylı/vapur araçlarının canlı konumları ve A–B yolculuk planlama kapsam dışındadır. Cloudflare KV/Durable Object tabanlı ortak cache/kota katmanı kullanıcı kararıyla şimdilik ertelendi.
 
 ## Temel kararlar
 
@@ -120,6 +120,17 @@ Tamamlanan dal: `feature/iett-schedules` (artık `main`de)
 - Mevcut `trips/stop_times` verisini saat ve yön için ikincil tutarlılık denetiminde kullanma; hizmet takvimi yoksa GTFS’den gün seçmeme.
 
 Kabul: Kaynak hat sayfası değiştiğinde bakım betiği açık hata vermeli; çalışma anında İETT sefer kaynağına hiçbir yeni istek eklenmemeli.
+
+### Tamamlandı — Bir sonraki araç deneyimi
+
+Tamamlanan dal: `feature/next-vehicle-experience`
+
+- Seçili yöndeki canlı araç sayısı durak kartında görünür hale getirildi.
+- Araçlar ETA üretmeden durağa yaklaşıyor, durağa çok yakın, durağı geçmiş olabilir veya konum doğrulanamadı durumlarına ayrıldı.
+- Son veri yaşı korunarak planlı sefer ile canlı konumun farklı bilgiler olduğu açıkça belirtildi.
+- Eski veya güzergâh dışı konumlar sessizce yok sayılmak yerine belirsizlik mesajıyla gösterildi.
+
+Kabul: Kullanıcı dakika cinsinden tahmin görmez; canlı kaynak sorunu, eski veri ve doğrulanamayan konum açıkça belirtilir. Ortak cache/KV/DO ve yolculuk planı bu faza dahil değildir.
 
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 

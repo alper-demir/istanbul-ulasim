@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.10.0 — Bir sonraki araç görünürlüğü
+
+### Eklendi
+
+- Durak detayında seçili yön için canlı araç sayısı ve yaklaşan araç sayısı birlikte gösterilir.
+- Araç durumu ETA üretmeden “durağa yaklaşıyor”, “durağa çok yakın”, “durağı geçmiş olabilir” veya “konum doğrulanamadı” olarak ayrıştırılır.
+- Eski canlı konum, güzergâh dışı konum ve yönü doğrulanamayan araçlar kullanıcıya belirsizlik mesajıyla bildirilir.
+- Her araçta son veri yaşı görünür tutulur; planlı sefer kartında canlı konumun tarife bilgisi olmadığı açıkça belirtilir.
+
+### Sınırlar
+
+- Dakika cinsinden varış tahmini, tarihsel veri modeli veya ortak cache eklenmedi.
+- “Geçmiş olabilir” durumu güzergâh projeksiyonudur; özellikle eski veride kesin geçiş bilgisi değildir.
+
 ## 0.9.0 — Kaynak sağlığı ve canlı veri görünürlüğü
 
 ### Eklendi
