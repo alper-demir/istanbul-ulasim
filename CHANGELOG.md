@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.9 — Snapshot bakım ve fark raporu kapısı
+
+- Statik sefer snapshot'ları için hat, yön, sefer özeti, kaynak ve geçerlilik metadata farkları ayrıntılı raporlanıyor.
+- `npm run data:refresh -- --provider=...` varsayılan olarak dry-run çalışıyor; `--apply` ile üretilen fark manuel inceleme gerektiriyorsa etkin snapshot otomatik geri alınıyor.
+- Bakım raporları JSON ve Markdown olarak `data/reports` altında tutuluyor; çalışma zamanına yeni upstream isteği eklenmiyor.
+
 ## 0.11.8 — Kalıcı E2E regresyon seti
 
 ### Eklendi

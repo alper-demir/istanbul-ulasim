@@ -38,6 +38,32 @@ export function diffSchedulePayloads(before, after) {
   return { before: left, after: right, changed: JSON.stringify(left) !== JSON.stringify(right) };
 }
 
+export function diffScheduleRouteMaps(beforeRoutes = {}, afterRoutes = {}) {
+  const routeIds = [...new Set([...Object.keys(beforeRoutes), ...Object.keys(afterRoutes)])].sort();
+  const changedRoutes = [];
+  for (const routeId of routeIds) {
+    if (!(routeId in beforeRoutes) || !(routeId in afterRoutes)) continue;
+    const diff = diffSchedulePayloads(beforeRoutes[routeId], afterRoutes[routeId]);
+    if (!diff.changed) continue;
+    const beforeDirections = new Map(diff.before.directions.map((direction) => [direction.id, direction]));
+    const afterDirections = new Map(diff.after.directions.map((direction) => [direction.id, direction]));
+    const addedDirections = [...afterDirections.keys()].filter((id) => !beforeDirections.has(id)).sort();
+    const removedDirections = [...beforeDirections.keys()].filter((id) => !afterDirections.has(id)).sort();
+    const changedDirections = [...afterDirections.keys()]
+      .filter((id) => beforeDirections.has(id) && JSON.stringify(beforeDirections.get(id)) !== JSON.stringify(afterDirections.get(id)))
+      .sort();
+    const beforeJourneys = diff.before.directions.flatMap((direction) => direction.journeyCounts).reduce((sum, item) => sum + item.count, 0);
+    const afterJourneys = diff.after.directions.flatMap((direction) => direction.journeyCounts).reduce((sum, item) => sum + item.count, 0);
+    changedRoutes.push({ routeId, addedDirections, removedDirections, changedDirections, beforeJourneyCount: beforeJourneys, afterJourneyCount: afterJourneys, contentDiff: diff });
+  }
+  return {
+    changedRoutes,
+    summary: { changedRouteCount: changedRoutes.length, addedDirectionCount: changedRoutes.reduce((sum, item) => sum + item.addedDirections.length, 0), removedDirectionCount: changedRoutes.reduce((sum, item) => sum + item.removedDirections.length, 0) },
+    reviewReasons: changedRoutes.map((item) => `${item.routeId}: sefer/yön özeti değişti`),
+    requiresReview: changedRoutes.length > 0,
+  };
+}
+
 export function diffScheduleManifests(before, after) {
   const beforeRoutes = entries(before);
   const afterRoutes = entries(after);
@@ -57,6 +83,11 @@ export function diffScheduleManifests(before, after) {
     addedRoutes,
     removedRoutes,
     changedSources,
+    reviewReasons: [
+      ...addedRoutes.map((routeId) => `${routeId}: yeni hat`),
+      ...removedRoutes.map((routeId) => `${routeId}: hat kaldırıldı`),
+      ...changedSources.map((item) => `${item.routeId}: kaynak/geçerlilik metadata değişti`),
+    ],
     requiresReview: addedRoutes.length + removedRoutes.length + changedSources.length > 0,
   };
 }

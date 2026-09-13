@@ -137,6 +137,10 @@ Komut varsayılan olarak 15 doğrulanmış hat için 33 kontrollü kaynak sorgus
 
 TCDD snapshot bakımı için `TCDD_API_BASIC_TOKEN` yalnız bakım ortamında tanımlanmalıdır. Ardından `npm run data:build-tcdd-schedules -- --codes=B1,M11` çalıştırılır. API yönü ve iki uç istasyon eşleşmezse üretim durur; ara istasyon saatleri tahmin edilmez.
 
+#### Snapshot bakım ve fark raporu
+
+Kaynak yenilemesini güvenli biçimde karşılaştırmak için `node scripts/data-refresh.mjs --provider=metro` gibi bir bakım komutu varsayılan olarak dry-run'dır ve dış kaynağa bağlanmaz. Gerçek kaynak üretimi yalnız açıkça `--apply` verildiğinde çalışır. Üretilen manifest veya rota içeriğinde hat, yön, sefer özeti, kaynak ya da geçerlilik farkı varsa işlem otomatik geri alınır; JSON ve Markdown raporu `data/reports` altında bırakılır. İnceleme gerektirmeyen bir çıktı varsa `--apply` ile etkinleştirilebilir. Doğrudan iki manifesti karşılaştırmak için `node scripts/schedule-snapshot-diff.mjs --before=... --after=... --output=...` kullanılabilir.
+
 Arayüzde gösterilen saatler planlı bilgidir; gecikme, iptal, özel gün ve işletme değişikliği olabilir. Kaynağın geçerlilik tarihi bilinmiyorsa uygulama saati “bugün kesin geçerli” olarak nitelemez.
 
 ## Paylaşılabilir bağlantılar
@@ -188,7 +192,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.11.8`. Kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, bir sonraki araç durumları, durak merkezli sefer akışı, gün türü otomatik seçilen planlı sefer snapshot'ları ve kalıcı masaüstü/mobil E2E kontrolleri bu sürümde yayımlanır.
+Güncel sürüm: `0.11.9`. Kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, bir sonraki araç durumları, durak merkezli sefer akışı, gün türü otomatik seçilen planlı sefer snapshot'ları, kalıcı masaüstü/mobil E2E kontrolleri ve snapshot bakım/fark raporu kapısı bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 

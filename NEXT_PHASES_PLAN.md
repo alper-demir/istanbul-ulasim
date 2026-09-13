@@ -253,15 +253,16 @@ Kabul: `test`, `typecheck`, `lint`, `build`, bağımlılık denetimi ve E2E smok
 
 Son doğrulama: Playwright Chromium 6/6 ve mobile-chromium 6/6 başarılı.
 
-### Faz 6 — Snapshot bakım ve fark raporu sistemi
+### Tamamlandı — Snapshot bakım ve fark raporu sistemi
 
-Dal: güncel `main`den açılacak `feature/snapshot-maintenance`
+Dal: `feature/snapshot-maintenance-next`
 
-- Resmî kaynaklardan alınan her statik snapshot için tekrar üretilebilir bakım akışı kurmak.
-- Önceki snapshot ile eklenen/silinen hat, yön, sefer ve geçerlilik değişikliklerini raporlamak.
-- Büyük veya beklenmeyen farkları yayın öncesinde manuel onaya bağlamak.
+- `data:refresh` için güvenli dry-run ve açık `--apply` akışı kuruldu.
+- Önceki snapshot ile eklenen/silinen hat, yön, sefer özeti, kaynak ve geçerlilik değişiklikleri raporlanıyor.
+- Fark bulunan üretim otomatik geri alınıyor; JSON/Markdown raporu `data/reports` altında bırakılıyor.
+- Çalışma zamanına yeni upstream isteği eklenmedi; bakım yalnız geliştirici/CI dışında manuel çalıştırılabilir.
 
-Kabul: Kaynak yenilemeleri çalışma zamanına dış istek eklemeden, fark raporu ve açık onay akışıyla yürütülmeli.
+Kabul: Karşılandı. Kaynak yenilemeleri çalışma zamanına dış istek eklemeden, fark raporu ve açık onay akışıyla yürütülüyor.
 
 ### Ertelendi — Çoklu kullanıcı için ortak edge cache ve kota katmanı
 

@@ -3,7 +3,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { dirname, join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
-import { diffScheduleManifests, diffSchedulePayloads } from './schedule-snapshot-diff.mjs';
+import { diffScheduleManifests, diffScheduleRouteMaps } from './schedule-snapshot-diff.mjs';
 
 const root = process.cwd();
 const provider = process.argv.find((arg) => arg.startsWith('--provider='))?.slice(11) ?? process.env.npm_config_provider;
@@ -45,10 +45,17 @@ if (apply) {
 const refreshed = JSON.parse(await readFile(manifestPath, 'utf8'));
 const finalManifest = apply ? refreshed : after;
 const afterRoutes = await routeState(finalManifest);
-const changedRoutes = Object.keys(afterRoutes).filter((routeId) => beforeRoutes[routeId]?.hash !== afterRoutes[routeId]?.hash).map((routeId) => ({ routeId, hashChanged: true, contentDiff: beforeRoutes[routeId]?.payload && afterRoutes[routeId]?.payload ? diffSchedulePayloads(beforeRoutes[routeId].payload, afterRoutes[routeId].payload) : null }));
+const changedRouteHashes = Object.keys(afterRoutes).filter((routeId) => beforeRoutes[routeId]?.hash !== afterRoutes[routeId]?.hash);
+const payloadDiff = diffScheduleRouteMaps(
+  Object.fromEntries(Object.entries(beforeRoutes).filter(([, item]) => item.payload).map(([routeId, item]) => [routeId, item.payload])),
+  Object.fromEntries(Object.entries(afterRoutes).filter(([, item]) => item.payload).map(([routeId, item]) => [routeId, item.payload])),
+);
+const changedRoutes = changedRouteHashes.map((routeId) => ({ routeId, hashChanged: true, ...(payloadDiff.changedRoutes.find((item) => item.routeId === routeId) ?? { contentDiff: null }) }));
 const review = diffScheduleManifests(before, finalManifest);
 review.changedRouteCount = changedRoutes.length;
-review.requiresReview = review.requiresReview || changedRoutes.length > 0;
+review.scheduleContentDiff = payloadDiff;
+review.reviewReasons = [...review.reviewReasons, ...payloadDiff.reviewReasons];
+review.requiresReview = review.requiresReview || payloadDiff.requiresReview;
 const report = { provider, generatedAt: new Date().toISOString(), applyRequested: apply, note: apply ? 'Kaynak snapshot üretildi; farklar manuel incelemeye tabidir.' : 'Dry-run: mevcut snapshot incelendi, hiçbir kaynak çağrısı yapılmadı.', scheduleDiff: review, changedRoutes };
 if (apply && review.requiresReview) {
   await cp(join(backupDirectory, 'manifest.json'), manifestPath);
@@ -87,6 +94,8 @@ const markdown = [
   `- Silinen hatlar: ${review.removedRoutes.length || 'yok'}`,
   `- Kaynak değişimi: ${review.changedSources.length}`,
   `- İçerik hash değişimi: ${changedRoutes.length}`,
+  `- Yön ekleme/çıkarma: ${payloadDiff.summary.addedDirectionCount} / ${payloadDiff.summary.removedDirectionCount}`,
+  `- İnceleme nedenleri: ${review.reviewReasons.length || 'yok'}`,
   '',
   '## Değişen rota dosyaları',
   '',
