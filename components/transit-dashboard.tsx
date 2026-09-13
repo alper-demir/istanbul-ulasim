@@ -19,6 +19,7 @@ import { parseScheduleManifestPayload, parseSchedulePayload, type ScheduleManife
 import type { TransitStopOccurrence, TransitStopSummary } from '@/lib/transit-search';
 import { normalizeTransitSearch, rankRouteMatches, rankStopMatches } from '@/lib/transit-discovery';
 import { safeInterpolatedCoordinate } from '@/lib/live-vehicle-motion';
+import { classifyVehicleStopRelation, vehicleStopRelationLabel, type VehicleStopRelation } from '@/lib/next-vehicle';
 import { APP_VERSION } from '@/lib/app-version';
 import { type RecentTransitItem, type SavedManualLocation, USER_STATE_KEYS } from '@/lib/transit-user-state';
 import { cn } from '@/lib/utils';
@@ -41,7 +42,7 @@ const maplibrePromise = import('maplibre-gl');
 type LocationStatus = 'idle' | 'loading' | 'ready' | 'denied' | 'unavailable';
 type RouteModeFilter = 'all' | 'road' | 'rail' | 'ferry';
 type ComparisonRoute = { routeId:string; directionId:string };
-type ApproachingVehicle = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean };
+type StopVehicleState = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean; relation:VehicleStopRelation };
 type LiveVehicleResponse = {
   data:IettLiveVehicle[];
   meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; cacheStatus:'hit' | 'miss' | 'stale'; cacheTtlMs:number; fetchedAt:string; newestPositionAt:string | null };
@@ -448,9 +449,9 @@ function useSmoothedVehicleMarkers({
   return displayVehicles;
 }
 
-function approachingVehicleLabel(item: ApproachingVehicle) {
-  if (item.nearSelectedStop || item.remainingMeters <= 250) return 'Durağa çok yakın';
-  return `Güzergâhta yaklaşık ${formatDistance(item.remainingMeters)} geride`;
+function approachingVehicleLabel(item: StopVehicleState) {
+  if (item.relation === 'near') return vehicleStopRelationLabel(item.relation);
+  return `${vehicleStopRelationLabel(item.relation)} · güzergâhta yaklaşık ${formatDistance(item.remainingMeters)} geride`;
 }
 
 function occurrenceDirectionName(route: TransitRouteSummary, directionId: string) {
@@ -817,25 +818,29 @@ export function TransitDashboard() {
     .map((occurrence) => ({ occurrence, route:routeByCode.get(occurrence[0]) }))
     .filter((item): item is { occurrence:TransitStopOccurrence; route:TransitRouteSummary } => Boolean(item.route)),
   [routeByCode, selectedStopSummary]);
-  const approachingVehicles = useMemo(() => {
-    if (!selectedStop || selectedStopIndex < 0 || selectedRoute.coordinates.length < 2) return [] as ApproachingVehicle[];
+  const stopVehicleStates = useMemo(() => {
+    if (!selectedStop || selectedStopIndex < 0 || selectedRoute.coordinates.length < 2) return [] as StopVehicleState[];
     const stopProjection = projectPointOnRoute(selectedStop.coordinates, selectedRoute.coordinates);
-    if (!stopProjection || stopProjection.distanceToRouteMeters > 750) return [] as ApproachingVehicle[];
+    if (!stopProjection || stopProjection.distanceToRouteMeters > 750) return [] as StopVehicleState[];
     const selectedStopCode = selectedStop.id.replace(/^iett-stop:/, '');
 
     return selectedRoute.vehicles.flatMap((vehicle) => {
       const nearSelectedStop = vehicle.nearbyStopCode === selectedStopCode;
-      if (vehicle.directionId === 'unknown' && !nearSelectedStop) return [];
+      if (vehicle.directionId === 'unknown' && !nearSelectedStop) return [{ vehicle, remainingMeters:0, nearSelectedStop:false, relation:'unknown' as const }];
       const vehicleProjection = projectPointOnRoute(vehicle.coordinates, selectedRoute.coordinates);
-      if (!vehicleProjection || vehicleProjection.distanceToRouteMeters > 1_200) return [];
+      if (!vehicleProjection || vehicleProjection.distanceToRouteMeters > 1_200) return [{ vehicle, remainingMeters:0, nearSelectedStop:false, relation:'unknown' as const }];
       const remainingMeters = nearSelectedStop ? 0 : stopProjection.progressMeters - vehicleProjection.progressMeters;
-      if (remainingMeters < -200) return [];
-      return [{ vehicle, remainingMeters:Math.max(0, remainingMeters), nearSelectedStop }];
+      return [{ vehicle, remainingMeters, nearSelectedStop, relation:classifyVehicleStopRelation({ nearSelectedStop, remainingMeters }) }];
     })
       .sort((first, second) => Number(first.vehicle.updatedSecondsAgo > 180) - Number(second.vehicle.updatedSecondsAgo > 180)
-        || first.remainingMeters - second.remainingMeters)
-      .slice(0, 3);
+        || (first.relation === 'unknown' ? 1 : second.relation === 'unknown' ? -1 : first.remainingMeters - second.remainingMeters));
   }, [selectedRoute.coordinates, selectedRoute.vehicles, selectedStop, selectedStopIndex]);
+  const approachingVehicles = useMemo(
+    () => stopVehicleStates.filter((item) => item.relation === 'approaching' || item.relation === 'near').slice(0, 3),
+    [stopVehicleStates],
+  );
+  const passedVehicleCount = stopVehicleStates.filter((item) => item.relation === 'passed').length;
+  const uncertainVehicleCount = stopVehicleStates.filter((item) => item.relation === 'unknown').length;
   const favoriteRoutes = useMemo(() => filteredRoutes.filter((route) => favorites.includes(route.id)), [favorites, filteredRoutes]);
   const regularRoutes = useMemo(
     () => search.trim() ? filteredRoutes : filteredRoutes.filter((route) => !favorites.includes(route.id)),
@@ -1312,7 +1317,7 @@ export function TransitDashboard() {
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Planlı seferler</p><p className="mt-1 text-sm font-bold">Hareket saatleri</p></div><span className="rounded-lg bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)]">Statik veri</span></div>
             <Button variant="ghost" size="sm" className="mt-2 h-8 w-full justify-between border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 text-[11px]" onClick={()=>setScheduleDetailsOpen(true)} aria-haspopup="dialog"><span>Sefer saatlerini gör</span><ChevronRight className="h-3.5 w-3.5" /></Button>
-            <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Yalnızca bu hatta ait planlı saatler açılır.</p>
+            <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Yalnızca bu hatta ait planlı saatler açılır. Planlı saatler kaynak tarifesidir; canlı araç konumu ayrı bir bilgidir ve ETA değildir.</p>
           </div>
           {hasLiveVehicles&&<><div id="route-vehicles" className="mt-5 flex scroll-mt-32 items-center justify-between gap-3"><h2 className="text-sm font-extrabold">Hat üzerindeki araçlar</h2><span className="text-right text-xs font-medium text-[var(--muted)]">{liveVehicleStatusLabel}</span></div>
           <div className="mt-2 space-y-2">
@@ -1366,7 +1371,7 @@ export function TransitDashboard() {
 
           <details className="group mt-3 border-t border-[var(--border)] pt-2">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl border border-[var(--primary)]/40 bg-[var(--primary-soft)] px-3 py-2.5 text-xs font-bold text-[var(--foreground)] shadow-sm transition hover:border-[var(--primary)] hover:bg-[var(--primary-soft)] [&::-webkit-details-marker]:hidden">
-              <span>{hasLiveVehicles&&approachingVehicles.length>0?`${approachingVehicles.length} yaklaşan araç · `:''}{stopIndexQuery.isLoading?'Hatlar yükleniyor…':`${new Set(selectedStopOccurrences.map(({route})=>route.id)).size} hat`}</span>
+              <span>{hasLiveVehicles&&selectedRoute.vehicles.length>0?`${selectedRoute.vehicles.length} canlı araç · `:''}{hasLiveVehicles&&approachingVehicles.length>0?`${approachingVehicles.length} yaklaşan · `:''}{stopIndexQuery.isLoading?'Hatlar yükleniyor…':`${new Set(selectedStopOccurrences.map(({route})=>route.id)).size} hat`}</span>
               <span className="flex items-center gap-1.5 text-[10px] font-extrabold text-[var(--primary)]">
                 <span className="group-open:hidden">Ayrıntıları göster</span>
                 <span className="hidden group-open:inline">Ayrıntıları gizle</span>
@@ -1381,7 +1386,9 @@ export function TransitDashboard() {
                 {liveVehiclesUnavailable && <p className="rounded-lg bg-amber-500/10 px-3 py-3 text-center text-[10px] font-medium text-amber-700 dark:text-amber-300">Canlı araç kaynağına şu anda erişilemiyor.</p>}
                 {!liveVehiclesLoading&&!liveVehiclesUnavailable&&approachingVehicles.length===0&&<p className="rounded-lg bg-[var(--surface-muted)] px-3 py-3 text-center text-[10px] font-medium text-[var(--muted)]">Seçili hat ve yönde durağa yaklaşan aktif araç bulunamadı.</p>}
                 {approachingVehicles.length>0&&<div className="space-y-1.5">{approachingVehicles.map((item)=><button key={item.vehicle.id} type="button" onClick={()=>selectApproachingVehicle(item.vehicle)} aria-label={`${item.vehicle.doorCode} aracını haritada göster`} className="flex w-full items-center gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2.5 text-left transition hover:border-[var(--primary)]"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-white" style={{background:selectedRoute.color}}><BusFront className="h-3.5 w-3.5" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-extrabold">{item.vehicle.doorCode}</span><span className="block truncate text-[10px] font-semibold text-[var(--primary)]">{approachingVehicleLabel(item)}</span></span><span className="text-right"><span title={vehicleFreshnessDescription(item.vehicle.updatedSecondsAgo)} className={cn('block cursor-help text-[9px] font-black',vehicleFreshnessClass(item.vehicle.updatedSecondsAgo))}>{vehicleFreshnessLabel(item.vehicle.updatedSecondsAgo)}</span><span className="block text-[9px] text-[var(--muted)]">{vehicleAgeLabel(item.vehicle.updatedSecondsAgo)}</span></span></button>)}</div>}
-                <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Sıralama, aracın seçili yön güzergâhındaki yaklaşık konumuna dayanır; süre tahmini değildir.</p>
+                {passedVehicleCount>0&&<p className="mt-2 rounded-lg bg-amber-500/10 px-3 py-2 text-[10px] font-medium text-amber-700 dark:text-amber-300">{passedVehicleCount} araç durağı geçmiş olabilir. Bu bilgi konum projeksiyonuna dayanır; veri eskiyse kesin kabul edilmemelidir.</p>}
+                {uncertainVehicleCount>0&&<p className="mt-2 rounded-lg bg-[var(--surface-muted)] px-3 py-2 text-[10px] font-medium text-[var(--muted)]">{uncertainVehicleCount} aracın durağa göre konumu doğrulanamadı.</p>}
+                <p className="mt-2 text-[9px] leading-relaxed text-[var(--muted)]">Sıralama, aracın seçili yön güzergâhındaki yaklaşık konumuna dayanır; süre tahmini değildir. Son veri yaşı her araçta ayrıca gösterilir.</p>
               </div>}
               {stopIndexQuery.isLoading&&<p className="text-center text-[10px] font-medium text-[var(--muted)]">Duraktan geçen hatlar yükleniyor…</p>}
               {selectedStopOccurrences.length>0&&<div className="border-t border-[var(--border)] pt-3"><div className="mb-2 flex items-center justify-between"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Bu duraktan geçen hatlar</p><span className="text-[10px] font-semibold text-[var(--muted)]">{new Set(selectedStopOccurrences.map(({route})=>route.id)).size} hat</span></div><div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto pr-1">{selectedStopOccurrences.map(({occurrence,route})=>{const directionName=occurrenceDirectionName(route,occurrence[1]);return <button key={`${occurrence[0]}-${occurrence[1]}`} onClick={()=>openStopOnRoute(selectedStop.id,occurrence)} className={cn('flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2 text-left transition hover:border-[var(--primary)]',route.id===selectedRoute.id&&occurrence[1]===selectedDirectionId&&'border-[var(--primary)] bg-[var(--primary-soft)]')}><span className="grid h-7 min-w-10 place-items-center rounded-md text-[10px] font-black text-white" style={{background:route.color}}>{route.code}</span><span className="min-w-0"><span title={directionName} className="block truncate text-[10px] font-bold">{directionName}</span><span className="block text-[9px] text-[var(--muted)]">{occurrence[2]}. durak</span></span></button>;})}</div></div>}
