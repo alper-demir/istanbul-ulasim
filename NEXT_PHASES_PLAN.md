@@ -142,6 +142,17 @@ Tamamlanan dal: `feature/stop-centric-experience`
 
 Kabul: Kullanıcı duraktan geçen hatlardan birini seçip ilgili planlı sefer paneline tek ek işlemle ulaşır; statik saatler canlı ETA veya yolculuk planı olarak sunulmaz.
 
+### Tamamlandı — Global duyuru görünürlüğü
+
+Tamamlanan dal: `feature/global-disruptions`
+
+- Uygulama başlığından global duyuru paneli açıldı.
+- Mevcut İETT duyuru endpointi, hat filtresi olmadan tüm aktif/gelecek İETT duyurularını sunacak şekilde kullanıcı akışına bağlandı.
+- Otobüs, raylı ve vapur filtreleri; etkilenen hat kapsamı, cache/stale durumu ve kaynak alınma zamanı eklendi.
+- Doğrulanmış kaynak bulunmayan ulaşım türleri kullanıcıya açıkça “henüz kapsanmıyor” olarak belirtiliyor.
+
+Kabul: Duyuru yokluğu kesintisizlik garantisi olarak sunulmaz; kaynak hatası ve stale yanıt kullanıcıya bildirilir. Yeni ortak cache veya doğrulanmamış ulaşım kaynağı eklenmez.
+
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
 Dal: `feature/rail-schedule-lite`

@@ -188,7 +188,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.11.0`. Kaynak sağlığı, bir sonraki araç durumları, durak merkezli sefer akışı, İETT duyuruları, planlı sefer snapshot'ları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
+Güncel sürüm: `0.11.1`. Kaynak sağlığı, bir sonraki araç durumları, durak merkezli sefer akışı, global duyuru görünürlüğü, planlı sefer snapshot'ları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 

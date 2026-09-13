@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.1 — Global duyuru görünürlüğü
+
+### Eklendi
+
+- Uygulama başlığından global aktif kesinti ve duyuru paneli açılabilir.
+- Duyurular ulaşım türüne göre filtrelenebilir; hat kapsamı ve kaynak alınma zamanı gösterilir.
+- Kaynak hatası, stale yanıt ve boş sonuç durumları kullanıcıya açıkça bildirilir.
+- Mevcut doğrulanmış kapsamın İETT olduğu, Metro/Marmaray/vapur duyurularının henüz kapsanmadığı arayüzde belirtilir.
+
+### Sınırlar
+
+- Yeni upstream sağlayıcı eklenmedi; panel mevcut İETT duyuru endpointini global görünümde kullanır.
+- Ortak cache/KV/DO, yol tarifi ve yolculuk planı bu sürümde kapsam dışıdır.
+
 ## 0.11.0 — Durak merkezli sefer akışı
 
 ### Eklendi
