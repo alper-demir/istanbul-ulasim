@@ -41,6 +41,7 @@ const maplibrePromise = import('maplibre-gl');
 
 type LocationStatus = 'idle' | 'loading' | 'ready' | 'denied' | 'unavailable';
 type RouteModeFilter = 'all' | 'road' | 'rail' | 'ferry';
+type AnnouncementModeFilter = 'all' | 'road' | 'rail' | 'ferry';
 type ComparisonRoute = { routeId:string; directionId:string };
 type StopVehicleState = { vehicle:TransitVehicle; remainingMeters:number; nearSelectedStop:boolean; relation:VehicleStopRelation };
 type LiveVehicleResponse = {
@@ -534,6 +535,8 @@ export function TransitDashboard() {
   const [locationOrigin, setLocationOrigin] = useState<'browser' | 'manual' | null>(() => readStoredManualLocation() ? 'manual' : null);
   const [comparisonRouteKeys, setComparisonRouteKeys] = useState<ComparisonRoute[]>([]);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [announcementsOpen, setAnnouncementsOpen] = useState(false);
+  const [announcementModeFilter, setAnnouncementModeFilter] = useState<AnnouncementModeFilter>('all');
   const [fareCatalogOpen, setFareCatalogOpen] = useState(false);
   const [urlStateReady, setUrlStateReady] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -544,10 +547,11 @@ export function TransitDashboard() {
   const aboutDialogRef = useDialogFocus<HTMLElement>(() => setAboutOpen(false), aboutOpen);
 
   useEffect(() => {
-    if (!aboutOpen && !fareCatalogOpen && !fareDetailsOpen && !scheduleDetailsOpen && !manualLocationMode) return;
+    if (!aboutOpen && !announcementsOpen && !fareCatalogOpen && !fareDetailsOpen && !scheduleDetailsOpen && !manualLocationMode) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       if (scheduleDetailsOpen) setScheduleDetailsOpen(false);
+      else if (announcementsOpen) setAnnouncementsOpen(false);
       else if (fareCatalogOpen) setFareCatalogOpen(false);
       else if (fareDetailsOpen) setFareDetailsOpen(false);
       else if (aboutOpen) setAboutOpen(false);
@@ -558,7 +562,7 @@ export function TransitDashboard() {
     };
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [aboutOpen, fareCatalogOpen, fareDetailsOpen, manualLocationMode, scheduleDetailsOpen]);
+  }, [aboutOpen, announcementsOpen, fareCatalogOpen, fareDetailsOpen, manualLocationMode, scheduleDetailsOpen]);
 
   useEffect(() => {
     const focusSearch = (event: KeyboardEvent) => {
@@ -691,6 +695,19 @@ export function TransitDashboard() {
     refetchIntervalInBackground:false,
     retry:1,
   });
+  const globalAnnouncementsQuery = useQuery({
+    queryKey:['announcements', 'global'],
+    queryFn:async ():Promise<{ data:Announcement[]; meta:{ status:string; cacheStatus:string; fetchedAt:string } }> => {
+      const response = await fetch('/api/v1/announcements');
+      if (!response.ok) throw new Error('Duyurular alınamadı');
+      return response.json();
+    },
+    enabled:announcementsOpen,
+    staleTime:90_000,
+    refetchInterval:120_000,
+    refetchIntervalInBackground:false,
+    retry:1,
+  });
   const sourceHealthQuery = useQuery({
     queryKey:['source-health'],
     queryFn:async ():Promise<SourceHealthResponse> => {
@@ -811,6 +828,20 @@ export function TransitDashboard() {
       .slice(0, 12);
   }, [stopIndexQuery.data?.data, userLocation]);
   const routeByCode = useMemo(() => new Map(routes.flatMap((route) => [[route.id, route], [route.code, route]])), [routes]);
+  const globalAnnouncements = useMemo(() => {
+    const announcements = globalAnnouncementsQuery.data?.data ?? [];
+    return announcements.filter((announcement) => {
+      if (announcementModeFilter === 'all') return true;
+      if (!announcement.routeCodes.length) return false;
+      return announcement.routeCodes.some((code) => {
+        const route = routeByCode.get(code);
+        if (!route) return announcementModeFilter === 'road';
+        if (announcementModeFilter === 'road') return route.mode === 'Otobüs' || route.mode === 'Metrobüs';
+        if (announcementModeFilter === 'rail') return ['Metro', 'Tramvay', 'Füniküler', 'Marmaray'].includes(route.mode);
+        return route.mode === 'Vapur';
+      });
+    });
+  }, [announcementModeFilter, globalAnnouncementsQuery.data?.data, routeByCode]);
   const stopById = useMemo(() => new Map((stopIndexQuery.data?.data ?? []).map((stop) => [stop.id, stop])), [stopIndexQuery.data?.data]);
   const favoriteStops = useMemo(() => favoriteStopIds.map((id) => stopById.get(id)).filter((stop): stop is TransitStopSummary => Boolean(stop)), [favoriteStopIds, stopById]);
   const selectedStopSummary = selectedStop ? stopById.get(selectedStop.id) : undefined;
@@ -1232,6 +1263,7 @@ export function TransitDashboard() {
         </div>
         <div className="flex min-w-fit items-center justify-end gap-2 md:w-[272px]">
           <span className="hidden items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-700 dark:text-amber-300 md:flex"><span className="h-2 w-2 rounded-full bg-amber-500" />{isOfficialRoute ? 'Kaynaklı hat ağı' : 'Demo veri'}</span>
+          <Button variant="secondary" size="icon" aria-label="Global duyuruları göster" onClick={()=>setAnnouncementsOpen(true)}><AlertTriangle className="h-4 w-4" /></Button>
           <Button variant="secondary" size="icon" aria-label="Yakınımdaki durakları göster" onClick={findNearbyStops}><LocateFixed className="h-4 w-4" /></Button>
           <Button variant="secondary" size="icon" aria-label="Uygulama hakkında" onClick={()=>setAboutOpen(true)}><Info className="h-4 w-4" /></Button>
           <Button variant="secondary" size="icon" aria-label="Temayı değiştir" onClick={()=>setTheme(resolvedTheme==='dark'?'light':'dark')}>
@@ -1242,6 +1274,8 @@ export function TransitDashboard() {
       </header>
 
       {toast&&<div role="status" aria-live="polite" className="glass-panel absolute left-1/2 top-[92px] z-[80] -translate-x-1/2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-xl">{toast}</div>}
+
+      {announcementsOpen&&<GlobalAnnouncementsDialog announcements={globalAnnouncements} routes={routes} modeFilter={announcementModeFilter} loading={globalAnnouncementsQuery.isLoading} error={globalAnnouncementsQuery.isError} cacheStatus={globalAnnouncementsQuery.data?.meta.cacheStatus} fetchedAt={globalAnnouncementsQuery.data?.meta.fetchedAt} onModeFilterChange={setAnnouncementModeFilter} onRetry={()=>void globalAnnouncementsQuery.refetch()} onClose={()=>setAnnouncementsOpen(false)} />}
 
       {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
         <section ref={aboutDialogRef} role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
@@ -1411,6 +1445,50 @@ export function TransitDashboard() {
 
 function Metric({ icon,value,label }: { icon:React.ReactNode; value:string; label:string }) {
   return <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3"><div className="mb-2 h-4 w-4 text-[var(--primary)] [&>svg]:h-4 [&>svg]:w-4">{icon}</div><p className="text-sm font-extrabold">{value}</p><p className="mt-0.5 text-[10px] font-medium text-[var(--muted)]">{label}</p></div>;
+}
+
+function GlobalAnnouncementsDialog({
+  announcements,
+  routes,
+  modeFilter,
+  loading,
+  error,
+  cacheStatus,
+  fetchedAt,
+  onModeFilterChange,
+  onRetry,
+  onClose,
+}: {
+  announcements:Announcement[];
+  routes:TransitRouteSummary[];
+  modeFilter:AnnouncementModeFilter;
+  loading:boolean;
+  error:boolean;
+  cacheStatus?:string;
+  fetchedAt?:string;
+  onModeFilterChange:(value:AnnouncementModeFilter)=>void;
+  onRetry:()=>void;
+  onClose:()=>void;
+}) {
+  const dialogRef = useDialogFocus<HTMLElement>(onClose, true);
+  const routeByCode = new Map(routes.map((route) => [route.code, route]));
+  const formatFetchedAt = fetchedAt ? new Intl.DateTimeFormat('tr-TR', { dateStyle:'short', timeStyle:'short' }).format(new Date(fetchedAt)) : null;
+  const statusLabel = (status:Announcement['status']) => status === 'upcoming' ? 'Yaklaşan' : status === 'unknown' ? 'Tarihi belirsiz' : 'Aktif';
+  const affectedRoutes = (announcement:Announcement) => announcement.routeCodes.length
+    ? announcement.routeCodes.map((code) => routeByCode.get(code)?.code ?? code).slice(0, 6).join(', ')
+    : 'Genel İETT duyurusu';
+
+  return <div className="absolute inset-0 z-[75] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={onClose}>
+    <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="global-announcements-title" className="glass-panel max-h-[min(720px,calc(100dvh-32px))] w-full max-w-xl overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
+      <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">Ulaşım duyuruları</p><h2 id="global-announcements-title" className="mt-1 text-lg font-extrabold">Aktif kesintiler ve duyurular</h2><p className="mt-1 text-[11px] text-[var(--muted)]">Şu an doğrulanmış duyuru kaynağı İETT’dir. Diğer ulaşım türleri için henüz ortak resmî kaynak bağlanmadı.</p></div><button type="button" aria-label="Duyurular penceresini kapat" onClick={onClose} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"><X className="h-4 w-4" /></button></div>
+      <div className="mt-5 flex flex-wrap gap-1.5" role="group" aria-label="Duyuru ulaşım türü filtresi">{([['all','Tümü'],['road','Otobüs'],['rail','Raylı'],['ferry','Vapur']] as const).map(([value,label])=><button key={value} type="button" aria-pressed={modeFilter===value} onClick={()=>onModeFilterChange(value)} className={cn('rounded-lg px-3 py-1.5 text-[10px] font-bold transition',modeFilter===value?'bg-[var(--primary)] text-white':'bg-[var(--surface-muted)] text-[var(--muted)] hover:text-[var(--foreground)]')}>{label}</button>)}</div>
+      {loading&&<div className="mt-4 rounded-xl border border-dashed border-[var(--border)] px-4 py-8 text-center"><AlertTriangle className="mx-auto h-5 w-5 animate-pulse text-[var(--primary)]" /><p className="mt-2 text-xs font-bold">Duyurular kontrol ediliyor…</p></div>}
+      {error&&<div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3"><p className="text-xs font-bold">Duyurular geçici olarak alınamadı</p><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">Bu durum hat ve harita verilerini etkilemez.</p><Button variant="ghost" size="sm" className="mt-2 w-full" onClick={onRetry}>Tekrar dene</Button></div>}
+      {!loading&&!error&&announcements.length===0&&<div className="mt-4 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-8 text-center"><AlertTriangle className="mx-auto h-5 w-5 text-[var(--muted)]" /><p className="mt-2 text-xs font-bold">Bu filtrede aktif duyuru yok</p><p className="mt-1 text-[10px] text-[var(--muted)]">Bu, ulaşımın kesintisiz olduğu garantisi değildir; kaynakta duyuru yayımlanmamış olabilir.</p></div>}
+      {!loading&&!error&&announcements.length>0&&<div className="mt-4 space-y-2">{announcements.map((announcement)=><article key={announcement.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-300" /><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-1.5"><h3 className="text-xs font-extrabold">{announcement.title}</h3><span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 dark:text-amber-300">{statusLabel(announcement.status)}</span></div><p className="mt-1 text-[10px] leading-relaxed text-[var(--muted)]">{announcement.description}</p><p className="mt-2 text-[9px] font-semibold text-[var(--primary)]">Etkilenen: {affectedRoutes(announcement)}</p><a className="mt-1 inline-block text-[10px] font-semibold text-[var(--primary)] underline" href={announcement.sourceUrl} target="_blank" rel="noreferrer">İETT kaynağını aç</a></div></div></article>)}</div>}
+      <div className="mt-4 border-t border-[var(--border)] pt-3 text-[9px] leading-relaxed text-[var(--muted)]"><p>Kaynak: İETT duyuru servisi{formatFetchedAt&&` · Son kontrol: ${formatFetchedAt}`}{cacheStatus === 'stale'&&' · Önceki geçerli yanıt gösteriliyor'}</p><p className="mt-1">Duyuru bulunmaması kesinti olmadığı anlamına gelmez. Resmî kaynağın kapsamı ve güncelliğiyle sınırlıdır.</p></div>
+    </section>
+  </div>;
 }
 
 function FareDetails({ fare }: { fare:ResolvedFare }) {

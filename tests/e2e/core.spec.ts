@@ -29,3 +29,11 @@ test('opens planned departures directly from a selected stop', async ({ page }) 
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('dialog').getByText('500T · planlı seferler')).toBeVisible();
 });
+
+test('opens the global announcements panel with explicit source coverage', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Global duyuruları göster' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('dialog').getByText('Aktif kesintiler ve duyurular')).toBeVisible();
+  await expect(page.getByRole('dialog').getByText('Şu an doğrulanmış duyuru kaynağı İETT’dir.')).toBeVisible();
+});
