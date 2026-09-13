@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.11 — Canlı veri zaman aşımı ve eski veri görünürlüğü
+
+- Canlı araç, hat duyurusu, global duyuru ve kaynak sağlık istemcilerine 12 saniyelik istemci zaman aşımı eklendi.
+- Dış kaynak yanıt vermezse arayüz sonsuz yüklenme durumunda kalmak yerine açık uyarı gösterir.
+- Önceki geçerli duyurular ve canlı konumlar yeni istek başarısız olduğunda “eski veri” olarak işaretlenir.
+- İETT canlı araç panelinde kaynak sağlık bilgisinin son başarılı canlı istek zamanı görünür hale getirildi.
+
 ## 0.11.10 — Performans ve son polish
 
 - Performans raporu artık baseline karşılaştırması ve isteğe bağlı çıktı yolu destekliyor; JS/toplam çıktı farkını raporluyor.
