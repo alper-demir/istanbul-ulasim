@@ -797,9 +797,9 @@ export function TransitDashboard() {
   const isOfficialRoute = Boolean(staticRouteUrl(selectedRoute.id));
   const hasLiveVehicles = selectedRoute.supportsLiveVehicles ?? selectedRoute.id.startsWith('iett:');
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
-  const liveVehiclesTimedOut = liveVehiclesTimeoutKey === `${selectedRouteId}:loading`;
-  const announcementsTimedOut = announcementsTimeoutKey === selectedRouteId;
-  const globalAnnouncementsTimedOut = announcementsOpen && globalAnnouncementsTimeoutKey === 'global';
+  const liveVehiclesTimedOut = liveVehiclesQuery.isLoading && liveVehiclesTimeoutKey === `${selectedRouteId}:loading`;
+  const announcementsTimedOut = announcementsQuery.isLoading && announcementsTimeoutKey === selectedRouteId;
+  const globalAnnouncementsTimedOut = announcementsOpen && globalAnnouncementsQuery.isLoading && globalAnnouncementsTimeoutKey === 'global';
   const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading && !liveVehiclesTimedOut;
   const liveVehicleRuntime = sourceHealthQuery.data?.data.find((source) => source.id === 'ibb-iett-vehicle-positions')?.runtime;
   const liveSourceUnavailable = liveVehicleRuntime?.operationalStatus === 'unavailable';

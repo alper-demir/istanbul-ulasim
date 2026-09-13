@@ -2,6 +2,10 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.13 — Timeout sonrası yeniden kontrol düzeltmesi
+
+- Canlı veri veya duyuru timeout durumunun sonraki başarılı polling yanıtını engellememesi sağlandı.
+
 ## 0.11.12 — Yüklenme güvenlik durumu
 
 - İstemci sorgusu başlatılamasa veya framework sorgusu beklemede kalsa bile 12 saniye sonra canlı araç ve duyuru panelleri uyarı durumuna geçer.
