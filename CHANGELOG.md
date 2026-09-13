@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.4 — Şehir Hatları duyuruları
+
+### Eklendi
+
+- Şehir Hatları’nın resmî duyuru listesi global duyuru endpointine eklendi.
+- Vapur filtresinde gerçek başlık, kısa açıklama, kaynak etiketi ve resmî detay bağlantısı gösteriliyor.
+- Şehir Hatları kaynağı için timeout, süreç içi cache, stale fallback ve `/api/v1/source-health` runtime metrikleri eklendi.
+- İETT, Metro İstanbul ve Şehir Hatları kaynaklarından biri geçici olarak bozulduğunda diğer kaynaklar gösterilmeye devam ediyor.
+
+### Sınırlar
+
+- Marmaray/TCDD duyuru adaptörü bu sürümde eklenmedi.
+- Ortak Cloudflare cache/KV/DO, yol tarifi ve yolculuk planı kapsam dışıdır.
+
 ## 0.11.3 — Metro İstanbul duyuruları
 
 ### Eklendi

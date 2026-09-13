@@ -154,6 +154,17 @@ Tamamlanan dal: `feature/global-disruptions`
 
 Kabul: Duyuru yokluğu kesintisizlik garantisi olarak sunulmaz; kaynak hatası ve stale yanıt kullanıcıya bildirilir. İETT ve Metro kaynaklarından biri bozulduğunda diğeri çalışmaya devam eder. Şehir Hatları ve Marmaray için doğrulanmış adaptör henüz yoktur.
 
+### Tamamlandı — Çok kaynaklı duyurular: Metro İstanbul ve Şehir Hatları
+
+Tamamlanan dal: `feature/sehir-hatlari-announcements`
+
+- Metro İstanbul ve Şehir Hatları resmî duyuru listeleri global duyuru endpointinde ayrı sağlayıcılar olarak çalışır.
+- Raylı ve Vapur filtreleri sağlayıcıya göre ayrıştırılır; her kartta mümkün olduğunda gerçek detay sayfasına bağlantı bulunur.
+- Her upstream için cache, stale fallback, timeout, hata sınıfı ve source-health runtime metrikleri tutulur.
+- Bir sağlayıcı başarısız olduğunda diğer duyuru kaynaklarının sonucu kullanıcıya gösterilir.
+
+Kabul: Duyuru kaynağı boşluğu veya erişim hatası kesintisizlik garantisi olarak yorumlanmaz; kullanıcıya kaynak kapsamı ve güncellik sınırı açıkça belirtilir. Marmaray/TCDD henüz bu adaptöre dahil değildir.
+
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
 Dal: `feature/rail-schedule-lite`

@@ -83,6 +83,15 @@ export function getIettSourceHealth(): SourceHealth[] {
       attributionUrl: 'https://www.metro.istanbul/Home/Duyurular',
     },
     {
+      id: 'sehir-hatlari-announcements',
+      label: 'Şehir Hatları Duyuruları',
+      kind: 'announcements',
+      status: 'connected',
+      detail: 'Şehir Hatları duyuru listesi sunucu tarafı cache ve stale fallback ile alınır; resmî detay bağlantısı korunur.',
+      updatedAt: new Date().toISOString(),
+      attributionUrl: 'https://sehirhatlari.istanbul/tr/duyurular',
+    },
+    {
       id: 'istanbulum-fixtures',
       label: 'İstanbulum geliştirme verisi',
       kind: 'static-network',
