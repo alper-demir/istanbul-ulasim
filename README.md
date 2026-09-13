@@ -173,6 +173,17 @@ Hat ayrıntısında yer alan canlı veri bilgisi, konum zamanını ve yanıtın 
 
 Uygulama ücretsiz Cloudflare Workers/CDN kotası içinde küçük bir kamu demosu için tasarlanmıştır. İETT kaynağının resmî yüksek hacim sözleşmesi olmadan saatlik kaynak bütçesi yükseltilmemelidir.
 
+### Kaynak sağlığı ve izleme
+
+`GET /api/v1/source-health`, canlı İETT araç ve duyuru kaynaklarının uygulama içi çalışma durumunu ve operasyonel sayaçlarını döndürür. Yanıt; kaynak başına son başarılı/başarısız istek zamanını, sınıflandırılmış son hata türünü, upstream istek/hata/timeout sayılarını, cache/stale fallback sayaçlarını ve ortalama yanıt süresini içerir. Ham hata metni, kullanıcı konumu veya araç bazlı log döndürülmez.
+
+Bu endpoint iki amaçla kullanılır:
+
+- Uygulama, seçili İETT hattında canlı kaynağın geçici sorunu varsa kullanıcıya sade bir durum mesajı gösterir. Güzergâh ve durak verileri çalışmaya devam eder; varsa son geçerli konumlar ayrı belirtilir.
+- Admin veya harici uptime izleme aracı, `GET /api/v1/source-health?monitor=1` çağrısını takip edebilir. Canlı kaynakların en güncel sonucu başarısızsa endpoint `503`, aksi halde `200` döndürür; `X-Source-Health` başlığı `operational`, `unknown` veya `unavailable` değerini taşır.
+
+Sayaçlar tek Worker/Node örneğinin belleğindedir ve cold start sonrası sıfırlanır. Bu sürümde Cloudflare KV, Durable Object veya kalıcı gözlemleme sağlayıcısı eklenmez.
+
 Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi üzerine izdüşürür; durağı henüz geçmemiş en yakın üç aracı yaklaşık güzergâh mesafesine göre sıralar. Bu değer bir varış süresi tahmini değildir. Başka hatlar otomatik olarak sorgulanmaz; duraktan geçen başka bir hat seçildiğinde canlı sorgu o hatta geçirilir.
 
 ## Sürüm

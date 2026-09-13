@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.8.0`; M7, B1, M11, İETT duyuru, snapshot bakım ve E2E geliştirmeleri bu dalda hazırlanmıştır.
-- Aktif yerel çalışma dalı: `feature/v0.8-development`; duyuru, sefer bakım ve E2E geliştirmeleri bu dalda sürdürülmektedir.
+- Güncel hedef sürüm: `0.9.0`; canlı kaynak sağlığı, kullanıcıya durum görünürlüğü ve izleme endpointi eklendi.
+- Aktif yerel çalışma dalı: `feature/source-observability`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -26,6 +26,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
 - B1 Marmaray ve M11 için TCDD kaynaklı ilk/son hareket özetleri; ara istasyon saati tahmini yapılmaz
 - İETT duyuru rozeti, ayrıntısı, stale fallback ve kaynak sağlık metrikleri
+- Canlı İETT araç/duyuru kaynakları için operasyonel durum, hata sınıfı ve gecikme sayaçları; İETT hattında kullanıcıya sade kaynak durumu mesajı
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
 - M1A, M1B, M2–M6, M8, M9, T1, T3, T4, T5, F1 ve F4'ün kaynak–yön eşleşmesi doğrulanan yönleri için Metro İstanbul kaynaklı ilk/son hareket özeti; tam tarife veya kesin günlük geçerlilik iddiası yoktur
@@ -63,6 +64,13 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 - Her istemci, canlı araç API’sine dakikada en fazla 12 istek gönderebilir. CDN yanıtı 30 saniye saklamalı, 10 dakikaya kadar eski veriyi hata durumunda sunabilmelidir.
 
 Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım öncesinde ortak edge önbelleği ve kota katmanı kurulmalıdır: Cloudflare Cache/KV + Durable Object veya Redis uygundur. İETT’nin herkese açık, taahhütlü yüksek hacim kotası varsayılmamalıdır.
+
+## Kaynak sağlığı ve admin izleme
+
+- `/api/v1/source-health`, admin/izleme için kaynak başına runtime sayaçları ve sade çalışma durumunu verir; kullanıcıya yalnız uygun özet gösterilir.
+- `?monitor=1` parametresi, canlı kaynağın son sonucu başarısız olduğunda `503` döndürerek harici uptime/alert aracını tetiklemeye uygundur.
+- Sayaçlar süreç belleğindedir; cold start sonrası sıfırlanır, çoklu Worker örnekleri arasında birleşmez ve kalıcı SLA ölçümü olarak kullanılmaz.
+- Harici alarm sağlayıcısı, e-posta, webhook veya shared cache bu fazda kurulmamıştır.
 
 ## Yayın öncesi sağlamlaştırma
 
@@ -106,7 +114,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.8.0` sonrasında öncelik ortak edge cache/kota gözlemi, tam erişilebilirlik kapsamı ve kontrollü performans optimizasyonudur.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.9.0` sonrasında öncelik canlı araç/durak deneyimini güçlendirmek, durak merkezli planlı sefer görünümü ve global kesinti katmanıdır. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

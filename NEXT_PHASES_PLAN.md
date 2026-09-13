@@ -1,6 +1,6 @@
 # İstanbulum — Sonraki Geliştirme Fazları
 
-Bu belge `v0.8.0` sonrası ürün ve teknik geliştirmeleri planlar. M7, B1, M11, İETT duyuruları, snapshot bakımı ve E2E sağlamlaştırması bu sürüm kapsamına alındı. Trafik verisi, kesin varış süresi tahmini, teleferik ve raylı/vapur araçlarının canlı konumları kapsam dışındadır. Sonraki öncelik ücretsiz edge cache/kota gözlemi ve kontrollü performans iyileştirmesidir.
+Bu belge `v0.9.0` sonrası ürün ve teknik geliştirmeleri planlar. M7, B1, M11, İETT duyuruları, snapshot bakımı, E2E sağlamlaştırması ve canlı kaynak gözlemi tamamlandı. Trafik verisi, kesin varış süresi tahmini, teleferik, raylı/vapur araçlarının canlı konumları ve A–B yolculuk planlama kapsam dışındadır. Cloudflare KV/Durable Object tabanlı ortak cache/kota katmanı kullanıcı kararıyla şimdilik ertelendi.
 
 ## Temel kararlar
 
@@ -74,6 +74,17 @@ M7 segment seferleri, TCDD kaynaklı B1/M11 sefer özetleri, İETT duyuruları, 
 `v0.7.0-beta.3` ile ortak planlı sefer sözleşmesi ve lazy loading; 30 Şehir Hatları rotasının sefer snapshot'ları; doğrulanabilen İETT sefer snapshot'ları; tarife/bilet kataloğu; yerel arama, favori, yakın duraklar ve karşılaştırma; erişilebilirlik/modal iyileştirmeleri; kompakt hat paneli; İETT canlı araçları, güncellik etiketleri ve görsel yumuşatma `main` dalına alınmıştır.
 
 ## Fazlar
+
+### Tamamlandı — Kaynak sağlığı ve canlı veri görünürlüğü
+
+Tamamlanan dal: `feature/source-observability`
+
+- Canlı araç ve duyuru kaynaklarında upstream istek/hata/timeout, cache/stale fallback, son başarılı/başarısız sonuç, hata sınıfı ve ortalama yanıt süresi izlenir.
+- `/api/v1/source-health`, admin/harici izleme için bu metrikleri ve kaynak başına `unknown` / `operational` / `unavailable` durumunu döndürür.
+- `?monitor=1`, son canlı kaynak sonucu başarısız olduğunda `503` döndürür; harici alarm sağlayıcısı henüz bağlanmamıştır.
+- İETT hat detayında kaynak sorunu sade ve erişilebilir bir durum mesajıyla kullanıcıya gösterilir; statik güzergâh/durak deneyiminin devam ettiği açıkça belirtilir.
+
+Kabul: Ham hata veya kullanıcı verisi health çıktısına taşınmaz; cold start sonrası durum “unknown” kalır ve kaynak çağrısı başarılı olmadan “normal” iddiası yapılmaz.
 
 ### Tamamlandı — Sefer altyapısı ve kaynak denetimi
 
@@ -190,9 +201,11 @@ Dal: güncel `main`den açılacak `feature/snapshot-maintenance`
 
 Kabul: Kaynak yenilemeleri çalışma zamanına dış istek eklemeden, fark raporu ve açık onay akışıyla yürütülmeli.
 
-### Faz 7 — Çoklu kullanıcı için ortak edge cache ve kota katmanı
+### Ertelendi — Çoklu kullanıcı için ortak edge cache ve kota katmanı
 
 Dal: güncel `main`den açılacak `feature/shared-edge-cache`
+
+Bu faz kullanıcı kararıyla şu an uygulanmayacak. Mevcut süreç içi cache/rate-limit korunur; ihtiyaç ve trafik verisi oluştuğunda yeniden değerlendirilir.
 
 - Cloudflare Cache/KV ve gerekli ise Durable Object ile Worker örnekleri arasında canlı araç cache ve kota bilgisini paylaşmak.
 - Cache tazeliği, stale fallback ve kullanıcı başı hız limiti davranışını çoklu örnekte test etmek.

@@ -2,6 +2,21 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.9.0 — Kaynak sağlığı ve canlı veri görünürlüğü
+
+### Eklendi
+
+- Canlı İETT araç ve duyuru kaynakları için upstream istek, hata, timeout, cache/stale fallback, son başarılı/başarısız istek ve ortalama yanıt süresi sayaçları.
+- Ham hata metni veya kullanıcı verisi taşımayan sınıflandırılmış hata türleri: timeout, HTTP, yanıt, kota veya ağ sorunu.
+- `/api/v1/source-health` içinde kaynak başına sade çalışma durumu ve admin/izleme araçlarının okuyabileceği runtime metrikleri.
+- `/api/v1/source-health?monitor=1` çağrısında son kaynak sonucu başarısızsa `503`; harici uptime/alert aracı bu endpointi izleyebilir.
+- İETT hat detayında kullanıcıya yönelik “Canlı kaynak durumu” açıklaması ve kaynak kesintisinde statik güzergâh/durakların çalışmaya devam ettiğini belirten erişilebilir durum mesajı.
+
+### Sınırlar
+
+- Bu sürüm Cloudflare KV, Durable Object veya ortak distributed cache eklemez. Sayaçlar Worker/Node örneği yaşam süresi boyunca tutulur; kalıcı SLA veya çoklu instance toplamı değildir.
+- Harici alarm sağlayıcısı bağlanmadı; endpoint, seçilecek izleme aracının kullanacağı kararlı sözleşmeyi sağlar.
+
 ## 0.8.0 — Kaynaklı sefer kapsamı ve sağlamlaştırma
 
 ### Eklendi
