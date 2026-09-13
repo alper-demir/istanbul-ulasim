@@ -46,6 +46,10 @@ type LiveVehicleResponse = {
   data:IettLiveVehicle[];
   meta:{ source:'ibb-iett-live'; status:'live' | 'stale' | 'pending'; cacheStatus:'hit' | 'miss' | 'stale'; cacheTtlMs:number; fetchedAt:string; newestPositionAt:string | null };
 };
+type SourceHealthResponse = {
+  status:'unknown' | 'operational' | 'unavailable';
+  data:Array<{ id:string; runtime:{ operationalStatus:'unknown' | 'operational' | 'unavailable'; lastSuccessAt:string|null; lastFailureAt:string|null } | null }>;
+};
 type Announcement = { id:string; title:string; description:string; routeCodes:string[]; status:'active'|'upcoming'|'expired'|'unknown'; publishedAt:string|null; effectiveTo:string|null; sourceUrl:string };
 type FarePriceKey = 'full' | 'student' | 'discounted' | 'student30Plus';
 type FareCatalogProfile = {
@@ -686,6 +690,19 @@ export function TransitDashboard() {
     refetchIntervalInBackground:false,
     retry:1,
   });
+  const sourceHealthQuery = useQuery({
+    queryKey:['source-health'],
+    queryFn:async ():Promise<SourceHealthResponse> => {
+      const response = await fetch('/api/v1/source-health');
+      if (!response.ok) throw new Error('Kaynak sağlık bilgisi alınamadı');
+      return response.json();
+    },
+    enabled:selectedRouteId.startsWith('iett:'),
+    staleTime:30_000,
+    refetchInterval:60_000,
+    refetchIntervalInBackground:false,
+    retry:1,
+  });
   const comparisonQueries = useQueries({
     queries: comparisonRouteKeys.map(({ routeId }) => ({
       queryKey:['comparison-route', TRANSIT_DATA_VERSION, routeId],
@@ -737,7 +754,9 @@ export function TransitDashboard() {
   const hasLiveVehicles = selectedRoute.supportsLiveVehicles ?? selectedRoute.id.startsWith('iett:');
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
   const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading;
-  const liveVehiclesUnavailable = hasLiveVehicles && liveVehiclesQuery.isError;
+  const liveVehicleRuntime = sourceHealthQuery.data?.data.find((source) => source.id === 'ibb-iett-vehicle-positions')?.runtime;
+  const liveSourceUnavailable = liveVehicleRuntime?.operationalStatus === 'unavailable';
+  const liveVehiclesUnavailable = hasLiveVehicles && (liveVehiclesQuery.isError || liveSourceUnavailable);
   const liveCacheStatus = liveVehiclesQuery.data?.meta.cacheStatus;
   const mapVehicles = useSmoothedVehicleMarkers({
     vehicles:selectedRoute.vehicles,
@@ -769,6 +788,11 @@ export function TransitDashboard() {
       : liveSourceTimestamp
         ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' ? ' · önceki yanıt' : liveCacheStatus === 'hit' ? ' · taze önbellek' : ' · yeni kaynak yanıtı'}${liveSnapshotTimestamp ? ` · yanıt alındı: ${liveSnapshotTimestamp}` : ''}`
         : 'İETT şu an bu hat için canlı konum bildirmiyor';
+  const liveSourceHealthLabel = liveSourceUnavailable
+    ? 'Canlı kaynakta geçici sorun var'
+    : liveVehicleRuntime?.operationalStatus === 'operational'
+      ? 'Canlı kaynak normal çalışıyor'
+      : 'Canlı kaynak kontrol ediliyor';
   const filteredRoutes = useMemo(() => {
     const byMode = routes.filter((route) => routeMatchesFilter(route, routeModeFilter));
     if (!normalizedSearch) return byMode;
@@ -1269,6 +1293,7 @@ export function TransitDashboard() {
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
           <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<><div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div><button type="button" onClick={clearComparisonRoutes} className="mt-2 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--foreground)]">Karşılaştırmayı temizle</button></>}</div>
           <div id="route-summary" className="scroll-mt-32 grid grid-cols-3 gap-2">{hasLiveVehicles?<Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" />:<Metric icon={<TramFront />} value="Statik" label="hat verisi" />}<Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label={stopKind(selectedRoute.mode)} /><Metric icon={<Clock3 />} value={selectedRoute.durationMinutes?`${selectedRoute.durationMinutes} dk`:'—'} label="tek yön" /></div>
+          {hasLiveVehicles&&<div role="status" aria-live="polite" className={cn('mt-3 rounded-xl border p-3 text-[10px] leading-relaxed',liveSourceUnavailable?'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200':'border-[var(--border)] bg-[var(--surface-muted)] text-[var(--muted)]')}><span className="font-bold text-[var(--foreground)]">Canlı kaynak durumu: </span>{liveSourceHealthLabel}{liveSourceUnavailable&&' Güzergâh ve durak bilgileri kullanılmaya devam eder; varsa son geçerli konumlar gösterilir.'}</div>}
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3">
               <div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{resolvedFare?.shortLabel ?? selectedRoute.fareLabel}</p></div>

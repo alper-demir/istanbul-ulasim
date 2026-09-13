@@ -20,6 +20,9 @@ for (const [name, path] of checks) {
   if (name === 'source health') {
     const payload = await response.json();
     if (!payload.metrics?.liveVehicles) throw new Error('source health: canlı metrikleri eksik');
+    if (!['unknown', 'operational', 'unavailable'].includes(payload.status)) throw new Error('source health: çalışma durumu geçersiz');
+    const liveVehicleSource = payload.data?.find((source) => source.id === 'ibb-iett-vehicle-positions');
+    if (!liveVehicleSource || !('runtime' in liveVehicleSource)) throw new Error('source health: canlı araç runtime bilgisi eksik');
   }
   console.log(`✓ ${name}: ${response.status}`);
 }

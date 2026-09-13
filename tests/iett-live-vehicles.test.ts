@@ -6,8 +6,9 @@ const response = (payload: unknown) => `<GetHatOtoKonum_jsonResult>${JSON.string
 describe('IETT live response parsing', () => {
   it('exposes aggregate cache and upstream counters without vehicle-level logs', () => {
     expect(getIettLiveVehicleMetrics()).toEqual(expect.objectContaining({
-      cacheHits:expect.any(Number), staleResponses:expect.any(Number), upstreamRequests:expect.any(Number), upstreamFailures:expect.any(Number),
+      cacheHits:expect.any(Number), staleResponses:expect.any(Number), upstreamRequests:expect.any(Number), upstreamFailures:expect.any(Number), upstreamTimeouts:expect.any(Number), responseDurationSamples:expect.any(Number),
     }));
+    expect(getIettLiveVehicleMetrics()).toHaveProperty('lastFailureKind');
   });
 
   it('normalizes valid Istanbul coordinates and discards malformed records', () => {

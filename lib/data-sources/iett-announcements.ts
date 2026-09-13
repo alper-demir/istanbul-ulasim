@@ -1,3 +1,5 @@
+import { classifySourceFailure, type SourceRuntimeMetrics } from '@/lib/source-observability';
+
 export type AnnouncementStatus = 'active' | 'upcoming' | 'expired' | 'unknown';
 
 export type IettAnnouncement = {
@@ -19,17 +21,8 @@ export type AnnouncementSnapshot = {
   cacheStatus: 'miss' | 'hit' | 'stale';
 };
 
-export type AnnouncementMetrics = {
-  cacheHits: number;
-  staleResponses: number;
-  upstreamRequests: number;
-  upstreamFailures: number;
-  upstreamTimeouts: number;
+export type AnnouncementMetrics = SourceRuntimeMetrics & {
   discardedAnnouncements: number;
-  responseDurationMsTotal: number;
-  responseDurationSamples: number;
-  lastSuccessAt: string | null;
-  lastFailureAt: string | null;
 };
 
 const ENDPOINT = 'https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx';
@@ -49,8 +42,10 @@ const metrics: AnnouncementMetrics = {
   discardedAnnouncements: 0,
   responseDurationMsTotal: 0,
   responseDurationSamples: 0,
+  lastUpstreamRequestAt: null,
   lastSuccessAt: null,
   lastFailureAt: null,
+  lastFailureKind: null,
 };
 
 export function getIettAnnouncementMetrics(): AnnouncementMetrics {
@@ -141,6 +136,7 @@ export function parseIettAnnouncementResponse(body: string, now = Date.now()): I
 async function fetchSnapshot(): Promise<Omit<AnnouncementSnapshot, 'cacheStatus'>> {
   const startedAt = Date.now();
   metrics.upstreamRequests += 1;
+  metrics.lastUpstreamRequestAt = new Date(startedAt).toISOString();
   try {
     const response = await fetch(ENDPOINT, { method: 'POST', headers: { 'content-type': 'text/xml; charset=utf-8', SOAPAction: 'http://tempuri.org/GetDuyurular_json' }, body: soapEnvelope(), signal: AbortSignal.timeout(TIMEOUT_MS) });
     if (!response.ok) throw new Error(`İETT duyuru kaynağı ${response.status} döndürdü`);
@@ -152,11 +148,13 @@ async function fetchSnapshot(): Promise<Omit<AnnouncementSnapshot, 'cacheStatus'
     const announcements = parseIettAnnouncementResponse(body);
     metrics.discardedAnnouncements += Math.max(0, records - announcements.length);
     metrics.lastSuccessAt = new Date().toISOString();
+    metrics.lastFailureKind = null;
     return { announcements, fetchedAt: new Date().toISOString() };
   } catch (error) {
     metrics.upstreamFailures += 1;
     metrics.lastFailureAt = new Date().toISOString();
-    if (error instanceof DOMException && error.name === 'TimeoutError') metrics.upstreamTimeouts += 1;
+    metrics.lastFailureKind = classifySourceFailure(error);
+    if (metrics.lastFailureKind === 'timeout') metrics.upstreamTimeouts += 1;
     throw error;
   } finally {
     metrics.responseDurationMsTotal += Date.now() - startedAt;

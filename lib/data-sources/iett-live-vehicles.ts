@@ -1,5 +1,6 @@
 import type { TransitVehicle } from '@/lib/transit-fixtures';
 import { IETT_SOURCES } from '@/lib/data-sources/iett';
+import { classifySourceFailure, type SourceRuntimeMetrics } from '@/lib/source-observability';
 
 function configuredMilliseconds(name: string, fallback: number) {
   const value = Number(process.env[name]);
@@ -59,15 +60,7 @@ export type CachedLiveVehicleSnapshot = LiveVehicleSnapshot & {
   cacheTtlMs: number;
 };
 
-export type LiveVehicleMetrics = {
-  cacheHits:number;
-  staleResponses:number;
-  upstreamRequests:number;
-  upstreamFailures:number;
-  lastUpstreamRequestAt:string | null;
-  lastSuccessAt:string | null;
-  lastFailureAt:string | null;
-};
+export type LiveVehicleMetrics = SourceRuntimeMetrics;
 
 type CacheEntry = { snapshot:LiveVehicleSnapshot; expiresAt:number; staleAt:number };
 type FailureEntry = { retryAt:number; error:unknown };
@@ -77,8 +70,9 @@ const pendingRequests = new Map<string, Promise<LiveVehicleSnapshot>>();
 const upstreamRequestTimes: number[] = [];
 const recentFailures = new Map<string, FailureEntry>();
 const liveMetrics: LiveVehicleMetrics = {
-  cacheHits:0, staleResponses:0, upstreamRequests:0, upstreamFailures:0,
-  lastUpstreamRequestAt:null, lastSuccessAt:null, lastFailureAt:null,
+  cacheHits:0, staleResponses:0, upstreamRequests:0, upstreamFailures:0, upstreamTimeouts:0,
+  responseDurationMsTotal:0, responseDurationSamples:0,
+  lastUpstreamRequestAt:null, lastSuccessAt:null, lastFailureAt:null, lastFailureKind:null,
 };
 
 export function getIettLiveVehicleMetrics(): LiveVehicleMetrics {
@@ -213,20 +207,24 @@ async function fetchSnapshot(routeCode: string) {
   if (UPSTREAM_RATE_LIMIT > 0) upstreamRequestTimes.push(now);
   liveMetrics.upstreamRequests += 1;
   liveMetrics.lastUpstreamRequestAt = new Date(now).toISOString();
-
-  const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
-    method:'POST',
-    headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
-    body:soapEnvelope(routeCode),
-    cache:'no-store',
-    signal,
-  }), UPSTREAM_TIMEOUT_MS);
-  if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
-  const contentLength = Number(response.headers.get('content-length'));
-  if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
-    throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+  try {
+    const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
+      method:'POST',
+      headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
+      body:soapEnvelope(routeCode),
+      cache:'no-store',
+      signal,
+    }), UPSTREAM_TIMEOUT_MS);
+    if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
+    const contentLength = Number(response.headers.get('content-length'));
+    if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
+      throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+    }
+    return parseIettLiveVehicleResponse(await response.text(), routeCode);
+  } finally {
+    liveMetrics.responseDurationMsTotal += Date.now() - now;
+    liveMetrics.responseDurationSamples += 1;
   }
-  return parseIettLiveVehicleResponse(await response.text(), routeCode);
 }
 
 export async function getIettLiveVehicles(routeCode: string): Promise<CachedLiveVehicleSnapshot> {
@@ -249,6 +247,7 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
     pending = fetchSnapshot(key)
       .then((snapshot) => {
         liveMetrics.lastSuccessAt = new Date().toISOString();
+        liveMetrics.lastFailureKind = null;
         recentFailures.delete(key);
         snapshotCache.set(key, {
           snapshot,
@@ -261,6 +260,8 @@ export async function getIettLiveVehicles(routeCode: string): Promise<CachedLive
       .catch((error:unknown) => {
         liveMetrics.upstreamFailures += 1;
         liveMetrics.lastFailureAt = new Date().toISOString();
+        liveMetrics.lastFailureKind = classifySourceFailure(error);
+        if (liveMetrics.lastFailureKind === 'timeout') liveMetrics.upstreamTimeouts += 1;
         recentFailures.set(key, { retryAt:Date.now() + FAILURE_BACKOFF_MS, error });
         throw error;
       });
