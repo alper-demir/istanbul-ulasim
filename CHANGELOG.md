@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.14 — Hat geçişinde veri tutarlılığı
+
+- Hat değişirken önceki hat detaylarının yeni harita güzergâhıyla kısa süreli karışması engellendi.
+- Yeni güzergâh ve durak verisi doğrulanana kadar panelde açık bir yüklenme durumu gösteriliyor.
+- Hızlı ardışık hat ve yön değişimlerinde harita katmanları güncel seçili hat verisiyle eşleştirildi.
+
 ## 0.11.13 — Timeout sonrası yeniden kontrol düzeltmesi
 
 - Canlı veri veya duyuru timeout durumunun sonraki başarılı polling yanıtını engellememesi sağlandı.

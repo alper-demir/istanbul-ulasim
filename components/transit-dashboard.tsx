@@ -643,7 +643,6 @@ export function TransitDashboard() {
       if (!response.ok) throw new Error('Hat detayı alınamadı');
       return response.json();
     },
-    placeholderData: (previousData) => previousData,
     staleTime: 24 * 60 * 60 * 1000,
   });
   const fareCatalogQuery = useQuery({
@@ -794,6 +793,8 @@ export function TransitDashboard() {
   }), [comparisonQueries, comparisonRouteKeys, selectedDirection?.id, selectedRoute.id]);
   const selectedStopIndex = selectedStop ? selectedRoute.stops.findIndex((stop) => stop.id === selectedStop.id) : -1;
   const activeRoute = routeQuery.data?.data;
+  const routeDataReady = routeQuery.data?.data.id === selectedRouteId;
+  const routeTransitioning = routeQuery.isFetching && !routeDataReady;
   const isOfficialRoute = Boolean(staticRouteUrl(selectedRoute.id));
   const hasLiveVehicles = selectedRoute.supportsLiveVehicles ?? selectedRoute.id.startsWith('iett:');
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
@@ -1051,7 +1052,7 @@ export function TransitDashboard() {
     // throws and leaves the canvas blank, so wait until every transit layer is
     // available.
     if (!map || !mapReady || !activeRoute || !map.isStyleLoaded() || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE)) return;
-    const route = selectedRouteRef.current;
+    const route = selectedRoute;
     (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(route));
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(route));
     if (map.getSource(ENDPOINT_SOURCE)) (map.getSource(ENDPOINT_SOURCE) as GeoJSONSource).setData(endpointFeatures(route));
@@ -1067,7 +1068,10 @@ export function TransitDashboard() {
     setSelectedVehicle(null);
     setSelectedStop(null);
     fitRoute(map,route);
-  }, [activeRoute, mapReady, selectedDirectionId]);
+    // Route identity and direction are the transition boundaries; live vehicle
+    // refreshes should update markers without resetting the selected stop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRoute, mapReady, selectedDirectionId, selectedRoute.id]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1098,8 +1102,8 @@ export function TransitDashboard() {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(STOP_SOURCE)) return;
-    (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRouteRef.current, selectedStop?.id));
-  }, [activeRoute, mapReady, selectedDirectionId, selectedStop?.id]);
+    (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute, selectedStop?.id));
+  }, [activeRoute, mapReady, selectedDirectionId, selectedRoute, selectedStop?.id]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1122,6 +1126,8 @@ export function TransitDashboard() {
 
   const selectRoute = (route: TransitRouteSummary) => {
     setNearbyOpen(false);
+    setSelectedStop(null);
+    setSelectedVehicle(null);
     setSelectedDirectionId('outbound');
     setSelectedRouteId(route.id);
     rememberRecent({ kind:'route', id:route.id, title:route.code, subtitle:route.name });
@@ -1352,6 +1358,7 @@ export function TransitDashboard() {
       {!routeListOpen && <Button className="absolute left-5 top-[104px] z-20 hidden shadow-lg md:inline-flex" onClick={()=>setRouteListOpen(true)}><BusFront className="h-4 w-4" />Hatları göster</Button>}
 
       <aside className={cn('glass-panel absolute bottom-3 left-3 right-3 z-20 max-h-[58vh] overflow-y-auto rounded-2xl transition-transform md:bottom-auto md:left-auto md:right-5 md:top-[104px] md:max-h-[calc(100vh-128px)] md:w-[350px]',!mobilePanelOpen&&'translate-y-[calc(100%+24px)] md:translate-y-0')}>
+        {routeTransitioning && <div className="absolute inset-0 z-[60] grid place-items-center rounded-2xl bg-[var(--surface-strong)]/95 p-6 text-center backdrop-blur-sm"><div><div className="mx-auto h-7 w-7 animate-spin rounded-full border-3 border-[var(--primary-soft)] border-t-[var(--primary)]" /><p className="mt-3 text-xs font-bold">Hat verisi yükleniyor</p><p className="mt-1 text-[10px] text-[var(--muted)]">Yeni güzergâh ve duraklar hazırlanıyor.</p></div></div>}
         <div data-route-panel-sticky className="sticky top-0 z-30 bg-[var(--surface-strong)] shadow-[0_8px_18px_rgba(0,0,0,0.12)]">
         <div className="isolate border-b border-[var(--border)] px-4 py-4">
           <div className="flex items-start gap-3">
