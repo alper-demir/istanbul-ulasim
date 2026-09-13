@@ -729,6 +729,24 @@ export function TransitDashboard() {
     refetchIntervalInBackground:false,
     retry:1,
   });
+  const [liveVehiclesTimeoutKey, setLiveVehiclesTimeoutKey] = useState<string|null>(null);
+  const [announcementsTimeoutKey, setAnnouncementsTimeoutKey] = useState<string|null>(null);
+  const [globalAnnouncementsTimeoutKey, setGlobalAnnouncementsTimeoutKey] = useState<string|null>(null);
+  useEffect(() => {
+    if (!liveVehiclesQuery.isLoading) return;
+    const timeoutHandle = window.setTimeout(() => setLiveVehiclesTimeoutKey(`${selectedRouteId}:loading`), CLIENT_DATA_TIMEOUT_MS);
+    return () => window.clearTimeout(timeoutHandle);
+  }, [liveVehiclesQuery.isLoading, selectedRouteId]);
+  useEffect(() => {
+    if (!announcementsQuery.isLoading) return;
+    const timeoutHandle = window.setTimeout(() => setAnnouncementsTimeoutKey(selectedRouteId), CLIENT_DATA_TIMEOUT_MS);
+    return () => window.clearTimeout(timeoutHandle);
+  }, [announcementsQuery.isLoading, selectedRouteId]);
+  useEffect(() => {
+    if (!announcementsOpen || !globalAnnouncementsQuery.isLoading) return;
+    const timeoutHandle = window.setTimeout(() => setGlobalAnnouncementsTimeoutKey('global'), CLIENT_DATA_TIMEOUT_MS);
+    return () => window.clearTimeout(timeoutHandle);
+  }, [announcementsOpen, globalAnnouncementsQuery.isLoading]);
   const comparisonQueries = useQueries({
     queries: comparisonRouteKeys.map(({ routeId }) => ({
       queryKey:['comparison-route', TRANSIT_DATA_VERSION, routeId],
@@ -779,10 +797,13 @@ export function TransitDashboard() {
   const isOfficialRoute = Boolean(staticRouteUrl(selectedRoute.id));
   const hasLiveVehicles = selectedRoute.supportsLiveVehicles ?? selectedRoute.id.startsWith('iett:');
   const liveVehicleStatus = liveVehiclesQuery.data?.meta.status;
-  const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading;
+  const liveVehiclesTimedOut = liveVehiclesTimeoutKey === `${selectedRouteId}:loading`;
+  const announcementsTimedOut = announcementsTimeoutKey === selectedRouteId;
+  const globalAnnouncementsTimedOut = announcementsOpen && globalAnnouncementsTimeoutKey === 'global';
+  const liveVehiclesLoading = hasLiveVehicles && liveVehiclesQuery.isLoading && !liveVehiclesTimedOut;
   const liveVehicleRuntime = sourceHealthQuery.data?.data.find((source) => source.id === 'ibb-iett-vehicle-positions')?.runtime;
   const liveSourceUnavailable = liveVehicleRuntime?.operationalStatus === 'unavailable';
-  const liveVehiclesUnavailable = hasLiveVehicles && (liveVehiclesQuery.isError || liveSourceUnavailable);
+  const liveVehiclesUnavailable = hasLiveVehicles && (liveVehiclesQuery.isError || liveSourceUnavailable || liveVehiclesTimedOut);
   const liveCacheStatus = liveVehiclesQuery.data?.meta.cacheStatus;
   const mapVehicles = useSmoothedVehicleMarkers({
     vehicles:selectedRoute.vehicles,
@@ -813,7 +834,7 @@ export function TransitDashboard() {
       : liveVehicleStatus === 'pending'
         ? 'Yoğunluk nedeniyle canlı konum isteği sıraya alındı'
       : liveSourceTimestamp
-        ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' || liveVehiclesQuery.isError ? ' · eski veri' : liveCacheStatus === 'hit' ? ' · taze önbellek' : ' · yeni kaynak yanıtı'}${liveSnapshotTimestamp ? ` · yanıt alındı: ${liveSnapshotTimestamp}` : ''}`
+        ? `Son canlı kayıt: ${liveSourceTimestamp}${liveVehicleStatus === 'stale' || liveVehiclesQuery.isError || liveVehiclesTimedOut ? ' · eski veri' : liveCacheStatus === 'hit' ? ' · taze önbellek' : ' · yeni kaynak yanıtı'}${liveSnapshotTimestamp ? ` · yanıt alındı: ${liveSnapshotTimestamp}` : ''}`
         : 'İETT şu an bu hat için canlı konum bildirmiyor';
   const liveSourceHealthLabel = liveSourceUnavailable
     ? 'Canlı kaynakta geçici sorun var'
@@ -1287,7 +1308,7 @@ export function TransitDashboard() {
 
       {toast&&<div role="status" aria-live="polite" className="glass-panel absolute left-1/2 top-[92px] z-[80] -translate-x-1/2 rounded-xl px-4 py-2.5 text-xs font-semibold shadow-xl">{toast}</div>}
 
-      {announcementsOpen&&<GlobalAnnouncementsDialog announcements={globalAnnouncements} routes={routes} modeFilter={announcementModeFilter} loading={globalAnnouncementsQuery.isLoading} error={globalAnnouncementsQuery.isError} staleData={globalAnnouncementsQuery.isError&&Boolean(globalAnnouncementsQuery.data?.data.length)} cacheStatus={globalAnnouncementsQuery.data?.meta.cacheStatus} fetchedAt={globalAnnouncementsQuery.data?.meta.fetchedAt} onModeFilterChange={setAnnouncementModeFilter} onRetry={()=>void globalAnnouncementsQuery.refetch()} onClose={()=>setAnnouncementsOpen(false)} />}
+      {announcementsOpen&&<GlobalAnnouncementsDialog announcements={globalAnnouncements} routes={routes} modeFilter={announcementModeFilter} loading={globalAnnouncementsQuery.isLoading&&!globalAnnouncementsTimedOut} error={globalAnnouncementsQuery.isError||globalAnnouncementsTimedOut} staleData={(globalAnnouncementsQuery.isError||globalAnnouncementsTimedOut)&&Boolean(globalAnnouncementsQuery.data?.data.length)} cacheStatus={globalAnnouncementsQuery.data?.meta.cacheStatus} fetchedAt={globalAnnouncementsQuery.data?.meta.fetchedAt} onModeFilterChange={setAnnouncementModeFilter} onRetry={()=>{void globalAnnouncementsQuery.refetch();}} onClose={()=>setAnnouncementsOpen(false)} />}
 
       {aboutOpen&&<div className="absolute inset-0 z-[70] grid place-items-center bg-slate-950/35 p-3 backdrop-blur-[2px]" role="presentation" onClick={()=>setAboutOpen(false)}>
         <section ref={aboutDialogRef} role="dialog" aria-modal="true" aria-labelledby="about-title" className="glass-panel max-h-[min(620px,calc(100dvh-32px))] w-full max-w-md overflow-y-auto rounded-2xl p-5 shadow-2xl" onClick={(event)=>event.stopPropagation()}>
@@ -1349,7 +1370,7 @@ export function TransitDashboard() {
           {routeData.directions && routeData.directions.length > 1 && <div className="mb-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Yön seçimi</p><div className="grid grid-cols-2 gap-2">{routeData.directions.map((direction)=><button key={direction.id} type="button" aria-pressed={selectedDirection?.id===direction.id} onClick={()=>setSelectedDirectionId(direction.id)} className={cn('rounded-xl border px-3 py-2.5 text-left transition',selectedDirection?.id===direction.id?'border-[var(--primary)] bg-[var(--primary-soft)] text-[var(--primary)]':'border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--primary)]')}><span className="block text-[9px] font-black uppercase tracking-wide opacity-70">Başlangıç → Bitiş</span><span className="mt-1 block line-clamp-2 text-xs font-bold">{direction.name}</span></button>)}</div></div>}
           <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3"><div className="flex items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Hat karşılaştır</p><p className="mt-1 text-[10px] text-[var(--muted)]">Haritada en fazla 3 hat tut.</p></div><Button variant="secondary" size="sm" disabled={!comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))&&comparisonRouteKeys.length>=3} onClick={toggleComparisonRoute}><RouteIcon className="h-3.5 w-3.5" />{comparisonRouteKeys.some((item)=>item.routeId===selectedRoute.id&&item.directionId===(selectedDirection?.id??selectedDirectionId))?'Çıkar':'Ekle'}</Button></div>{comparisonRouteKeys.length>0&&<><div className="mt-2 flex flex-wrap gap-1.5">{comparisonRouteKeys.map((item)=>{const route=routes.find((candidate)=>candidate.id===item.routeId);return <button key={`${item.routeId}-${item.directionId}`} onClick={()=>removeComparisonRoute(item.routeId,item.directionId)} className="inline-flex items-center gap-1 rounded-md bg-[var(--surface-strong)] px-2 py-1 text-[10px] font-bold text-[var(--muted)] hover:text-[var(--foreground)]"><span className="h-1.5 w-1.5 rounded-full" style={{background:route?.color??'var(--primary)'}} />{route?.code??item.routeId.replace('iett:','')}<X className="h-3 w-3" /></button>;})}</div><button type="button" onClick={clearComparisonRoutes} className="mt-2 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--foreground)]">Karşılaştırmayı temizle</button></>}</div>
           <div id="route-summary" className="scroll-mt-32 grid grid-cols-3 gap-2">{hasLiveVehicles?<Metric icon={<BusFront />} value={liveVehiclesLoading?'…':String(selectedRoute.vehicles.length)} label="canlı araç" />:<Metric icon={<TramFront />} value="Statik" label="hat verisi" />}<Metric icon={<MapPin />} value={String(selectedRoute.stops.length)} label={stopKind(selectedRoute.mode)} /><Metric icon={<Clock3 />} value={selectedRoute.durationMinutes?`${selectedRoute.durationMinutes} dk`:'—'} label="tek yön" /></div>
-          {hasLiveVehicles&&<div role="status" aria-live="polite" className={cn('mt-3 rounded-xl border p-3 text-[10px] leading-relaxed',liveSourceUnavailable||liveVehiclesQuery.isError?'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200':'border-[var(--border)] bg-[var(--surface-muted)] text-[var(--muted)]')}><span className="font-bold text-[var(--foreground)]">Canlı kaynak durumu: </span>{liveSourceHealthLabel}{liveVehiclesQuery.data&&liveVehiclesQuery.isError&&' Son geçerli canlı konumlar gösteriliyor; yeni veri alınamadı.'}{liveSourceLastSuccess&&<span className="mt-1 block">Son başarılı canlı istek: {liveSourceLastSuccess}</span>}{liveSourceUnavailable&&' Güzergâh ve durak bilgileri kullanılmaya devam eder.'}</div>}
+          {hasLiveVehicles&&<div role="status" aria-live="polite" className={cn('mt-3 rounded-xl border p-3 text-[10px] leading-relaxed',liveSourceUnavailable||liveVehiclesQuery.isError||liveVehiclesTimedOut?'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200':'border-[var(--border)] bg-[var(--surface-muted)] text-[var(--muted)]')}><span className="font-bold text-[var(--foreground)]">Canlı kaynak durumu: </span>{liveSourceHealthLabel}{liveVehiclesQuery.data&&(liveVehiclesQuery.isError||liveVehiclesTimedOut)&&' Son geçerli canlı konumlar gösteriliyor; yeni veri alınamadı.'}{liveSourceLastSuccess&&<span className="mt-1 block">Son başarılı canlı istek: {liveSourceLastSuccess}</span>}{liveSourceUnavailable&&' Güzergâh ve durak bilgileri kullanılmaya devam eder.'}</div>}
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">
             <div className="flex items-center justify-between gap-3">
               <div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Ücret tarifesi</p><p className="mt-1 text-sm font-bold">{resolvedFare?.shortLabel ?? selectedRoute.fareLabel}</p></div>
@@ -1360,9 +1381,9 @@ export function TransitDashboard() {
           </div>
           {selectedRouteId.startsWith('iett:') && <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
             <div className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-300" /><p className="text-xs font-extrabold">İETT duyuruları</p><span className="ml-auto text-[9px] font-semibold text-[var(--muted)]">{announcementsQuery.data?.meta.cacheStatus === 'stale' ? 'önceki yanıt' : 'kaynaklı'}</span></div>
-            {announcementsQuery.isLoading && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular kontrol ediliyor…</p>}
-            {announcementsQuery.isError && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular geçici olarak alınamadı. Hat ve araç bilgileri kullanılmaya devam ediyor.</p>}
-            {!announcementsQuery.isLoading && !announcementsQuery.isError && !(announcementsQuery.data?.data.length) && <p className="mt-2 text-[10px] text-[var(--muted)]">Bu hat için aktif duyuru bulunmuyor.</p>}
+            {announcementsQuery.isLoading&&!announcementsTimedOut && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular kontrol ediliyor…</p>}
+            {(announcementsQuery.isError||announcementsTimedOut) && <p className="mt-2 text-[10px] text-[var(--muted)]">Duyurular geçici olarak alınamadı. Hat ve araç bilgileri kullanılmaya devam ediyor.</p>}
+            {!announcementsQuery.isLoading&&!announcementsQuery.isError&&!announcementsTimedOut && !(announcementsQuery.data?.data.length) && <p className="mt-2 text-[10px] text-[var(--muted)]">Bu hat için aktif duyuru bulunmuyor.</p>}
             {announcementsQuery.data?.data.slice(0, 3).map((announcement) => <details key={announcement.id} className="mt-2 rounded-lg bg-[var(--surface-strong)] p-2"><summary className="cursor-pointer text-[11px] font-bold">{announcement.title}{announcement.announcementType&&<span className="ml-1.5 rounded bg-[var(--primary-soft)] px-1 py-0.5 text-[9px] text-[var(--primary)]">{announcement.announcementType}</span>}</summary><p className="mt-2 text-[10px] leading-relaxed text-[var(--muted)]">{announcement.description}</p>{announcement.sourceUpdateLabel&&<p className="mt-1 text-[9px] text-[var(--muted)]">{announcement.sourceUpdateLabel}</p>}</details>)}
           </div>}
           <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-3">

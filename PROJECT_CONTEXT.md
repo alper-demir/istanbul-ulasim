@@ -4,7 +4,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.11`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
+- Güncel hedef sürüm: `0.11.12`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
 - Aktif yerel çalışma dalı: `feature/performance-polish-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.

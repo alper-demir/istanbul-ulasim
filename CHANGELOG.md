@@ -2,6 +2,11 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.12 — Yüklenme güvenlik durumu
+
+- İstemci sorgusu başlatılamasa veya framework sorgusu beklemede kalsa bile 12 saniye sonra canlı araç ve duyuru panelleri uyarı durumuna geçer.
+- Global duyurularda eski veri görünürlüğü zaman aşımı durumunu da kapsar.
+
 ## 0.11.11 — Canlı veri zaman aşımı ve eski veri görünürlüğü
 
 - Canlı araç, hat duyurusu, global duyuru ve kaynak sağlık istemcilerine 12 saniyelik istemci zaman aşımı eklendi.
