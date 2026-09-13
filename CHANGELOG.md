@@ -2,6 +2,20 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.3 — Metro İstanbul duyuruları
+
+### Eklendi
+
+- Metro İstanbul’un resmî duyuru listesi global duyuru endpointine eklendi.
+- Metro kayıtlarında başlık, özet, tespit edilen hat kodları ve gerçek detay sayfası bağlantısı korunuyor.
+- Metro kaynağı için süreç içi cache, stale fallback, timeout ve source-health runtime metrikleri eklendi.
+- İETT ve Metro kaynaklarından biri geçici olarak bozulduğunda diğer kaynak duyuruları gösterilmeye devam ediyor.
+- Kaynak listesinin aşırı büyümesini önlemek için Metro en güncel 30, arayüz global paneli ilk 40 kaydı gösteriyor.
+
+### Sınırlar
+
+- Şehir Hatları ve Marmaray duyuruları henüz bağlanmadı; doğrulanmamış kayıt gösterilmiyor.
+
 ## 0.11.2 — İETT duyuru içeriği düzeltmesi
 
 - İETT SOAP yanıtındaki gerçek büyük harfli alanlar (`HATKODU`, `HAT`, `TIP`, `GUNCELLEME_SAATI`, `MESAJ`) doğru eşleştirildi.

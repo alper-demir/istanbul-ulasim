@@ -150,8 +150,9 @@ Tamamlanan dal: `feature/global-disruptions`
 - Mevcut İETT duyuru endpointi, hat filtresi olmadan tüm aktif/gelecek İETT duyurularını sunacak şekilde kullanıcı akışına bağlandı.
 - Otobüs, raylı ve vapur filtreleri; etkilenen hat kapsamı, cache/stale durumu ve kaynak alınma zamanı eklendi.
 - Doğrulanmış kaynak bulunmayan ulaşım türleri kullanıcıya açıkça “henüz kapsanmıyor” olarak belirtiliyor.
+- Metro İstanbul’un resmî duyuru listesi ikinci kaynak olarak eklendi; kaynak durumu `/api/v1/source-health` içinde izleniyor.
 
-Kabul: Duyuru yokluğu kesintisizlik garantisi olarak sunulmaz; kaynak hatası ve stale yanıt kullanıcıya bildirilir. Yeni ortak cache veya doğrulanmamış ulaşım kaynağı eklenmez.
+Kabul: Duyuru yokluğu kesintisizlik garantisi olarak sunulmaz; kaynak hatası ve stale yanıt kullanıcıya bildirilir. İETT ve Metro kaynaklarından biri bozulduğunda diğeri çalışmaya devam eder. Şehir Hatları ve Marmaray için doğrulanmış adaptör henüz yoktur.
 
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
