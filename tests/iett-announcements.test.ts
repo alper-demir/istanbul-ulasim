@@ -32,4 +32,10 @@ describe('IETT announcement normalization', () => {
     const xml = '<soap:Envelope><GetDuyurular_jsonResult>[{&quot;duyuruId&quot;:&quot;soap-1&quot;,&quot;baslik&quot;:&quot;500T duyurusu&quot;,&quot;hatKodu&quot;:&quot;500T&quot;}]</GetDuyurular_jsonResult></soap:Envelope>';
     expect(parseIettAnnouncementResponse(xml)).toMatchObject([{ id: 'soap-1', title: '500T duyurusu', routeCodes: ['500T'] }]);
   });
+
+  it('maps the live IETT uppercase fields to meaningful user-facing content', () => {
+    const result = normalizeIettAnnouncements([{ HATKODU: '10B', HAT: 'BOSTANCI - KADIKÖY', TIP: 'Günlük', GUNCELLEME_SAATI: 'Kayıt Saati: 16:07', MESAJ: 'MAÇ NEDENİYLE GÜZERGAH DEĞİŞİKLİĞİ UYGULANMAKTADIR.' }]);
+    expect(result[0]).toMatchObject({ title: 'BOSTANCI - KADIKÖY', description: 'MAÇ NEDENİYLE GÜZERGAH DEĞİŞİKLİĞİ UYGULANMAKTADIR.', routeCodes: ['10B'], announcementType: 'Günlük', sourceUpdateLabel: 'Kayıt Saati: 16:07' });
+    expect(result[0]?.title).not.toBe('İETT duyurusu');
+  });
 });

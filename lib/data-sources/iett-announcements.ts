@@ -7,6 +7,9 @@ export type IettAnnouncement = {
   title: string;
   description: string;
   routeCodes: string[];
+  routeName: string | null;
+  announcementType: string | null;
+  sourceUpdateLabel: string | null;
   stopCodes: string[];
   publishedAt: string | null;
   effectiveFrom: string | null;
@@ -98,14 +101,17 @@ export function normalizeIettAnnouncements(value: unknown, now = Date.now()): Ie
   const normalized: IettAnnouncement[] = [];
   records.forEach((record, index) => {
     const id = text(pick(record, ['id', 'duyuruid', 'duyuruid'])) || `iett-announcement-${index + 1}`;
-    const title = text(pick(record, ['title', 'baslik', 'duyurubaslik'])) || 'İETT duyurusu';
-    const description = text(pick(record, ['description', 'aciklama', 'duyuru'])) || title;
+    const routeName = text(pick(record, ['routeName', 'hat', 'hatadi'])) || null;
+    const announcementType = text(pick(record, ['announcementType', 'type', 'tip'])) || null;
+    const sourceUpdateLabel = text(pick(record, ['sourceUpdateLabel', 'guncellemesaati', 'guncelleme_saati', 'güncellemesaati'])) || null;
     const publishedAt = parseDate(pick(record, ['publishedAt', 'tarih', 'duyurutarihi', 'yayinlanmatarihi']));
     const effectiveFrom = parseDate(pick(record, ['effectiveFrom', 'baslangictarihi', 'gecerlilikbaslangic']));
     const effectiveTo = parseDate(pick(record, ['effectiveTo', 'bitistarihi', 'gecerlilikbitis']));
     const routeCodes = codes(pick(record, ['routeCodes', 'hatkodu', 'hatlar', 'hat']));
     const stopCodes = codes(pick(record, ['stopCodes', 'durakkodu', 'duraklar', 'durak']));
-    const item: IettAnnouncement = { id, title, description, routeCodes, stopCodes, publishedAt, effectiveFrom, effectiveTo, sourceUrl: SOURCE_URL, status: statusFor(effectiveFrom, effectiveTo, now) };
+    const title = text(pick(record, ['title', 'baslik', 'duyurubaslik'])) || routeName || (routeCodes.length ? `${routeCodes[0]} duyurusu` : 'İETT duyurusu');
+    const description = text(pick(record, ['description', 'aciklama', 'duyuru', 'message', 'mesaj'])) || title;
+    const item: IettAnnouncement = { id, title, description, routeCodes, routeName, announcementType, sourceUpdateLabel, stopCodes, publishedAt, effectiveFrom, effectiveTo, sourceUrl: SOURCE_URL, status: statusFor(effectiveFrom, effectiveTo, now) };
     if (seen.has(id)) return;
     seen.add(id);
     if (item.status !== 'expired') normalized.push(item);
