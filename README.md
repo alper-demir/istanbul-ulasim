@@ -192,7 +192,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.11.9`. Kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, bir sonraki araç durumları, durak merkezli sefer akışı, gün türü otomatik seçilen planlı sefer snapshot'ları, kalıcı masaüstü/mobil E2E kontrolleri ve snapshot bakım/fark raporu kapısı bu sürümde yayımlanır.
+Güncel sürüm: `0.11.10`. Kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, bir sonraki araç durumları, durak merkezli sefer akışı, gün türü otomatik seçilen planlı sefer snapshot'ları, kalıcı masaüstü/mobil E2E kontrolleri, snapshot bakım/fark raporu kapısı ve performans polish kontrolleri bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 

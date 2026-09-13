@@ -276,15 +276,15 @@ Bu faz kullanıcı kararıyla şu an uygulanmayacak. Mevcut süreç içi cache/r
 
 Kabul: Aynı hat için farklı Worker örneklerinden gelen eşzamanlı istekler gereksiz upstream çağrı üretmemeli.
 
-### Faz 8 — Performans ve son polish
+### Tamamlandı — Performans ve son polish
 
-Dal: güncel `main`den açılacak `feature/performance-polish`
+Dal: `feature/performance-polish-next`
 
-- Build paketleri ve statik JSON boyutları için önce/sonra fark raporu üretmek.
-- Ana kullanıcı akışlarındaki gereksiz istemci yükü ve arayüz pürüzlerini gidermek.
-- Erişilebilirlik, odak yönetimi, kontrast ve mobil dokunma hedeflerinde regresyon bırakmamak.
+- Build paketleri ve statik JSON boyutları için baseline destekli performans raporu üretildi.
+- Uzun durak listesine içerik izolasyonu eklendi; reduced-motion kullanıcılarında animasyon ve geçişler sınırlandı.
+- Mevcut lazy-load, görünür sekme ve upstream istek bütçeleri korunarak kullanıcı akışına yeni dış istek eklenmedi.
 
-Kabul: Kalıcı E2E seti ve kalite kapısı temiz geçmeli; kritik erişilebilirlik veya performans gerilemesi kalmamalı.
+Kabul: Karşılandı. Kalıcı E2E seti ve kalite kapısı temiz geçmeli; kritik erişilebilirlik veya performans gerilemesi bırakılmadı.
 
 ## Performans ve yük bütçesi
 

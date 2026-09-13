@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.9`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı ve güvenli snapshot bakım/fark raporu akışı eklendi.
-- Aktif yerel çalışma dalı: `feature/snapshot-maintenance-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
+- Güncel hedef sürüm: `0.11.10`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı ve performans polish kontrolleri eklendi.
+- Aktif yerel çalışma dalı: `feature/performance-polish-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -114,7 +114,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.9` ile snapshot bakımında hat/yön/sefer/geçerlilik farkları raporlanır ve inceleme gerektiren çıktı otomatik yayımlanmaz. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.10` ile performans baseline raporu, uzun liste içerik izolasyonu ve reduced-motion koruması eklendi. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

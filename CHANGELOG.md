@@ -2,6 +2,12 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.10 — Performans ve son polish
+
+- Performans raporu artık baseline karşılaştırması ve isteğe bağlı çıktı yolu destekliyor; JS/toplam çıktı farkını raporluyor.
+- Uzun durak listesinde içerik izolasyonu ve `prefers-reduced-motion` için genel animasyon/geçiş koruması eklendi.
+- Kullanıcı akışına yeni upstream isteği eklenmedi; statik sefer lazy-load davranışı korunuyor.
+
 ## 0.11.9 — Snapshot bakım ve fark raporu kapısı
 
 - Statik sefer snapshot'ları için hat, yön, sefer özeti, kaynak ve geçerlilik metadata farkları ayrıntılı raporlanıyor.

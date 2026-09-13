@@ -64,6 +64,16 @@ button:not(:disabled), a[href], [role='button']:not([aria-disabled='true']) { cu
 /* MapLibre's base stylesheet sets its root to relative.  This map is a
    full-screen application layer, so preserve the Tailwind inset dimensions. */
 .maplibregl-map { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; }
+.route-stop-list { contain: content; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 @media (max-width: 767px) {
   .maplibregl-ctrl-bottom-right { bottom: 178px; }
