@@ -9,6 +9,51 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
+## Session devralma özeti — 14 Eylül 2026
+
+- Son commit: `54d56bd fix: prevent stale route details during switching`
+- Son sürüm: `0.11.14`
+- Son doğrulanan dal: `feature/performance-polish-next`
+- Bu session’da tamamlanan son düzeltme, hızlı hat geçişlerinde eski hattın durak listesinin yeni hattın harita güzergâhıyla karışmasını engeller.
+- Hat detay sorgusunda önceki route verisini `placeholderData` olarak tutma kaldırıldı. Yeni route verisi seçili route kimliğiyle eşleşene kadar panelde “Hat verisi yükleniyor” örtüsü gösterilir.
+- MapLibre route/stop katmanları güncel `selectedRoute` verisini kullanır; hızlı ardışık hat ve yön değişimleri için tarayıcıda doğrulandı.
+- Kullanıcıya ait üretim/test çıktıları olan `data/reports/`, `playwright-report/` ve `test-results/` untracked dizinleri korunuyor; bu session’da commit edilmedi.
+
+### Son kabul kontrolleri
+
+- `npm run typecheck` başarılı.
+- `npm run lint` başarılı.
+- `npm test -- --run` başarılı: 19 test dosyası, 60 test.
+- `npm run build` başarılı. Yalnızca mevcut büyük client bundle için Vite boyut uyarısı var.
+- Tarayıcıda `34BZ → 500T → 41ST → 34BZ` hızlı geçişi yapıldı; son panel ve duraklar yalnızca son seçili hatta aitti.
+- Tarayıcıda 34BZ yön değişimi yapıldı; URL `direction=return` olarak güncellendi.
+- Yeniden başlatma sonrası `http://localhost:3000/api/v1/live-vehicles?route=500T` 200 döndü ve 3 araç verdi. Bu snapshot’taki üç aracın tamamı `return` yönünde olduğundan 500T `outbound` görünümünde 0 araç, `return` görünümünde 3 araç görülmesi beklenen davranıştır.
+
+### Yeni session başlangıç komutları
+
+```powershell
+Set-Location E:\Alper\Projeler\istanbulum\apps\web
+npm install
+npm run typecheck
+npm run lint
+npm test -- --run
+npm run dev -- --force
+```
+
+Yerel uygulama: `http://localhost:3000/`
+
+Canlı araç kontrolü: `http://localhost:3000/api/v1/live-vehicles?route=500T`
+
+Kaynak sağlığı: `http://localhost:3000/api/v1/source-health`
+
+### Devam ederken dikkat edilecekler
+
+- 500T’de canlı araç sayısını kontrol ederken mutlaka seçili yönü de kontrol et; canlı araçlar yön bazında filtrelenir.
+- Canlı araç verisi kesin ETA değildir. Araç hiç dönmeyebilir, eski snapshot gösterilebilir veya yönlerden yalnızca biri dolu olabilir.
+- Cloudflare Cache/KV, Durable Object, Redis, yol tarifi ve yolculuk planı bu kapsamda değildir.
+- `main`e merge, deploy veya GitHub push kullanıcı onayı olmadan yapılmayacak.
+- Sonraki geliştirmeye başlamadan önce `NEXT_PHASES_PLAN.md` içindeki açık fazlar ve bu belgedeki test durumu birlikte okunmalı.
+
 Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve vapur hatlarını yön bazlı durak/istasyon/iskeleleriyle haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
 
 ## Kullanıcıya sunulan özellikler
