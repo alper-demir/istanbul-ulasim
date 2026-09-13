@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFile, stat } from 'node:fs/promises';
-import { parseScheduleManifestPayload, parseSchedulePayload, scheduleAvailability, scheduleTimeToMinutes } from '@/lib/schedule-data';
+import { parseScheduleManifestPayload, parseSchedulePayload, scheduleAvailability, scheduleDayTypeForDate, scheduleTimeToMinutes } from '@/lib/schedule-data';
 
 const validPayload = {
   data: {
@@ -66,6 +66,17 @@ describe('schedule data contract', () => {
     expect(scheduleAvailability(source, new Date('2026-08-31T21:30:00.000Z'))).toBe('valid');
     expect(scheduleAvailability(source, new Date('2027-01-01T00:00:00.000Z'))).toBe('expired');
     expect(scheduleAvailability({ ...source, validityUnknown: true, effectiveFrom: undefined, effectiveTo: undefined })).toBe('unknown');
+  });
+
+  it('selects the day type using the Istanbul weekday instead of the first pattern', () => {
+    const dayTypes = [
+      { id:'weekday', label:'Hafta içi', weekdays:[1, 2, 3, 4, 5] },
+      { id:'saturday', label:'Cumartesi', weekdays:[6] },
+      { id:'sunday', label:'Pazar', weekdays:[7] },
+    ];
+    expect(scheduleDayTypeForDate(dayTypes, new Date('2026-09-13T10:00:00Z'))).toBe('sunday');
+    expect(scheduleDayTypeForDate(dayTypes, new Date('2026-09-12T10:00:00Z'))).toBe('saturday');
+    expect(scheduleDayTypeForDate(dayTypes, new Date('2026-09-14T10:00:00Z'))).toBe('weekday');
   });
 
   it('validates manifest counts and blocks paths outside the schedule directory', () => {

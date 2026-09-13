@@ -4,8 +4,8 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.5`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, bir sonraki araç durumları ve durak merkezli sefer akışı eklendi.
-- Aktif yerel çalışma dalı: `feature/multi-source-announcements`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
+- Güncel hedef sürüm: `0.11.6`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, gün türü otomatik seçilen planlı seferler, bir sonraki araç durumları ve durak merkezli sefer akışı eklendi.
+- Aktif yerel çalışma dalı: `feature/rail-schedule-lite-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
@@ -114,7 +114,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.5` ile Marmaray/TCDD duyuruları eklendi; sonraki öncelik duyuru tarih/aktiflik ayrıştırmasını kaynak bazında güçlendirmektir. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.6` ile planlı seferlerde İstanbul saatine göre gün türü otomatik seçimi eklendi; sonraki öncelik Marmaray/M11 tarifelerinin kapsam ve geçerlilik denetimini güçlendirmektir. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

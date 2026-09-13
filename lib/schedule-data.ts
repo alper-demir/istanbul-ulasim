@@ -297,6 +297,18 @@ export function istanbulDate(now = new Date()) {
   return `${values.year}-${values.month}-${values.day}`;
 }
 
+export function istanbulWeekday(now = new Date()) {
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone:'Europe/Istanbul', weekday:'short' }).format(now);
+  return ({ Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6, Sun:7 } as const)[weekday as 'Mon'|'Tue'|'Wed'|'Thu'|'Fri'|'Sat'|'Sun'] ?? 1;
+}
+
+export function scheduleDayTypeForDate(dayTypes:ScheduleDayType[], now = new Date()) {
+  const weekday = istanbulWeekday(now);
+  return dayTypes.find((dayType) => dayType.weekdays?.includes(weekday))?.id
+    ?? dayTypes.find((dayType) => dayType.id === (weekday >= 6 ? (weekday === 6 ? 'saturday' : 'sunday') : 'weekday'))?.id
+    ?? dayTypes[0]?.id;
+}
+
 export function scheduleAvailability(source: ScheduleSource, now = new Date()): ScheduleAvailability {
   if (source.validityUnknown || !source.effectiveFrom || !source.effectiveTo) return 'unknown';
   const today = istanbulDate(now);

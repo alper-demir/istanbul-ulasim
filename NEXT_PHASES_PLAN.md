@@ -191,6 +191,7 @@ Tamamlanan küçük dilim:
 - M7'nin kaynakta yayımlanan kısa işletme yönlerini statik rota kesitleriyle ayrı ayrı eşleme; M11 ve B1 için işletmeci kaynak adaptörünü doğrulama.
 - Gece Metrosu ve hat bazlı işletme saati notlarını ayrı gün türü/uyarı olarak taşıma.
 - Eksik hatlarda tahmini saat üretmek yerine resmî kaynak bağlantısı ve işletme saati özeti gösterme.
+- Planlı sefer penceresinde gün türünü İstanbul saatine göre otomatik seçme; kullanıcıya manuel değiştirme seçeneğini koruma.
 
 Kabul: Seçilen tarihe ait kaynak verisi doğrulanmadan “bugün” filtresi açılmamalı.
 

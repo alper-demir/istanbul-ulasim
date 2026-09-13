@@ -2,6 +2,14 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.6 — Tarifede doğru gün türü seçimi
+
+### Eklendi
+
+- Planlı sefer penceresi, ilk kayıt yerine İstanbul saatine göre bugünün gün türünü otomatik seçiyor.
+- Hafta içi, cumartesi ve pazar ayrımı kaynakta haftanın günleriyle tanımlıysa doğrudan eşleştiriliyor.
+- Kullanıcı otomatik seçimi her zaman elle değiştirebiliyor; canlı ETA veya kesin varış tahmini eklenmedi.
+
 ## 0.11.5 — Marmaray/TCDD duyuruları
 
 ### Eklendi
