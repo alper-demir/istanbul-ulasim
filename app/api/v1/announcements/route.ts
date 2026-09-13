@@ -1,6 +1,7 @@
 import { getIettAnnouncements } from '@/lib/data-sources/iett-announcements';
 import { getMetroAnnouncements } from '@/lib/data-sources/metro-announcements';
 import { getSehirHatlariAnnouncements } from '@/lib/data-sources/sehir-hatlari-announcements';
+import { getMarmarayAnnouncements } from '@/lib/data-sources/marmaray-announcements';
 import { createFixedWindowRateLimiter, getClientIdentifier } from '@/lib/rate-limit';
 
 const ROUTE_CODE_PATTERN = /^[0-9A-ZÇĞİÖŞÜ-]{1,16}$/u;
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
   const route = new URL(request.url).searchParams.get('route')?.trim().toLocaleUpperCase('tr-TR') ?? null;
   if (route && !ROUTE_CODE_PATTERN.test(route)) return Response.json({ error: 'Geçerli bir hat kodu gerekli' }, { status: 400 });
   try {
-    const results = await Promise.allSettled([getIettAnnouncements(), getMetroAnnouncements(), getSehirHatlariAnnouncements()]);
+    const results = await Promise.allSettled([getIettAnnouncements(), getMetroAnnouncements(), getSehirHatlariAnnouncements(), getMarmarayAnnouncements()]);
     type AnnouncementSnapshot = { announcements:Array<{ routeCodes:string[]; provider:string }>; cacheStatus:'miss'|'hit'|'stale' };
     const snapshots = results.flatMap((result):AnnouncementSnapshot[] => result.status === 'fulfilled' ? [{ announcements:result.value.announcements, cacheStatus:result.value.cacheStatus }] : []);
     if (!snapshots.length) throw new Error('Duyuru kaynaklarının tamamı kullanılamıyor');

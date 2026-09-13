@@ -92,6 +92,15 @@ export function getIettSourceHealth(): SourceHealth[] {
       attributionUrl: 'https://sehirhatlari.istanbul/tr/duyurular',
     },
     {
+      id: 'marmaray-tcdd-announcements',
+      label: 'Marmaray / TCDD Duyuruları',
+      kind: 'announcements',
+      status: 'connected',
+      detail: 'TCDD Marmaray son dakika duyuruları sunucu tarafı cache ve stale fallback ile alınır; detay bağlantısı korunur.',
+      updatedAt: new Date().toISOString(),
+      attributionUrl: 'https://www.tcddtasimacilik.gov.tr/marmaray/tr/son_dakika',
+    },
+    {
       id: 'istanbulum-fixtures',
       label: 'İstanbulum geliştirme verisi',
       kind: 'static-network',

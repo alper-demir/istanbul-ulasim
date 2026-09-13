@@ -4,7 +4,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.4`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul ve Şehir Hatları duyuru içerikleri, bir sonraki araç durumları ve durak merkezli sefer akışı eklendi.
+- Güncel hedef sürüm: `0.11.5`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, bir sonraki araç durumları ve durak merkezli sefer akışı eklendi.
 - Aktif yerel çalışma dalı: `feature/multi-source-announcements`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
@@ -25,7 +25,7 @@ Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve 
 - M7 için Metro İstanbul’un dört ayrı işletme segmentinden kaynaklı ilk/son hareket özetleri
 - T1, T3, T4, T5, F1, F4 ve B1 Marmaray için kaynaklı statik güzergâh/istasyon gösterimi
 - B1 Marmaray ve M11 için TCDD kaynaklı ilk/son hareket özetleri; ara istasyon saati tahmini yapılmaz
-- İETT, Metro İstanbul ve Şehir Hatları duyuruları; sağlayıcı filtresi, resmî detay bağlantısı, stale fallback ve kaynak sağlık metrikleri
+- İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuruları; sağlayıcı filtresi, resmî detay bağlantısı, stale fallback ve kaynak sağlık metrikleri
 - Canlı İETT araç/duyuru kaynakları için operasyonel durum, hata sınıfı ve gecikme sayaçları; İETT hattında kullanıcıya sade kaynak durumu mesajı
 - 30 Şehir Hatları güzergâhı ve 44 iskele; yayımlanmış İBB deniz hattı vektörleri kullanılır, ancak çizgiler gerçek gemi izi değildir ve canlı gemi konumu yoktur
 - 30 vapur hattı için Şehir Hatları kaynaklı, iki yön ve gün türü ayrımlı planlı sefer saatleri; ara iskele ve işaretli sefer notları korunur
@@ -114,7 +114,7 @@ Canlı veri değişikliğinde en az birkaç farklı hat için `/api/v1/live-vehi
 
 ## Sonraki mantıklı aşamalar
 
-Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.4` ile Şehir Hatları duyuruları eklendi; sonraki öncelik Marmaray/TCDD duyuru kaynağını doğrulamaktır. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
+Ayrıntılı kaynak, faz, branch, performans ve kabul kriterleri [NEXT_PHASES_PLAN.md](NEXT_PHASES_PLAN.md) belgesindedir. `v0.11.5` ile Marmaray/TCDD duyuruları eklendi; sonraki öncelik duyuru tarih/aktiflik ayrıştırmasını kaynak bazında güçlendirmektir. Ortak edge cache/kota katmanı kullanıcı kararıyla şimdilik kapsam dışıdır.
 
 Ortak sefer sözleşmesi ve lazy-loaded panel, 30 vapur hattının resmî planlı sefer snapshot'ları, doğrulanabilen İETT planlı kalkışları, keşif/arama deneyimi ve canlı araç yumuşatma tamamlanmış ve `main`e alınmıştır. Kaynağın tablo üretmediği veya 500 döndürdüğü İETT hatlarında veri uydurulmaz; bu hatlar ayrıca raporlanır. Sefer ayrıntıları, kullanıcı seçili hattaki `Sefer saatlerini gör` eylemine bastığında modal içinde açılır; manifest ve yalnız o hattın dosyası lazy-load edilir. Canlı araç yumuşatma, iki snapshot arasında yalnız görsel işaretçi hareketini rota geometrisine projekte eder; kaynak konumunun veya varış süresinin daha hassas olduğu iddiasını taşımaz.
 

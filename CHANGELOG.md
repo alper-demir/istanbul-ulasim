@@ -2,6 +2,21 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.5 — Marmaray/TCDD duyuruları
+
+### Eklendi
+
+- TCDD Taşımacılık’ın Marmaray son dakika duyuru listesi global duyuru endpointine eklendi.
+- Raylı filtresinde Marmaray duyuruları B1 kapsamında gösteriliyor.
+- Gerçek TCDD detay bağlantısı, kaynak tarihi ve “Marmaray / TCDD” sağlayıcı etiketi korunuyor.
+- Marmaray kaynağı için timeout, süreç içi cache, stale fallback ve `/api/v1/source-health` runtime metrikleri eklendi.
+- TCDD’nin geçerli “duyuru bulunamadı” yanıtı kaynak hatası sayılmadan operasyonel/boş sonuç olarak işleniyor.
+
+### Sınırlar
+
+- Duyuru tarihi kaynakta açıkça bulunmuyorsa kayıt “Tarihi belirsiz” gösterilir.
+- Yolculuk planı, canlı tren konumu ve kesin sefer/varış tahmini bu faza dahil değildir.
+
 ## 0.11.4 — Şehir Hatları duyuruları
 
 ### Eklendi

@@ -165,6 +165,18 @@ Tamamlanan dal: `feature/sehir-hatlari-announcements`
 
 Kabul: Duyuru kaynağı boşluğu veya erişim hatası kesintisizlik garantisi olarak yorumlanmaz; kullanıcıya kaynak kapsamı ve güncellik sınırı açıkça belirtilir. Marmaray/TCDD henüz bu adaptöre dahil değildir.
 
+### Tamamlandı — Marmaray/TCDD duyuruları
+
+Tamamlanan dal: `feature/marmaray-announcements`
+
+- TCDD Taşımacılık Marmaray “Son Dakika” duyuruları global endpointte ayrı sağlayıcı olarak çalışır.
+- Raylı filtrede Marmaray duyuruları B1 hattına bağlanır; resmî detay sayfası korunur.
+- Tarihi kaynakta açıkça ayrıştırılamayan kayıtlar “Tarihi belirsiz” olarak gösterilir; tarih uydurulmaz.
+- Kaynak için timeout, cache, stale fallback, hata sınıfı ve source-health runtime metrikleri tutulur.
+- TCDD’nin resmî “duyuru bulunamadı” yanıtı geçerli boş sonuç olarak kabul edilir; sahte kayıt üretilmez.
+
+Kabul: TCDD listesi erişilemez veya beklenmeyen HTML döndürürse İETT, Metro İstanbul ve Şehir Hatları sonuçları çalışmaya devam eder; Marmaray kaynağı kesintisizlik garantisi olarak sunulmaz.
+
 ### Faz 3 — Metro, tramvay ve füniküler tarifeleri (başladı)
 
 Dal: `feature/rail-schedule-lite`

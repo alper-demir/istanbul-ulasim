@@ -188,7 +188,7 @@ Durak detay kartı, seçili hat ve yöndeki canlı araçları yön geometrisi ü
 
 ## Sürüm
 
-Güncel sürüm: `0.11.4`. Kaynak sağlığı, gerçek İETT, Metro İstanbul ve Şehir Hatları duyuru içerikleri, bir sonraki araç durumları, durak merkezli sefer akışı, planlı sefer snapshot'ları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
+Güncel sürüm: `0.11.5`. Kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, bir sonraki araç durumları, durak merkezli sefer akışı, planlı sefer snapshot'ları, masaüstü/mobil E2E ve performans ölçümü bu sürümde yayımlanır.
 
 ## Sürümleme yaklaşımı
 
