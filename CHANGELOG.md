@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.2 — İETT duyuru içeriği düzeltmesi
+
+- İETT SOAP yanıtındaki gerçek büyük harfli alanlar (`HATKODU`, `HAT`, `TIP`, `GUNCELLEME_SAATI`, `MESAJ`) doğru eşleştirildi.
+- Genel “İETT duyurusu” kartları yerine hat adı ve gerçek duyuru mesajı gösteriliyor.
+- Duyuru kartlarındaki ana sayfaya yönlendiren yanıltıcı bağlantılar kaldırıldı; kaynak kapsamı panel altında açıklanıyor.
+- “Hatı aç” metni “Hattı aç” olarak düzeltildi.
+
 ## 0.11.1 — Global duyuru görünürlüğü
 
 ### Eklendi

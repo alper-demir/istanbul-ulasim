@@ -4,7 +4,7 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.1`; canlı kaynak sağlığı, bir sonraki araç durumları, durak merkezli sefer akışı ve global duyuru görünürlüğü eklendi.
+- Güncel hedef sürüm: `0.11.2`; canlı kaynak sağlığı, bir sonraki araç durumları, durak merkezli sefer akışı ve gerçek İETT duyuru içerikleri eklendi.
 - Aktif yerel çalışma dalı: `feature/global-disruptions`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
