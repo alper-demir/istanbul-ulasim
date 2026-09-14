@@ -2,6 +2,11 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.16 — Basemap yüklenirken rota çizgisi güncellemesi
+
+- Rota çizgisi güncellemesinin MapLibre altlık haritasının tüm tile’ları yüklenene kadar beklemesine neden olan koşul kaldırıldı.
+- Uygulamanın kendi rota ve durak kaynakları hazır olduğu sürece seçilen hattın çizgisi hemen güncellenir; böylece yeni durak noktalarıyla önceki hattın çizgisinin birlikte kalması önlenir.
+
 ## 0.11.15 — Harita rota senkronizasyonu ve eksik yön durakları
 
 - MapLibre katmanları artık stil hazırlanırken o an seçili olan rota üzerinden kuruluyor; hızlı hat değişiminde önceki hattın çizgisinin haritada kalmasına yol açan yarış durumu kapatıldı.

@@ -4,17 +4,17 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.15`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
+- Güncel hedef sürüm: `0.11.16`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
 - Aktif yerel çalışma dalı: `feature/performance-polish-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
 ## Session devralma özeti — 14 Eylül 2026
 
-- Son commit: `0.11.15` rota senkronizasyonu ve eksik yön durakları düzeltmesi.
-- Son sürüm: `0.11.15`
+- Son commit: `0.11.16` basemap yüklenirken rota çizgisi güncellemesi düzeltmesi.
+- Son sürüm: `0.11.16`
 - Son doğrulanan dal: `feature/performance-polish-next`
-- Bu session’da tamamlanan son düzeltme, MapLibre stil yüklenmesi ile hat değişimi çakıştığında eski hattın çizgisinin haritada kalmasını engeller. Katmanların ilk verisi, render anında yakalanmış rota yerine stil hazırlandığı andaki güncel rota referansından gelir; katman yeniden oluşunca bütün harita kaynakları tekrar eşitlenir.
+- Bu session’da tamamlanan son düzeltme, MapLibre altlık tile’ları yüklenirken `map.isStyleLoaded()` geçici olarak `false` olduğunda rota çizgisi güncellemesinin atlanmasını engeller. Uygulamanın rota/durak kaynakları mevcut olduğu sürece çizgi hemen güncellenir; bu, yeni durak noktalarıyla eski çizginin birlikte kalabildiği gerçek üretim durumuydu.
 - Hat detay sorgusunda önceki route verisini `placeholderData` olarak tutma kaldırıldı. Yeni route verisi seçili route kimliğiyle eşleşene kadar panelde “Hat verisi yükleniyor” örtüsü gösterilir.
 - İETT GTFS snapshot’ında iki yönden yalnız birinin durak sırası varsa (mevcut snapshot’ta 58 çift yönlü hat), boş yön karşı yönün durakları ters sırada kullanılarak yayınlanır. Bu bir ETA veya yeni güzergâh türetimi değildir; her yönün kendi resmî çizgisi korunur ve kullanıcıya kaynak eksikliği uyarısı gösterilir. EL2 dönüş yönü bunun test örneğidir: 35 durak, `reverse-opposite-direction` işareti.
 - Kullanıcıya ait üretim/test çıktıları olan `data/reports/`, `playwright-report/` ve `test-results/` untracked dizinleri korunuyor; bu session’da commit edilmedi.

@@ -32,7 +32,7 @@ const USER_LOCATION_SOURCE = 'user-location';
 const ENDPOINT_SOURCE = 'route-endpoints';
 const COMPARISON_SOURCE = 'comparison-routes';
 const VEHICLE_ICON = 'live-vehicle-bus';
-const TRANSIT_DATA_VERSION = '2026-08-31.4';
+const TRANSIT_DATA_VERSION = '2026-08-31.5';
 const ROUTE_DATA_UPDATED_LABEL = '26 Ağu 2026';
 const CLIENT_DATA_TIMEOUT_MS = 12_000;
 const STOP_RADIUS: ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
@@ -1058,11 +1058,12 @@ export function TransitDashboard() {
 
   useEffect(() => {
     const map = mapRef.current;
-    // Route data can arrive while MapLibre is recreating its style during a
-    // hot reload or a slow basemap response.  Mutating a half-loaded style
-    // throws and leaves the canvas blank, so wait until every transit layer is
-    // available.
-    if (!map || !mapReady || !activeRoute || !map.isStyleLoaded() || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE)) return;
+    // A basemap can still be loading tiles after our own sources and layers
+    // exist. `isStyleLoaded()` is false during that interval, but GeoJSON
+    // source updates are valid. Waiting for it made this effect return while
+    // the stop-only effect below still ran, leaving new stop markers on an old
+    // route line. Source presence is the actual safety boundary here.
+    if (!map || !mapReady || !activeRoute || !map.getSource(ROUTE_SOURCE) || !map.getSource(STOP_SOURCE)) return;
     const route = selectedRoute;
     (map.getSource(ROUTE_SOURCE) as GeoJSONSource).setData(lineFeature(route));
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(route));
