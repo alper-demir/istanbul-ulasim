@@ -2,6 +2,13 @@
 
 Bu projedeki önemli değişiklikler bu dosyada belgelenir.
 
+## 0.11.15 — Harita rota senkronizasyonu ve eksik yön durakları
+
+- MapLibre katmanları artık stil hazırlanırken o an seçili olan rota üzerinden kuruluyor; hızlı hat değişiminde önceki hattın çizgisinin haritada kalmasına yol açan yarış durumu kapatıldı.
+- Harita katmanları yeniden oluşturulduğunda rota, durak, araç, karşılaştırma ve kullanıcı konumu kaynakları güncel durumla yeniden eşitleniyor.
+- İETT kaynak snapshot’ında yalnız bir yönün durak sırası bulunan 58 çift yönlü hat için boş yön, karşı yönün sırası ters çevrilerek kullanılabilir hale getirildi. Her hattın kendi resmî güzergâh geometrisi korunuyor.
+- Bu yedek durak sırası kullanılan yönlerde, veri sınırını açıklayan görünür bir uyarı eklendi. EL2’nin `4.LEVENT → EMİRGAN` yönü artık 35 durakla açılıyor.
+
 ## 0.11.14 — Hat geçişinde veri tutarlılığı
 
 - Hat değişirken önceki hat detaylarının yeni harita güzergâhıyla kısa süreli karışması engellendi.

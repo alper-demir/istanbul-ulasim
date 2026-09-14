@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import type { ExpressionSpecification, GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
@@ -32,7 +32,7 @@ const USER_LOCATION_SOURCE = 'user-location';
 const ENDPOINT_SOURCE = 'route-endpoints';
 const COMPARISON_SOURCE = 'comparison-routes';
 const VEHICLE_ICON = 'live-vehicle-bus';
-const TRANSIT_DATA_VERSION = '2026-08-31.3';
+const TRANSIT_DATA_VERSION = '2026-08-31.4';
 const ROUTE_DATA_UPDATED_LABEL = '26 Ağu 2026';
 const CLIENT_DATA_TIMEOUT_MS = 12_000;
 const STOP_RADIUS: ExpressionSpecification = ['case', ['get', 'selected'], 12, 7];
@@ -544,6 +544,7 @@ export function TransitDashboard() {
   const [manualLocationMode, setManualLocationMode] = useState(false);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  const [mapLayerVersion, setMapLayerVersion] = useState(0);
   const [favorites, setFavorites] = useState<string[]>(() => readStoredStringList(USER_STATE_KEYS.favoriteRoutes));
   const [favoriteStopIds, setFavoriteStopIds] = useState<string[]>(() => readStoredStringList(USER_STATE_KEYS.favoriteStops));
   const [recents, setRecents] = useState<RecentTransitItem[]>(readStoredRecents);
@@ -936,7 +937,10 @@ export function TransitDashboard() {
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
   }, [pendingStop?.stopId, selectedDirectionId, selectedRouteId, selectedStop?.id, urlStateReady]);
 
-  useEffect(() => {
+  // MapLibre can finish creating its initial style between route renders. Keep
+  // its event handlers on the same route that React has just committed, not a
+  // route captured when the map was first requested.
+  useLayoutEffect(() => {
     selectedRouteRef.current = selectedRoute;
   }, [selectedRoute]);
 
@@ -949,7 +953,6 @@ export function TransitDashboard() {
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current || !activeRoute) return;
     let cancelled = false;
-    const initialRoute = activeRoute;
     void maplibrePromise.then((maplibregl) => {
       if (cancelled || !mapContainerRef.current || mapRef.current) return;
       // The worker and its colocated shared module are emitted as Vite assets
@@ -965,22 +968,26 @@ export function TransitDashboard() {
       map.addControl(new maplibregl.NavigationControl({ showCompass:true }), 'bottom-right');
       const initializeTransitLayers = () => {
       if (map.getSource(ROUTE_SOURCE)) return;
+      // Read the ref at style-load time. A route may have changed while the
+      // base map was loading; using the captured initial route here leaves an
+      // old line behind even though the panel and stop markers are current.
+      const route = selectedRouteRef.current;
       map.addSource(COMPARISON_SOURCE, { type:'geojson', data:comparisonFeatures([]) });
       map.addLayer({ id:'comparison-route-halo', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':7, 'line-opacity':0.65 } });
       map.addLayer({ id:'comparison-route-line', type:'line', source:COMPARISON_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':3.5, 'line-opacity':0.8, 'line-dasharray':[1.5,1.2] } });
-      map.addSource(ROUTE_SOURCE, { type:'geojson', data:lineFeature(initialRoute) });
+      map.addSource(ROUTE_SOURCE, { type:'geojson', data:lineFeature(route) });
       map.addLayer({ id:'route-halo', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':'#ffffff', 'line-width':9, 'line-opacity':0.72 } });
       map.addLayer({ id:'route-line', type:'line', source:ROUTE_SOURCE, paint:{ 'line-color':['get','color'], 'line-width':5, 'line-opacity':0.96 } });
-      map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(initialRoute) });
+      map.addSource(STOP_SOURCE, { type:'geojson', data:stopFeatures(route) });
       // Drawing every stop while viewing the whole city gives little navigational
       // value and is needlessly expensive on mobile GPUs. The route and endpoints
       // remain visible; individual stops appear once the user zooms into a useful
       // inspection level.
       map.addLayer({ id:'route-stops', type:'circle', source:STOP_SOURCE, minzoom:10.5, paint:{
         'circle-radius':STOP_RADIUS,
-        'circle-color':['case',['get','selected'],initialRoute.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',initialRoute.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
+        'circle-color':['case',['get','selected'],route.color,'#ffffff'], 'circle-stroke-color':['case',['get','selected'],'#ffffff',route.color], 'circle-stroke-width':['case',['get','selected'],4,3.5],
       } });
-      map.addSource(ENDPOINT_SOURCE, { type:'geojson', data:endpointFeatures(initialRoute) });
+      map.addSource(ENDPOINT_SOURCE, { type:'geojson', data:endpointFeatures(route) });
       map.addLayer({ id:'route-endpoint-halo', type:'circle', source:ENDPOINT_SOURCE, paint:{
         'circle-radius':18, 'circle-color':['match',['get','kind'],'start','#16a34a','end','#dc2626','#ffffff'], 'circle-opacity':0.18,
       } });
@@ -990,11 +997,11 @@ export function TransitDashboard() {
       map.addLayer({ id:'route-endpoint-labels', type:'symbol', source:ENDPOINT_SOURCE, layout:{
         'text-field':['get','label'], 'text-size':10, 'text-font':['Open Sans Bold'], 'text-anchor':'top', 'text-offset':[0,1.7], 'text-allow-overlap':true,
       }, paint:{ 'text-color':['match',['get','kind'],'start','#15803d','end','#b91c1c','#334155'], 'text-halo-color':'#ffffff', 'text-halo-width':2 } });
-      map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(initialRoute.vehicles) });
+      map.addSource(VEHICLE_SOURCE, { type:'geojson', data:vehicleFeatures(route.vehicles) });
       map.addImage(VEHICLE_ICON, vehicleIconImage(), { pixelRatio:2 });
-      map.addLayer({ id:'selected-vehicle-ring', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],28,0], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','selected'],0.16,0], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],3,0] } });
-      map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],24,20], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','selected'],0.35,['case',['get','stale'],0.06,0.2]] } });
-      map.addLayer({ id:'route-vehicles', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],16,12], 'circle-color':initialRoute.color, 'circle-opacity':['case',['get','stale'],0.45,1], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],4,2.5] } });
+      map.addLayer({ id:'selected-vehicle-ring', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],28,0], 'circle-color':route.color, 'circle-opacity':['case',['get','selected'],0.16,0], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],3,0] } });
+      map.addLayer({ id:'vehicle-glow', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],24,20], 'circle-color':route.color, 'circle-opacity':['case',['get','selected'],0.35,['case',['get','stale'],0.06,0.2]] } });
+      map.addLayer({ id:'route-vehicles', type:'circle', source:VEHICLE_SOURCE, paint:{ 'circle-radius':['case',['get','selected'],16,12], 'circle-color':route.color, 'circle-opacity':['case',['get','stale'],0.45,1], 'circle-stroke-color':'#ffffff', 'circle-stroke-width':['case',['get','selected'],4,2.5] } });
       map.addLayer({ id:'route-vehicle-icons', type:'symbol', source:VEHICLE_SOURCE, layout:{ 'icon-image':VEHICLE_ICON, 'icon-size':['case',['get','selected'],1.25,1], 'icon-allow-overlap':true, 'icon-ignore-placement':true }, paint:{ 'icon-opacity':['case',['get','stale'],0.5,1] } });
       map.addSource(USER_LOCATION_SOURCE, { type:'geojson', data:userLocationFeature() });
       map.addLayer({ id:'user-location-halo', type:'circle', source:USER_LOCATION_SOURCE, paint:{ 'circle-radius':18, 'circle-color':'#14b8a6', 'circle-opacity':0.2 } });
@@ -1030,7 +1037,11 @@ export function TransitDashboard() {
         setRouteListOpen(true);
       });
       setMapReady(true);
-      fitRoute(map, initialRoute);
+      // The dependent source effects re-run after every layer recreation. This
+      // closes the window where a MapLibre style finishes after a route change
+      // and no later React state change exists to trigger a source sync.
+      setMapLayerVersion((version) => version + 1);
+      fitRoute(map, route);
       };
       map.on('load', initializeTransitLayers);
       map.on('style.load', initializeTransitLayers);
@@ -1071,7 +1082,7 @@ export function TransitDashboard() {
     // Route identity and direction are the transition boundaries; live vehicle
     // refreshes should update markers without resetting the selected stop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRoute, mapReady, selectedDirectionId, selectedRoute.id]);
+  }, [activeRoute, mapLayerVersion, mapReady, selectedDirectionId, selectedRoute.id]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1080,13 +1091,13 @@ export function TransitDashboard() {
     if (map.getLayer('vehicle-glow')) map.setPaintProperty('vehicle-glow','circle-color',selectedRoute.color);
     if (map.getLayer('route-vehicles')) map.setPaintProperty('route-vehicles','circle-color',selectedRoute.color);
     if (map.getLayer('selected-vehicle-ring')) map.setPaintProperty('selected-vehicle-ring','circle-color',selectedRoute.color);
-  }, [mapReady, mapVehicles, selectedRoute.color, selectedVehicle?.id]);
+  }, [mapLayerVersion, mapReady, mapVehicles, selectedRoute.color, selectedVehicle?.id]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(COMPARISON_SOURCE)) return;
     (map.getSource(COMPARISON_SOURCE) as GeoJSONSource).setData(comparisonFeatures(comparisonRoutes));
-  }, [comparisonRoutes, mapReady]);
+  }, [comparisonRoutes, mapLayerVersion, mapReady]);
 
   useEffect(() => {
     if (!pendingStop || selectedRoute.id !== pendingStop.routeId || selectedDirection?.id !== pendingStop.directionId) return;
@@ -1103,14 +1114,14 @@ export function TransitDashboard() {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(STOP_SOURCE)) return;
     (map.getSource(STOP_SOURCE) as GeoJSONSource).setData(stopFeatures(selectedRoute, selectedStop?.id));
-  }, [activeRoute, mapReady, selectedDirectionId, selectedRoute, selectedStop?.id]);
+  }, [activeRoute, mapLayerVersion, mapReady, selectedDirectionId, selectedRoute, selectedStop?.id]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !map.getSource(USER_LOCATION_SOURCE)) return;
     (map.getSource(USER_LOCATION_SOURCE) as GeoJSONSource).setData(userLocationFeature(userLocation ?? undefined));
     if (userLocation) map.flyTo({ center:userLocation, zoom:Math.max(map.getZoom(), 13), duration:700 });
-  }, [mapReady, userLocation]);
+  }, [mapLayerVersion, mapReady, userLocation]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1410,6 +1421,7 @@ export function TransitDashboard() {
             ))}
           </div></>}
           <div id="route-stops" className="mt-5 flex scroll-mt-32 items-center justify-between"><h2 className="text-sm font-extrabold">Güzergâh {stopKindPlural(selectedRoute.mode)}</h2><span className="text-xs font-medium text-[var(--muted)]">{selectedRoute.stops.length ? 'Haritada tıklanabilir' : 'Veri bekleniyor'}</span></div>
+          {selectedDirection?.stopSource === 'reverse-opposite-direction' && <p className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-800 dark:text-amber-200">Bu yönün resmî durak sırası kaynakta eksik. Karşı yönün mevcut durakları ters sırada gösteriliyor; güzergâh çizgisi bu yöne aittir.</p>}
           <div className="route-stop-list relative mt-3 space-y-0 pl-1">
             {selectedRoute.stops.map((stop,index)=>{const isStart=index===0;const isEnd=index===selectedRoute.stops.length-1;return (
               <button key={`${stop.id}-${index}`} onClick={()=>{setSelectedVehicle(null);setSelectedStop(stop);rememberRecent({ kind:'stop', id:stop.id, title:stop.name, subtitle:stop.district, routeId:selectedRoute.id, routeCode:selectedRoute.code, directionId:selectedDirectionId });}} className={cn('relative flex min-h-14 w-full gap-3 rounded-xl pb-3 text-left transition',(isStart||isEnd)&&'mb-1 px-2 pt-2',isStart&&'bg-emerald-500/10',isEnd&&'bg-red-500/10',selectedStop?.id===stop.id&&'bg-[var(--primary-soft)] px-2')}><>{index<selectedRoute.stops.length-1&&<span className={cn('absolute top-4 h-full w-0.5 bg-[var(--border)]',(isStart||isEnd)?'left-[17px]':'left-[7px]')} />}<span className={cn('relative z-10 mt-1.5 rounded-full border-[3px] transition',isStart||isEnd?'h-5 w-5':'h-4 w-4')} style={{borderColor:selectedStop?.id===stop.id?'#ffffff':isStart?'#16a34a':isEnd?'#dc2626':selectedRoute.color, background:selectedStop?.id===stop.id?selectedRoute.color:isStart?'#16a34a':isEnd?'#dc2626':undefined}} /><span className="min-w-0"><span className="flex flex-wrap items-center gap-1.5"><span className="text-sm font-semibold">{stop.name}</span>{isStart&&<span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">BAŞLANGIÇ</span>}{isEnd&&<span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white">BİTİŞ</span>}</span><span className="mt-0.5 block text-xs text-[var(--muted)]">{stop.district}</span></span></></button>

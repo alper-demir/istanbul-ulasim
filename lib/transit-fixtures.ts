@@ -28,6 +28,12 @@ export type TransitDirection = {
   geometrySource?: string;
   geometrySourceUpdatedAt?: string;
   geometrySourceUrl?: string;
+  /**
+   * Some legacy IETT snapshots publish stop sequences for only one direction.
+   * In that case the opposite direction keeps its own geometry but uses the
+   * available sequence in reverse order, and the UI states that limitation.
+   */
+  stopSource?: 'official' | 'reverse-opposite-direction';
 };
 
 export type TransitRoute = {

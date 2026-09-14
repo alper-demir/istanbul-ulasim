@@ -71,6 +71,8 @@ npm run data:build-iett
 
 Betik, hat detaylarına ek olarak birleşik aramada kullanılan `stop-index.json` dosyasını da üretir. Bu ters indeks her durağı, o duraktan geçen hat ve yönlerle ilişkilendirir; uygulama böylece yüzlerce hat dosyasını ayrı ayrı indirmeden durak arayabilir.
 
+Kaynak snapshot’ında bir hattın iki yönü için ayrı geometri bulunup yalnız bir yönün durak sırası yayımlanmışsa, diğer yönün boş kalmaması için mevcut sıra ters çevrilir. Uygulama bu durumu ilgili yönün durak listesinde açıkça bildirir; her yönün haritadaki güzergâh çizgisi kendi resmî geometrisinden gelir.
+
 ### Metro verisi
 
 Metro hatları çalışma zamanında dış kaynağa bağlanmaz. `data/metro/lines.json` içindeki resmî hat manifesti ve OpenStreetMap ilişki snapshot’ı kullanılarak küçük statik JSON dosyaları üretilir:

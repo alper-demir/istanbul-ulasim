@@ -50,6 +50,20 @@ async function expectRouteFiles(network: 'rail' | 'ferry', routes: RouteSummary[
 }
 
 describe('static transit networks', () => {
+  it('keeps a usable, labelled stop sequence when an IETT direction lacks its own source rows', async () => {
+    const payload = await readJson<{ data: {
+      code: string;
+      directions: Array<{ id: string; stops: unknown[]; stopSource?: string }>;
+    } }>('public/iett/routes/EL2.json');
+
+    const outbound = payload.data.directions.find((direction) => direction.id === 'outbound');
+    const returning = payload.data.directions.find((direction) => direction.id === 'return');
+    expect(payload.data.code).toBe('EL2');
+    expect(outbound?.stops).toHaveLength(35);
+    expect(returning?.stops).toHaveLength(35);
+    expect(returning?.stopSource).toBe('reverse-opposite-direction');
+  });
+
   it('publishes the selected tram, funicular and Marmaray lines', async () => {
     const index = await readJson<RouteIndex>('public/rail/route-index.json');
     expect(index.data.map((route) => route.code)).toEqual(['B1', 'F1', 'F4', 'T1', 'T3', 'T4', 'T5']);

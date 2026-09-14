@@ -138,6 +138,18 @@ for (const [code, features] of groups) {
     coordinates: result.feature.geometry.coordinates,
     stops: result.stops,
   }));
+  // A portion of the legacy GTFS snapshot has a geometry for both directions
+  // but only one of their stop sequences. Keep the official geometry for each
+  // direction, and make the available stop order usable in reverse rather
+  // than publishing an empty stop panel. The marker is preserved in the
+  // static payload so the UI can explain this source limitation clearly.
+  const outbound = directions.find((direction) => direction.id === 'outbound');
+  const returning = directions.find((direction) => direction.id === 'return');
+  for (const [missing, available] of [[outbound, returning], [returning, outbound]]) {
+    if (!missing || !available || missing.stops.length || !available.stops.length) continue;
+    missing.stops = [...available.stops].reverse();
+    missing.stopSource = 'reverse-opposite-direction';
+  }
   const primaryDirection = directions[0];
   if (!primaryDirection) continue;
   const feature = features[0];

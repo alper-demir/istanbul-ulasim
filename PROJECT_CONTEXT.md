@@ -4,29 +4,29 @@ Bu belge, yeni bir geliştirme oturumunda projenin mevcut durumunu hızlıca anl
 
 ## Mevcut durum
 
-- Güncel hedef sürüm: `0.11.14`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
+- Güncel hedef sürüm: `0.11.15`; canlı kaynak sağlığı, gerçek İETT, Metro İstanbul, Şehir Hatları ve Marmaray/TCDD duyuru içerikleri, TCDD ilk/son hareket sınırları, gün türü otomatik seçilen planlı seferler, kalıcı masaüstü/mobil E2E kontrolleri, bir sonraki araç durumları, durak merkezli sefer akışı, güvenli snapshot bakım/fark raporu akışı, performans polish kontrolleri ve dış kaynak zaman aşımı/eski veri görünürlüğü eklendi.
 - Aktif yerel çalışma dalı: `feature/performance-polish-next`; bu faz kullanıcı onayından sonra `main`e alınacaktır.
 - Dağıtım: Uygulama canlı ortamda çalışıyor. Yeni özellikler kullanıcı onayı olmadan `main` dalına birleştirilmeyecek veya dağıtılmayacak.
 - GitHub: `alper-demir/istanbul-ulasim`. Özellik dalındaki yeni commit ve etiketler, kullanıcı özellikle istemedikçe GitHub’a pushlanmaz.
 
 ## Session devralma özeti — 14 Eylül 2026
 
-- Son commit: `54d56bd fix: prevent stale route details during switching`
-- Son sürüm: `0.11.14`
+- Son commit: `0.11.15` rota senkronizasyonu ve eksik yön durakları düzeltmesi.
+- Son sürüm: `0.11.15`
 - Son doğrulanan dal: `feature/performance-polish-next`
-- Bu session’da tamamlanan son düzeltme, hızlı hat geçişlerinde eski hattın durak listesinin yeni hattın harita güzergâhıyla karışmasını engeller.
+- Bu session’da tamamlanan son düzeltme, MapLibre stil yüklenmesi ile hat değişimi çakıştığında eski hattın çizgisinin haritada kalmasını engeller. Katmanların ilk verisi, render anında yakalanmış rota yerine stil hazırlandığı andaki güncel rota referansından gelir; katman yeniden oluşunca bütün harita kaynakları tekrar eşitlenir.
 - Hat detay sorgusunda önceki route verisini `placeholderData` olarak tutma kaldırıldı. Yeni route verisi seçili route kimliğiyle eşleşene kadar panelde “Hat verisi yükleniyor” örtüsü gösterilir.
-- MapLibre route/stop katmanları güncel `selectedRoute` verisini kullanır; hızlı ardışık hat ve yön değişimleri için tarayıcıda doğrulandı.
+- İETT GTFS snapshot’ında iki yönden yalnız birinin durak sırası varsa (mevcut snapshot’ta 58 çift yönlü hat), boş yön karşı yönün durakları ters sırada kullanılarak yayınlanır. Bu bir ETA veya yeni güzergâh türetimi değildir; her yönün kendi resmî çizgisi korunur ve kullanıcıya kaynak eksikliği uyarısı gösterilir. EL2 dönüş yönü bunun test örneğidir: 35 durak, `reverse-opposite-direction` işareti.
 - Kullanıcıya ait üretim/test çıktıları olan `data/reports/`, `playwright-report/` ve `test-results/` untracked dizinleri korunuyor; bu session’da commit edilmedi.
 
 ### Son kabul kontrolleri
 
 - `npm run typecheck` başarılı.
 - `npm run lint` başarılı.
-- `npm test -- --run` başarılı: 19 test dosyası, 60 test.
+- `npm test -- --run` başarılı: 19 test dosyası, 61 test.
 - `npm run build` başarılı. Yalnızca mevcut büyük client bundle için Vite boyut uyarısı var.
-- Tarayıcıda `34BZ → 500T → 41ST → 34BZ` hızlı geçişi yapıldı; son panel ve duraklar yalnızca son seçili hatta aitti.
-- Tarayıcıda 34BZ yön değişimi yapıldı; URL `direction=return` olarak güncellendi.
+- Tarayıcıda `EL2 → 500T → 41ST` ardışık geçişi yapıldı; son panel, URL ve duraklar yalnızca son seçili 41ST hattına aitti.
+- Tarayıcıda EL2 `4.LEVENT → EMİRGAN` yönü açıldı; 35 durak ve kaynak eksikliği uyarısı doğrulandı.
 - Yeniden başlatma sonrası `http://localhost:3000/api/v1/live-vehicles?route=500T` 200 döndü ve 3 araç verdi. Bu snapshot’taki üç aracın tamamı `return` yönünde olduğundan 500T `outbound` görünümünde 0 araç, `return` görünümünde 3 araç görülmesi beklenen davranıştır.
 
 ### Yeni session başlangıç komutları
@@ -52,6 +52,7 @@ Kaynak sağlığı: `http://localhost:3000/api/v1/source-health`
 - Canlı araç verisi kesin ETA değildir. Araç hiç dönmeyebilir, eski snapshot gösterilebilir veya yönlerden yalnızca biri dolu olabilir.
 - Cloudflare Cache/KV, Durable Object, Redis, yol tarifi ve yolculuk planı bu kapsamda değildir.
 - `main`e merge, deploy veya GitHub push kullanıcı onayı olmadan yapılmayacak.
+- Bu session sonunda önce `CHANGELOG.md` ve bu belge güncellenmiş, sonra yalnız ilgili dosyalar commitlenmelidir; kullanıcıya ait `data/reports/`, `playwright-report/` ve `test-results/` dizinleri commit kapsamı dışındadır.
 - Sonraki geliştirmeye başlamadan önce `NEXT_PHASES_PLAN.md` içindeki açık fazlar ve bu belgedeki test durumu birlikte okunmalı.
 
 Uygulama; İstanbul otobüs/metrobüs, metro, tramvay, füniküler, Marmaray ve vapur hatlarını yön bazlı durak/istasyon/iskeleleriyle haritada incelemek için bir keşif aracıdır. Yolculuk planlama, resmî sefer yönetimi veya kesin varış zamanı tahmini değildir.
