@@ -27,6 +27,16 @@ const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 0
 const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 15_000);
 const MAX_UPSTREAM_RESPONSE_BYTES = configuredLimit('IETT_LIVE_MAX_RESPONSE_BYTES', 1_000_000);
 const MAX_CACHE_ENTRIES = configuredLimit('IETT_LIVE_MAX_CACHE_ENTRIES', 900);
+const UPSTREAM_USER_AGENT = 'Istanbulum/0.11 (+https://istanbulum.alper-apps.workers.dev)';
+
+export function iettLiveRequestHeaders() {
+  return {
+    Accept:'text/xml',
+    'Content-Type':'text/xml; charset=utf-8',
+    SOAPAction:'http://tempuri.org/GetHatOtoKonum_json',
+    'User-Agent':UPSTREAM_USER_AGENT,
+  };
+}
 
 type RawIettVehicle = {
   kapino?: string;
@@ -212,7 +222,7 @@ async function fetchSnapshot(routeCode: string) {
   try {
     const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
       method:'POST',
-      headers:{ 'Content-Type':'text/xml; charset=utf-8', SOAPAction:'http://tempuri.org/GetHatOtoKonum_json' },
+      headers:iettLiveRequestHeaders(),
       body:soapEnvelope(routeCode),
       cache:'no-store',
       signal,
