@@ -1,6 +1,5 @@
 import type { TransitVehicle } from '@/lib/transit-fixtures';
 import { IETT_SOURCES } from '@/lib/data-sources/iett';
-import { fetchIettLiveViaSocket } from '@/lib/data-sources/iett-live-socket';
 import { classifySourceFailure, type SourceRuntimeMetrics } from '@/lib/source-observability';
 
 function configuredMilliseconds(name: string, fallback: number) {
@@ -221,20 +220,13 @@ async function fetchSnapshot(routeCode: string) {
   liveMetrics.upstreamRequests += 1;
   liveMetrics.lastUpstreamRequestAt = new Date(now).toISOString();
   try {
-    const requestBody = soapEnvelope(routeCode);
-    let response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
+    const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
       method:'POST',
       headers:iettLiveRequestHeaders(),
-      body:requestBody,
+      body:soapEnvelope(routeCode),
       cache:'no-store',
       signal,
     }), UPSTREAM_TIMEOUT_MS);
-    if (response.status === 500) {
-      response = await runWithTimeout(
-        (signal) => fetchIettLiveViaSocket(requestBody, signal, MAX_UPSTREAM_RESPONSE_BYTES),
-        UPSTREAM_TIMEOUT_MS,
-      );
-    }
     if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
     const contentLength = Number(response.headers.get('content-length'));
     if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
