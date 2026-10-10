@@ -1,4 +1,5 @@
 import { getIettLiveVehicles } from '@/lib/data-sources/iett-live-vehicles';
+import { classifySourceFailure } from '@/lib/source-observability';
 
 const ROUTE_CODE_PATTERN = /^[0-9A-ZÇĞİÖŞÜ-]{1,16}$/u;
 
@@ -31,9 +32,17 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Live vehicle source failed', error);
+    const errorMessage = error instanceof Error ? error.message : '';
+    const upstreamStatusMatch = errorMessage.match(/\b([45]\d{2})\b/u);
     return Response.json({
       error:'Canlı araç verisi şu anda alınamıyor',
-      meta:{ source:'ibb-iett-live', status:'unavailable', fetchedAt:new Date().toISOString() },
+      meta:{
+        source:'ibb-iett-live',
+        status:'unavailable',
+        failureKind:classifySourceFailure(error),
+        upstreamStatus:upstreamStatusMatch ? Number(upstreamStatusMatch[1]) : null,
+        fetchedAt:new Date().toISOString(),
+      },
     }, { status:503, headers:{ 'Cache-Control':'no-store' } });
   }
 }

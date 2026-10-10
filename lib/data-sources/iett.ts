@@ -60,7 +60,7 @@ export function getIettSourceHealth(): SourceHealth[] {
       label: IETT_SOURCES.vehiclePositions.label,
       kind: 'live-vehicles',
       status: 'connected',
-      detail: 'Resmî hat bazlı araç konum metodu bağlı; sunucu adaptörü kısa süreli önbellek ve saatlik istek bütçesiyle kaynağı korur.',
+      detail: 'Resmî hat bazlı araç konum metodu bağlı; sunucu adaptörü kısa süreli önbellek, stale fallback ve zaman aşımı koruması kullanır.',
       updatedAt: new Date().toISOString(),
       attributionUrl: IETT_SOURCES.vehiclePositions.wsdl,
     },
