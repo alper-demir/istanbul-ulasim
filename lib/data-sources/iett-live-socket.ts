@@ -71,6 +71,12 @@ export async function fetchIettLiveViaSocket(body: string, signal: AbortSignal, 
 
     const responseBody = raw.subarray(boundary + 4);
     if (responseBody.byteLength > maxResponseBytes) throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+    const responseText = new TextDecoder().decode(responseBody);
+    const soapFault = responseText.match(/<faultstring>([\s\S]*?)<\/faultstring>/iu)?.[1]
+      ?.replace(/<[^>]+>/gu, ' ')
+      .replace(/\s+/gu, ' ')
+      .trim();
+    if (soapFault) throw new Error(`İETT canlı araç socket SOAP hatası: ${soapFault.slice(0, 120)}`);
     return new Response(responseBody, { status, headers:{ 'Content-Type':'text/xml; charset=utf-8' } });
   } finally {
     signal.removeEventListener('abort', closeOnAbort);

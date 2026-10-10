@@ -40,6 +40,7 @@ export async function GET(request: Request) {
         source:'ibb-iett-live',
         status:'unavailable',
         failureKind:classifySourceFailure(error),
+        failureDetail:errorMessage.slice(0, 180) || null,
         upstreamStatus:upstreamStatusMatch ? Number(upstreamStatusMatch[1]) : null,
         fetchedAt:new Date().toISOString(),
       },
