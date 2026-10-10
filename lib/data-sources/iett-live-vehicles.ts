@@ -19,9 +19,11 @@ const CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_CACHE_TTL_MS', 30_000);
 const STALE_CACHE_TTL_MS = configuredMilliseconds('IETT_LIVE_STALE_TTL_MS', 10 * 60 * 1_000);
 const UPSTREAM_TIMEOUT_MS = configuredMilliseconds('IETT_LIVE_TIMEOUT_MS', 10_000);
 const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
-// This deliberately conservative default protects an undocumented upstream
-// quota. Hosting can raise it only after observing source health in production.
-const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 360);
+// Do not enforce an unmeasured process-local budget by default. In a Worker,
+// this counter is neither shared nor durable; once exhausted it makes every
+// route fail on that isolate while other isolates can still look healthy.
+// Hosting may opt into a measured limit until a shared edge quota exists.
+const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 0);
 const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 15_000);
 const MAX_UPSTREAM_RESPONSE_BYTES = configuredLimit('IETT_LIVE_MAX_RESPONSE_BYTES', 1_000_000);
 const MAX_CACHE_ENTRIES = configuredLimit('IETT_LIVE_MAX_CACHE_ENTRIES', 900);

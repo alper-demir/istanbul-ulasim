@@ -104,7 +104,7 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 - İstemci yalnız seçili hattı sorgular; sayfa arka plandayken yenileme yapılmaz.
 - İstemci 30 saniyede bir kontrol eder; aynı hattın taze sunucu yanıtı varsayılan olarak 30 saniye kullanılır ve `IETT_LIVE_*` ortam ayarlarıyla değiştirilebilir.
 - Aynı hat için eşzamanlı istekler tek İETT isteğinde birleştirilir.
-- Üst İETT kaynağı için varsayılan küresel süreç bütçesi saatte 360 istektir; üst kaynak yanıtı 1 MB ile sınırlıdır.
+- Üst İETT kaynağı için ölçülmemiş süreç içi bütçe varsayılan olarak kapalıdır; gerekirse hosting ortamından etkinleştirilir. Üst kaynak yanıtı 1 MB ile sınırlıdır.
 - Son başarılı yanıt 10 dakika boyunca geri dönüş verisi olarak tutulur. Bir kaynağın hatası sonrasında aynı hat 15 saniye yeniden zorlanmaz.
 - Bellek içi önbellek sınırlıdır; uzun çalışan süreçte büyümesi kontrol edilir.
 - Her istemci, canlı araç API’sine dakikada en fazla 12 istek gönderebilir. CDN yanıtı 30 saniye saklamalı, 10 dakikaya kadar eski veriyi hata durumunda sunabilmelidir.
