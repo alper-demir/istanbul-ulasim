@@ -25,6 +25,8 @@ const UPSTREAM_RATE_WINDOW_MS = 60 * 60 * 1_000;
 // Hosting may opt into a measured limit until a shared edge quota exists.
 const UPSTREAM_RATE_LIMIT = configuredLimit('IETT_LIVE_MAX_REQUESTS_PER_HOUR', 0);
 const FAILURE_BACKOFF_MS = configuredMilliseconds('IETT_LIVE_FAILURE_BACKOFF_MS', 15_000);
+const UPSTREAM_RETRY_COUNT = configuredLimit('IETT_LIVE_RETRY_COUNT', 2);
+const UPSTREAM_RETRY_DELAY_MS = configuredMilliseconds('IETT_LIVE_RETRY_DELAY_MS', 250);
 const MAX_UPSTREAM_RESPONSE_BYTES = configuredLimit('IETT_LIVE_MAX_RESPONSE_BYTES', 1_000_000);
 const MAX_CACHE_ENTRIES = configuredLimit('IETT_LIVE_MAX_CACHE_ENTRIES', 900);
 const UPSTREAM_USER_AGENT = 'Istanbulum/0.11 (+https://istanbulum.alper-apps.workers.dev)';
@@ -220,19 +222,30 @@ async function fetchSnapshot(routeCode: string) {
   liveMetrics.upstreamRequests += 1;
   liveMetrics.lastUpstreamRequestAt = new Date(now).toISOString();
   try {
-    const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
-      method:'POST',
-      headers:iettLiveRequestHeaders(),
-      body:soapEnvelope(routeCode),
-      cache:'no-store',
-      signal,
-    }), UPSTREAM_TIMEOUT_MS);
-    if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
-    const contentLength = Number(response.headers.get('content-length'));
-    if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
-      throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= UPSTREAM_RETRY_COUNT; attempt += 1) {
+      try {
+        const response = await runWithTimeout((signal) => fetch(IETT_SOURCES.vehiclePositions.endpoint, {
+          method:'POST',
+          headers:iettLiveRequestHeaders(),
+          body:soapEnvelope(routeCode),
+          cache:'no-store',
+          signal,
+        }), UPSTREAM_TIMEOUT_MS);
+        if (!response.ok) throw new Error(`İETT canlı araç servisi ${response.status} döndürdü`);
+        const contentLength = Number(response.headers.get('content-length'));
+        if (Number.isFinite(contentLength) && contentLength > MAX_UPSTREAM_RESPONSE_BYTES) {
+          throw new Error('İETT canlı araç yanıtı güvenli boyut sınırını aştı');
+        }
+        return parseIettLiveVehicleResponse(await response.text(), routeCode);
+      } catch (error) {
+        lastError = error;
+        if (attempt < UPSTREAM_RETRY_COUNT) {
+          await new Promise((resolve) => setTimeout(resolve, UPSTREAM_RETRY_DELAY_MS * (attempt + 1)));
+        }
+      }
     }
-    return parseIettLiveVehicleResponse(await response.text(), routeCode);
+    throw lastError instanceof Error ? lastError : new Error('İETT canlı araç isteği başarısız oldu');
   } finally {
     liveMetrics.responseDurationMsTotal += Date.now() - now;
     liveMetrics.responseDurationSamples += 1;

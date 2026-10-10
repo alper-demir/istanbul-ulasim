@@ -23,4 +23,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: npm audit --audit-level=high
+      # The deployed Worker does not include dev tooling. Audit the runtime
+      # dependency graph so a vulnerability in local test/build tooling cannot
+      # block a production deploy.
+      - run: npm audit --omit=dev --audit-level=high
