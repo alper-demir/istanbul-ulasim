@@ -107,7 +107,7 @@ Canlı konumlar bilgilendirme amaçlıdır. Güncellik, doğruluk, eksik kayıt 
 - Üst İETT kaynağı için ölçülmemiş süreç içi bütçe varsayılan olarak kapalıdır; gerekirse hosting ortamından etkinleştirilir. Üst kaynak yanıtı 1 MB ile sınırlıdır.
 - Son başarılı yanıt 10 dakika boyunca geri dönüş verisi olarak tutulur. Bir kaynağın hatası sonrasında aynı hat 15 saniye yeniden zorlanmaz.
 - Bellek içi önbellek sınırlıdır; uzun çalışan süreçte büyümesi kontrol edilir.
-- Her istemci, canlı araç API’sine dakikada en fazla 12 istek gönderebilir. CDN yanıtı 30 saniye saklamalı, 10 dakikaya kadar eski veriyi hata durumunda sunabilmelidir.
+- Canlı araç API’sinde süreç-içi istemci kotası uygulanmaz. CDN yanıtı 30 saniye saklamalı, 10 dakikaya kadar eski veriyi hata durumunda sunabilmelidir.
 
 Bu korumalar tek Node/Worker süreci içindir. Çoklu örnekli canlı dağıtım öncesinde ortak edge önbelleği ve kota katmanı kurulmalıdır: Cloudflare Cache/KV + Durable Object veya Redis uygundur. İETT’nin herkese açık, taahhütlü yüksek hacim kotası varsayılmamalıdır.
 
